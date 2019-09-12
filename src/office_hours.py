@@ -44,19 +44,6 @@ def _transform_data_row(raw_data_row: dict) -> EngagementRecord:
         student_pre_registered=_student_pre_registered(raw_data_row),
         associated_staff_email=raw_data_row['staff_member_on_appointments.email_address']
     )
-    # return {
-    #     'engagement_type': 'office_hours',
-    #     'engagement_id': raw_data_row['appointments.id'],
-    #     'start_date_time': _get_start_date_time(raw_data_row),
-    #     'medium': _get_medium(raw_data_row),
-    #     'engagement_name': raw_data_row['appointment_type_on_appointments.name'],
-    #     'engagement_category': department.category,
-    #     'engagement_department': department.name,
-    #     'student_handshake_id': raw_data_row['student_on_appointments.id'],
-    #     'student_school_year_at_time_of_engagement': raw_data_row['student_school_year_on_appointments.name'],
-    #     'student_pre_registered': _student_pre_registered(raw_data_row),
-    #     'associated_staff_email': raw_data_row['staff_member_on_appointments.email_address']
-    # }
 
 
 def _set_report_date_range(insights_page: InsightsPage):
