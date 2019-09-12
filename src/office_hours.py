@@ -58,8 +58,10 @@ def _get_medium(raw_data_row: dict) -> Mediums:
     lower_medium_str = raw_data_row['appointment_medium_on_appointments.name'].lower()
     if 'in-person' in lower_medium_str:
         return Mediums.IN_PERSON
-    elif 'virtual' in lower_medium_str:
+    elif 'virtual' in lower_medium_str or 'phone' in lower_medium_str:
         return Mediums.VIRTUAL
+    elif 'email' in lower_medium_str:
+        return Mediums.EMAIL
     else:
         raise ValueError(f'Unknown medium: {raw_data_row["appointment_medium_on_appointments.name"]}')
 
@@ -70,7 +72,7 @@ def _get_start_date_time(raw_data_row: dict) -> datetime:
 
 def _get_department_from_type(raw_data_row: dict) -> Department:
     appt_type_to_dept_mapping = {
-        'Homewood: AMS Career Advising - For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI.value,
+        'Homewood: AMS Career Advising -  For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI.value,
         'Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI.value,
         'Homewood: Biomedical Engineering': Departments.BME.value,
         'Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI.value,
@@ -79,7 +81,7 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Humanities: History, Philosophy,and Humanistic Thought': Departments.HIST_PHIL_HUM.value,
         'Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM.value,
         'Homewood: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN.value,
-        'Homewood: Misc Engineering': Departments.MISC_ENG.value,
+        'Homewood: Misc. Engineering': Departments.MISC_ENG.value,
         'Homewood: Peer Advisor Drop In': Departments.PA_DROP_INS.value,
         'Homewood: Physical and Environmental Sciences': Departments.PHYS_ENV_SCI.value,
         'Homewood: Pre-Health and Public Health Studies': Departments.PRE_PUB_HEALTH.value,
@@ -93,11 +95,12 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Consulting Academy': Departments.CONSUTING_ACADEMY.value,
         'Homewood: Finance Academy': Departments.FINANCE_ACADEMY.value,
         'Homewood: Health Sciences Academy': Departments.HEALTH_SCI_ACADEMY.value,
-        'Homewood: STEM and Innovation Academy': Departments.STEM_ACADEMY.value,
+        'Homewood: STEM & Innovation Academy': Departments.STEM_ACADEMY.value,
         'Homewood: Pre-Law': Departments.PRE_PROF.value,
         'Homewood: Pre-Health/Other Health Professions': Departments.PRE_PROF.value,
         'Homewood: Pre-Dental': Departments.PRE_PROF.value,
-        'Homewood: Pre-Med': Departments.PRE_PROF.value
+        'Homewood: Pre-Med': Departments.PRE_PROF.value,
+        'Homewood: Non-Office Hour Interaction': Departments.NO_DEPARTMENT.value
     }
     return appt_type_to_dept_mapping[raw_data_row['appointment_type_on_appointments.name']]
 
