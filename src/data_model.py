@@ -76,13 +76,17 @@ class Mediums(Enum):
 class EngagementRecord:
     """A data record representing a single student engagement"""
 
-    def __init__(self, engagement_type: EngagementTypes, engagement_id: str, start_date_time: datetime, medium: Mediums,
-                 engagement_name: str, engagement_department: Department,
-                 student_handshake_id: str, student_school_year_at_time_of_engagement: str,
+    def __init__(self, engagement_type: EngagementTypes, handshake_engagement_id: str,
+                 start_date_time: datetime, medium: Mediums, engagement_name: str,
+                 engagement_department: Department, student_handshake_id: str,
+                 student_school_year_at_time_of_engagement: str,
                  student_pre_registered: bool, associated_staff_email: str):
         self.data = {
+            'unique_engagement_id': self._unique_engagement_id(engagement_type,
+                                                               handshake_engagement_id,
+                                                               student_handshake_id),
+            'handshake_engagement_id': handshake_engagement_id,
             'engagement_type': engagement_type.value,
-            'engagement_id': engagement_id,
             'start_date_time': start_date_time,
             'medium': medium.value,
             'engagement_name': engagement_name,
@@ -93,3 +97,7 @@ class EngagementRecord:
             'student_pre_registered': student_pre_registered,
             'associated_staff_email': associated_staff_email
         }
+
+    def _unique_engagement_id(self, engagement_type: EngagementTypes, handshake_engagement_id: str,
+                              student_handshake_id: str):
+        return f'{engagement_type.value}_{handshake_engagement_id}_{student_handshake_id}'

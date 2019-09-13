@@ -21,8 +21,9 @@ class TestOfficeHourDataTransformation(unittest.TestCase):
         ]
 
         expected = {
+            'unique_engagement_id': 'office_hours_4298790_4218008',
             'engagement_type': 'office_hours',
-            'engagement_id': '4298790',
+            'handshake_engagement_id': '4298790',
             'start_date_time': datetime(2019, 9, 5, 11, 57, 51),
             'medium': 'in_person',
             'engagement_name': 'Homewood: Social Sciences: Political Science, Economics, and Finance',
@@ -51,8 +52,9 @@ class TestOfficeHourDataTransformation(unittest.TestCase):
         ]
 
         expected = {
+            'unique_engagement_id': 'office_hours_4146716_14140603',
             'engagement_type': 'office_hours',
-            'engagement_id': '4146716',
+            'handshake_engagement_id': '4146716',
             'start_date_time': datetime(2019, 8, 19, 10, 0, 0),
             'medium': 'virtual',
             'engagement_name': 'Homewood: Pre-Med',

@@ -24,7 +24,7 @@ def transform_office_hours_data(raw_data: List[dict]) -> List[EngagementRecord]:
 def _transform_data_row(raw_data_row: dict) -> EngagementRecord:
     return EngagementRecord(
         engagement_type=EngagementTypes.OFFICE_HOURS,
-        engagement_id=raw_data_row['appointments.id'],
+        handshake_engagement_id=raw_data_row['appointments.id'],
         start_date_time=_get_start_date_time(raw_data_row),
         medium=_get_medium(raw_data_row),
         engagement_name=raw_data_row['appointment_type_on_appointments.name'],
