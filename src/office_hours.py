@@ -1,24 +1,14 @@
 from datetime import datetime
 from typing import List
 
-from autohandshake import HandshakeBrowser, InsightsPage, FileType
-
+from src.common import InsightsReport
 from src.data_model import Departments, Department, EngagementRecord, EngagementTypes, Mediums
-from src.utils import CONFIG, read_and_delete_json
 
-
-def extract_office_hours_data(browser: HandshakeBrowser) -> List[dict]:
-    """
-    Extract all Handshake office-hours data for the report.
-
-    :param browser: a logged-in HandshakeBrowser
-    :return: the raw, extracted data in list-of-dict format
-    """
-    APPTS_INSIGHTS_URL = 'https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD02QlpEZlFQbTFLcGR3dzN5Rzl2eEFNJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA=='
-    insights_page = InsightsPage(APPTS_INSIGHTS_URL, browser)
-    insights_page = _set_report_date_range(insights_page)
-    downloaded_filepath = insights_page.download_file(CONFIG['download_dir'], file_type=FileType.JSON)
-    return read_and_delete_json(downloaded_filepath)
+APPT_INSIGHTS_REPORT = InsightsReport(
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD02QlpEZlFQbTFLcGR3dzN5Rzl2eEFNJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
+    date_field_category='Appointments',
+    date_field_title='Start Date Date'
+)
 
 
 def transform_office_hours_data(raw_data: List[dict]) -> List[EngagementRecord]:
@@ -44,14 +34,6 @@ def _transform_data_row(raw_data_row: dict) -> EngagementRecord:
         student_pre_registered=_student_pre_registered(raw_data_row),
         associated_staff_email=raw_data_row['staff_member_on_appointments.email_address']
     )
-
-
-def _set_report_date_range(insights_page: InsightsPage):
-    START_DATE = datetime(2019, 7, 1)
-    END_DATE = datetime.today()
-    insights_page.set_date_range_filter(field_category='Appointments', field_title='Start Date Date',
-                                        start_date=START_DATE, end_date=END_DATE)
-    return insights_page
 
 
 def _get_medium(raw_data_row: dict) -> Mediums:
