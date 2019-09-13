@@ -72,7 +72,7 @@ def _get_start_date_time(raw_data_row: dict) -> datetime:
 
 def _get_department_from_type(raw_data_row: dict) -> Department:
     appt_type_to_dept_mapping = {
-        'Homewood: AMS Career Advising -  For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI.value,
+        'Homewood: AMS Career Advising - For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI.value,
         'Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI.value,
         'Homewood: Biomedical Engineering': Departments.BME.value,
         'Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI.value,
@@ -95,7 +95,7 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Consulting Academy': Departments.CONSUTING_ACADEMY.value,
         'Homewood: Finance Academy': Departments.FINANCE_ACADEMY.value,
         'Homewood: Health Sciences Academy': Departments.HEALTH_SCI_ACADEMY.value,
-        'Homewood: STEM & Innovation Academy': Departments.STEM_ACADEMY.value,
+        'Homewood: STEM and Innovation Academy': Departments.STEM_ACADEMY.value,
         'Homewood: Pre-Law': Departments.PRE_PROF.value,
         'Homewood: Pre-Health/Other Health Professions': Departments.PRE_PROF.value,
         'Homewood: Pre-Dental': Departments.PRE_PROF.value,
