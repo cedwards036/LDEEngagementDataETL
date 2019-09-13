@@ -74,3 +74,12 @@ def read_and_delete_json(filepath: str) -> List[dict]:
         data = json.load(file)
     os.remove(filepath)
     return data
+
+
+def parse_date_string(date_str: str) -> datetime:
+    """
+    Parse a standard Handshake datetime string
+    :param date_str:
+    :return:
+    """
+    return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')

@@ -1,7 +1,6 @@
-from datetime import datetime
 from typing import List
 
-from src.common import InsightsReport
+from src.common import InsightsReport, parse_date_string
 from src.data_model import Departments, Department, EngagementRecord, EngagementTypes, Mediums
 
 APPT_INSIGHTS_REPORT = InsightsReport(
@@ -25,7 +24,7 @@ def _transform_data_row(raw_data_row: dict) -> EngagementRecord:
     return EngagementRecord(
         engagement_type=EngagementTypes.OFFICE_HOURS,
         handshake_engagement_id=raw_data_row['appointments.id'],
-        start_date_time=_get_start_date_time(raw_data_row),
+        start_date_time=parse_date_string(raw_data_row['appointments.start_date_time']),
         medium=_get_medium(raw_data_row),
         engagement_name=raw_data_row['appointment_type_on_appointments.name'],
         engagement_department=_get_department_from_type(raw_data_row),
@@ -46,10 +45,6 @@ def _get_medium(raw_data_row: dict) -> Mediums:
         return Mediums.EMAIL
     else:
         raise ValueError(f'Unknown medium: {raw_data_row["appointment_medium_on_appointments.name"]}')
-
-
-def _get_start_date_time(raw_data_row: dict) -> datetime:
-    return datetime.strptime(raw_data_row['appointments.start_date_time'], '%Y-%m-%d %H:%M:%S')
 
 
 def _get_department_from_type(raw_data_row: dict) -> Department:

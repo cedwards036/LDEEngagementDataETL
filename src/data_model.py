@@ -5,7 +5,7 @@ from enum import Enum
 class Categories(Enum):
     """The possible engagement category values"""
     LDL_DEPARTMENT = 'ldl_department'
-    LDL_NO_DEPT = 'ldl_no_department'
+    LDL_NO_DEPARTMENT = 'ldl_no_department'
     LDL_ACADEMY = 'ldl_academy'
     PRE_PROF = 'pre_prof'
     ENG_MASTERS = 'eng_masters'
@@ -57,7 +57,7 @@ class Departments(Enum):
     HEALTH_SCI_ACADEMY = Department('health_sci_academy', Categories.LDL_ACADEMY)
     NP_GOV_ACADEMY = Department('np_gov_academy', Categories.LDL_ACADEMY)
     PRE_PROF = Department('pre_prof', Categories.PRE_PROF)
-    NO_DEPARTMENT = Department('no_dept', Categories.LDL_DEPARTMENT)
+    NO_DEPARTMENT = Department('no_dept', Categories.LDL_NO_DEPARTMENT)
 
 
 class EngagementTypes(Enum):
