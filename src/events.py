@@ -4,28 +4,64 @@ from src.common import InsightsReport, parse_date_string
 from src.data_model import EngagementRecord, EngagementTypes, Mediums, Departments, Department
 
 EVENTS_INSIGHTS_REPORT = InsightsReport(
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1XdnpaMTl2N2hJa0d4V0NUTlNQN1U3JmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
+    date_field_category='Events',
+    date_field_title='Start Date Date'
+)
+
+EVENTS_LABELS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1YeGVFWG9SV0h2NjZSdFBLcTI3NWYwJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
     date_field_category='Events',
     date_field_title='Start Date Date'
 )
 
 
-def transform_events_data(raw_data: List[dict]) -> List[EngagementRecord]:
+def transform_events_data(raw_events_data: List[dict], raw_events_labels_data: List[dict]) -> List[EngagementRecord]:
     """
     Transform raw events data into standard "engagement data" format
 
-    :param raw_data: raw events data from Handshake
+    :param raw_events_data: raw events data from Handshake
     :return: cleaned events data in the form of "engagement data"
     """
     result = []
-    for raw_data_row in raw_data:
-        if raw_data_row['added_institution_labels_on_events.name'] is not None:
-            department = _get_department_from_label(raw_data_row)
-        else:
-            department = Departments.NO_DEPARTMENT.value
-        if department is not None:
+    dept_data = _build_dept_lookup_dict(raw_events_labels_data)
+    for raw_data_row in raw_events_data:
+        for department in dept_data[raw_data_row['events.id']]['depts']:
             result.append(_transform_data_row(raw_data_row, department))
     return result
+
+
+def _build_dept_lookup_dict(raw_events_labels_data: List[dict]) -> dict:
+    dept_data = {}
+    for row in raw_events_labels_data:
+        dept_data = _ensure_event_is_in_lookup_data(row, dept_data)
+        department = _get_department_from_label(row)
+        if department is not None:
+            dept_data[row['events.id']] = _add_valid_dept(department, dept_data[row['events.id']])
+        else:
+            dept_data[row['events.id']] = _add_invalid_dept(dept_data[row['events.id']])
+    return dept_data
+
+
+def _ensure_event_is_in_lookup_data(event_data_row: dict, dept_data: dict) -> dict:
+    if event_data_row['events.id'] not in dept_data.keys():
+        dept_data[event_data_row['events.id']] = {'depts': [], 'contains_valid_dept': False}
+    return dept_data
+
+
+def _add_valid_dept(department: Department, dept_record: dict) -> dict:
+    if dept_record['contains_valid_dept']:
+        dept_record['depts'].append(department)
+    else:
+        dept_record['depts'] = [department]
+        dept_record['contains_valid_dept'] = True
+    return dept_record
+
+
+def _add_invalid_dept(dept_record: dict) -> dict:
+    if not dept_record['contains_valid_dept']:
+        dept_record['depts'] = [Departments.NO_DEPARTMENT.value]
+    return dept_record
 
 
 def _transform_data_row(raw_data_row: dict, engagement_department: Department) -> EngagementRecord:
