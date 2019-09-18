@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 from datetime import datetime
@@ -74,6 +75,18 @@ def read_and_delete_json(filepath: str) -> List[dict]:
         data = json.load(file)
     os.remove(filepath)
     return data
+
+
+def read_csv(filepath: str) -> List[dict]:
+    """
+    Read the given csv file into a list of dicts
+
+    :param filepath: the filepath of the csv file to read
+    :return: a list of dicts representing the csv data
+    """
+    with open(filepath) as f:
+        return [{k: v for k, v in row.items()}
+                for row in csv.DictReader(f, skipinitialspace=True)]
 
 
 def parse_date_string(date_str: str) -> datetime:
