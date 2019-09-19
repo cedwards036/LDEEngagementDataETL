@@ -1,5 +1,7 @@
 from typing import List
 
+from autohandshake import HandshakeBrowser
+
 from src.common import InsightsReport, parse_date_string
 from src.data_model import EngagementRecord, EngagementTypes, Mediums, Departments, Department
 
@@ -14,6 +16,18 @@ EVENTS_LABELS_INSIGHTS_REPORT = InsightsReport(
     date_field_category='Events',
     date_field_title='Start Date Date'
 )
+
+
+def run_events_etl(browser: HandshakeBrowser) -> List[EngagementRecord]:
+    """
+    Run the full ETL process for events data
+
+    :param browser: a logged-in HandshakeBrowser
+    :return: a list consisting of cleaned event engagement data
+    """
+    raw_event_data = EVENTS_INSIGHTS_REPORT.extract_data(browser)
+    raw_event_label_data = EVENTS_LABELS_INSIGHTS_REPORT.extract_data(browser)
+    return transform_events_data(raw_event_data, raw_event_label_data)
 
 
 def transform_events_data(raw_events_data: List[dict], raw_events_labels_data: List[dict]) -> List[EngagementRecord]:

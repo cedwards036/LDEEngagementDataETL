@@ -1,16 +1,12 @@
 from src.common import BrowsingSession, CONFIG
-from src.events import transform_events_data, EVENTS_INSIGHTS_REPORT, EVENTS_LABELS_INSIGHTS_REPORT
+from src.events import run_events_etl
 from src.file_writer import write_engagement_data
-from src.office_hours import transform_office_hours_data, APPT_INSIGHTS_REPORT
+from src.office_hours import run_office_hours_etl
 
 if __name__ == '__main__':
     with BrowsingSession() as browser:
-        raw_appt_data = APPT_INSIGHTS_REPORT.extract_data(browser)
-        clean_appt_data = transform_office_hours_data(raw_appt_data)
-
-        raw_event_data = EVENTS_INSIGHTS_REPORT.extract_data(browser)
-        raw_event_label_data = EVENTS_LABELS_INSIGHTS_REPORT.extract_data(browser)
-        clean_event_data = transform_events_data(raw_event_data, raw_event_label_data)
-
+        clean_appt_data = run_office_hours_etl(browser)
+        clean_event_data = run_events_etl(browser)
         engagement_data = clean_appt_data + clean_event_data
+
         write_engagement_data(CONFIG['engagement_data_filepath'], engagement_data)

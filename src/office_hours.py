@@ -1,5 +1,7 @@
 from typing import List
 
+from autohandshake import HandshakeBrowser
+
 from src.common import InsightsReport, parse_date_string
 from src.data_model import Departments, Department, EngagementRecord, EngagementTypes, Mediums
 
@@ -8,6 +10,17 @@ APPT_INSIGHTS_REPORT = InsightsReport(
     date_field_category='Appointments',
     date_field_title='Start Date Date'
 )
+
+
+def run_office_hours_etl(browser: HandshakeBrowser) -> List[EngagementRecord]:
+    """
+    Run the full ETL process for Office Hours data
+
+    :param browser: a logged-in HandshakeBrowser
+    :return: a list consisting of cleaned office hour engagement data
+    """
+    raw_appt_data = APPT_INSIGHTS_REPORT.extract_data(browser)
+    return transform_office_hours_data(raw_appt_data)
 
 
 def transform_office_hours_data(raw_data: List[dict]) -> List[EngagementRecord]:
@@ -55,7 +68,7 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI.value,
         'Homewood: Computer Science, Computer Engineering, and Electrical Engineering': Departments.COMP_ELEC_ENG.value,
         'Homewood: Engineering Masters Students': Departments.ENG_MASTERS.value,
-        'Homewood: Humanities: History, Philosophy,and Humanistic Thought': Departments.HIST_PHIL_HUM.value,
+        'Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM.value,
         'Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM.value,
         'Homewood: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN.value,
         'Homewood: Misc. Engineering': Departments.MISC_ENG.value,
