@@ -1,7 +1,8 @@
 import unittest
 
 from src.roster_data import (transform_handshake_data, transform_roster_data,
-                             enrich_with_handshake_data, enrich_with_dept_college_data)
+                             enrich_with_handshake_data, enrich_with_dept_college_data,
+                             transform_major_data)
 
 
 class TestHandshakeData(unittest.TestCase):
@@ -62,6 +63,36 @@ class TestHandshakeData(unittest.TestCase):
         }
 
         self.assertEqual(expected, transform_handshake_data(test_data))
+
+
+class TestMajorData(unittest.TestCase):
+
+    def test_transform_major_data(self):
+        test_data = [
+            {
+                'major': 'English',
+                'department': 'literature',
+                'college': 'ksas'
+            },
+            {
+                'major': 'Comp Sci',
+                'department': 'comp_sci',
+                'college': 'wse'
+            }
+        ]
+
+        expected = {
+            'English': {
+                'department': 'literature',
+                'college': 'ksas'
+            },
+            'Comp Sci': {
+                'department': 'comp_sci',
+                'college': 'wse'
+            }
+        }
+
+        self.assertEqual(expected, transform_major_data(test_data))
 
 
 class TestRosterData(unittest.TestCase):

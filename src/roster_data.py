@@ -38,6 +38,22 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
     return result
 
 
+def transform_major_data(raw_major_data: List[dict]) -> dict:
+    """
+    Create a lookup dict in the form {major: {department and college info}}
+
+    :param raw_major_data: raw major data as read from a csv
+    :return: a dict that allows the lookup of department and college given major
+    """
+    result = {}
+    for row in raw_major_data:
+        result[row['major']] = {
+            'department': row['department'],
+            'college': row['college']
+        }
+    return result
+
+
 def enrich_with_handshake_data(student_data: List[dict], handshake_lookup_data: dict) -> List[dict]:
     """
     Enrich student data with Handshake data.
