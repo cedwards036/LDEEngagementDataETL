@@ -1,6 +1,32 @@
 from typing import List
 
+from src.common import read_csv
 from src.data_model import Departments
+
+
+def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str, major_data_filepath: str) -> List[
+    dict]:
+    major_data = _extract_major_data(major_data_filepath)
+    handshake_data = _extract_handshake_data(handshake_data_filepath)
+    roster_data = _extract_sis_rosters(sis_roster_filepaths)
+    return enrich_with_dept_college_data(
+        enrich_with_handshake_data(roster_data, handshake_data),
+        major_data)
+
+
+def _extract_major_data(filepath: str) -> dict:
+    return transform_major_data(read_csv(filepath))
+
+
+def _extract_handshake_data(filepath: str) -> dict:
+    return transform_handshake_data(read_csv(filepath))
+
+
+def _extract_sis_rosters(roster_filepaths: List[str]) -> List[dict]:
+    result = []
+    for filepath in roster_filepaths:
+        result += transform_roster_data(read_csv(filepath))
+    return result
 
 
 def transform_roster_data(raw_sis_data: List[dict]) -> List[dict]:
@@ -22,7 +48,7 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
     """
 
     def _add_new_username_to_lookup(row: dict, lookup_dict: dict) -> dict:
-        lookup_dict[row['Students Username']] = {
+        lookup_dict[row['Students Username'].upper()] = {
             'handshake_id': row['Students ID'],
             'majors': [row['Majors Name']],
             'school_year': row['School Year Name']
@@ -31,10 +57,10 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
 
     result = {}
     for row in raw_handshake_data:
-        if row['Students Username'] not in result:
+        if row['Students Username'].upper() not in result:
             result = _add_new_username_to_lookup(row, result)
         else:
-            result[row['Students Username']]['majors'].append(row['Majors Name'])
+            result[row['Students Username'].upper()]['majors'].append(row['Majors Name'])
     return result
 
 
@@ -54,6 +80,19 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     return result
 
 
+def transform_athlete_data(raw_athlete_data: List[dict]) -> dict:
+    """
+    Create a lookup dict in the form {hopkins_id: sport}
+
+    :param raw_athlete_data: raw athlete data as read from a csv
+    :return: a dict that allows the lookup of sports team given hopkins ID
+    """
+    result = {}
+    for row in raw_athlete_data:
+        result[row['University ID'].upper()] = row['Sport']
+    return result
+
+
 def enrich_with_handshake_data(student_data: List[dict], handshake_lookup_data: dict) -> List[dict]:
     """
     Enrich student data with Handshake data.
@@ -64,7 +103,7 @@ def enrich_with_handshake_data(student_data: List[dict], handshake_lookup_data: 
     """
     result = []
     for row in student_data:
-        handshake_record = handshake_lookup_data[row['handshake_username']]
+        handshake_record = handshake_lookup_data[row['handshake_username'].upper()]
         for major in handshake_record['majors']:
             new_row = row.copy()
             new_row['handshake_id'] = handshake_record['handshake_id']

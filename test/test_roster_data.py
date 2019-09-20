@@ -2,7 +2,7 @@ import unittest
 
 from src.roster_data import (transform_handshake_data, transform_roster_data,
                              enrich_with_handshake_data, enrich_with_dept_college_data,
-                             transform_major_data)
+                             transform_major_data, transform_athlete_data)
 
 
 class TestHandshakeData(unittest.TestCase):
@@ -24,12 +24,12 @@ class TestHandshakeData(unittest.TestCase):
         ]
 
         expected = {
-            '49gj40': {
+            '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science'],
                 'school_year': 'Junior'
             },
-            '82t349': {
+            '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
                 'school_year': 'Senior'
@@ -55,7 +55,7 @@ class TestHandshakeData(unittest.TestCase):
         ]
 
         expected = {
-            '49gj40': {
+            '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior'
@@ -141,12 +141,12 @@ class TestRosterData(unittest.TestCase):
         ]
 
         test_hs_data = {
-            '49gj40': {
+            '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior'
             },
-            '82t349': {
+            '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
                 'school_year': 'Senior'
@@ -175,6 +175,42 @@ class TestRosterData(unittest.TestCase):
         ]
         self.assertEqual(expected, enrich_with_handshake_data(test_data, test_hs_data))
 
+
+class TestAthleteData(unittest.TestCase):
+
+    def test_transform_athlete_data(self):
+        test_data = [
+            {
+                'ID': '923809',
+                'University ID': 'f94t7r',
+                'First Name': 'John',
+                'Last Name': 'Student',
+                'Sport': 'Water Polo',
+                'Grad. Year': '2022',
+                'Email': 'jstudent@jhu.edu',
+                'Mobile Phone': '9024098352',
+                'Campus Address Street 1': '1 Street, Baltimore MD',
+                'Birth Date': '1/1/2000'
+            },
+            {
+                'ID': '4839589',
+                'University ID': 'gt29fj',
+                'First Name': 'Jane',
+                'Last Name': 'Otherstudent',
+                'Sport': 'Soccer',
+                'Grad. Year': '2021',
+                'Email': 'jotherstu@jhu.edu',
+                'Mobile Phone': '8232938294',
+                'Campus Address Street 1': '2 Ave, Baltimore MD',
+                'Birth Date': '7/3/1999'
+            }
+        ]
+
+        expected = {
+            'F94T7R': 'Water Polo',
+            'GT29FJ': 'Soccer'
+        }
+        self.assertEqual(expected, transform_athlete_data(test_data))
 
 class TestDeptCollegeEnrichment(unittest.TestCase):
     def test_enrich_with_dept_and_college_data(self):
