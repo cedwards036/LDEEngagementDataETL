@@ -122,14 +122,23 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
     """
     result = []
     for row in student_data:
-        new_row = row.copy()
-        new_row['department'] = dept_college_data[new_row['major']]['department']
-        new_row['college'] = dept_college_data[new_row['major']]['college']
-        result.append(new_row)
-        if new_row['school_year'] == 'Freshman' and new_row['department'] != 'soar_fye_ksas':
-            fye_row = new_row.copy()
-            fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
-            result.append(fye_row)
+        try:
+            new_row = row.copy()
+            new_row['department'] = dept_college_data[new_row['major']]['department']
+            new_row['college'] = dept_college_data[new_row['major']]['college']
+            result.append(new_row)
+            if new_row['school_year'] == 'Freshman' and new_row['department'] != 'soar_fye_ksas':
+                fye_row = new_row.copy()
+                fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
+                result.append(fye_row)
+        except KeyError:
+            if row['major'] == '' or ('interdisciplinary studies' in row['major'].lower()):
+                new_row = row.copy()
+                new_row['department'] = None
+                new_row['college'] = None
+                result.append(new_row)
+            else:
+                raise ValueError(f'Student {row["handshake_username"]} has unexpected major "{row["major"]}"')
     return result
 
 
