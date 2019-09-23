@@ -10,6 +10,7 @@ ROSTER_FILEPATHS = [
 ]
 HANDSHAKE_DATA_FILEPATH = f'{STUDENT_DATA_DIR}\\handshake_hwd_students_2019_09_16.csv'
 MAJORS_FILEPATH = f'{STUDENT_DATA_DIR}\\all_majors_2019_09_18.csv'
+ATHLETE_FILEPATH = f'{STUDENT_DATA_DIR}\\student_athlete_roster_2019_09_19.csv'
 
 if __name__ == '__main__':
     with BrowsingSession() as browser:
@@ -18,5 +19,5 @@ if __name__ == '__main__':
         engagement_data = clean_appt_data + clean_event_data
         write_engagement_data(CONFIG['engagement_data_filepath'], engagement_data)
 
-    student_data = run_students_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH)
+    student_data = run_students_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH, ATHLETE_FILEPATH)
     write_to_csv(CONFIG['student_data_filepath'], student_data)

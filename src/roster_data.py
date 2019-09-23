@@ -4,14 +4,17 @@ from src.common import read_csv
 from src.data_model import Departments
 
 
-def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str, major_data_filepath: str) -> List[
-    dict]:
+def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
+                     major_data_filepath: str, athlete_filepath: str) -> List[dict]:
     major_data = _extract_major_data(major_data_filepath)
     handshake_data = _extract_handshake_data(handshake_data_filepath)
     roster_data = _extract_sis_rosters(sis_roster_filepaths)
-    return enrich_with_dept_college_data(
-        enrich_with_handshake_data(roster_data, handshake_data),
-        major_data)
+    athlete_data = _extract_athlete_data(athlete_filepath)
+    return enrich_with_athlete_data(
+        enrich_with_dept_college_data(
+            enrich_with_handshake_data(roster_data, handshake_data),
+            major_data),
+        athlete_data)
 
 
 def _extract_major_data(filepath: str) -> dict:
@@ -20,6 +23,10 @@ def _extract_major_data(filepath: str) -> dict:
 
 def _extract_handshake_data(filepath: str) -> dict:
     return transform_handshake_data(read_csv(filepath))
+
+
+def _extract_athlete_data(filepath: str) -> dict:
+    return transform_athlete_data(read_csv(filepath))
 
 
 def _extract_sis_rosters(roster_filepaths: List[str]) -> List[dict]:
@@ -118,6 +125,7 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
     Enrich student data with appropriate department affiliation and college data.
 
     :param student_data: student data with 'major' and 'school_year' fields
+    :param dept_college_data: a dict mapping username to dept and college data
     :return: an enriched dataset including department affiliations and colleges for each student
     """
     result = []
@@ -139,6 +147,27 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
                 result.append(new_row)
             else:
                 raise ValueError(f'Student {row["handshake_username"]} has unexpected major "{row["major"]}"')
+    return result
+
+
+def enrich_with_athlete_data(student_data: List[dict], athlete_data: dict) -> List[dict]:
+    """
+    Enrich student data with appropriate department affiliation and college data.
+
+    :param student_data: student data with a 'handshake_username' field
+    :param athlete_data: a dict mapping student username to athlete status info
+    :return: an enriched dataset including athlete info for each student
+    """
+    result = []
+    for row in student_data:
+        new_row = row.copy()
+        new_row['is_athlete'] = False
+        try:
+            new_row['athlete_sport'] = athlete_data[new_row['handshake_username'].upper()]
+            new_row['is_athlete'] = True
+        except KeyError:
+            new_row['athlete_sport'] = None
+        result.append(new_row)
     return result
 
 

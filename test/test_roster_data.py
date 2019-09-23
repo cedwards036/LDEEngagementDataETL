@@ -2,7 +2,8 @@ import unittest
 
 from src.roster_data import (transform_handshake_data, transform_roster_data,
                              enrich_with_handshake_data, enrich_with_dept_college_data,
-                             transform_major_data, transform_athlete_data)
+                             transform_major_data, transform_athlete_data,
+                             enrich_with_athlete_data)
 
 
 class TestHandshakeData(unittest.TestCase):
@@ -211,6 +212,59 @@ class TestAthleteData(unittest.TestCase):
             'GT29FJ': 'Soccer'
         }
         self.assertEqual(expected, transform_athlete_data(test_data))
+
+    def test_enrich_student_data_with_athlete_status(self):
+        test_data = [
+            {
+                'handshake_username': 'f94t7r',
+                'handshake_id': '8029439',
+                'major': 'B.S. Comp. Sci.: Computer Science',
+                'school_year': 'Junior',
+                'extraneous_field': 'something'
+            },
+            {
+                'handshake_username': 'gt29fj',
+                'handshake_id': '8029439',
+                'school_year': 'Junior'
+            },
+            {
+                'handshake_username': '203rf8',
+                'handshake_id': '92839843',
+                'school_year': 'Freshman'
+            },
+        ]
+
+        test_athlete_data = {
+            'F94T7R': 'Water Polo',
+            'GT29FJ': 'Soccer'
+        }
+
+        expected = [
+            {
+                'handshake_username': 'f94t7r',
+                'handshake_id': '8029439',
+                'major': 'B.S. Comp. Sci.: Computer Science',
+                'school_year': 'Junior',
+                'extraneous_field': 'something',
+                'is_athlete': True,
+                'athlete_sport': 'Water Polo'
+            },
+            {
+                'handshake_username': 'gt29fj',
+                'handshake_id': '8029439',
+                'school_year': 'Junior',
+                'is_athlete': True,
+                'athlete_sport': 'Soccer'
+            },
+            {
+                'handshake_username': '203rf8',
+                'handshake_id': '92839843',
+                'school_year': 'Freshman',
+                'is_athlete': False,
+                'athlete_sport': None
+            },
+        ]
+        self.assertEqual(expected, enrich_with_athlete_data(test_data, test_athlete_data))
 
 class TestDeptCollegeEnrichment(unittest.TestCase):
     def test_enrich_with_dept_and_college_data(self):
