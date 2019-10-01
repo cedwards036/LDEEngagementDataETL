@@ -165,6 +165,9 @@ def enrich_with_athlete_data(student_data: List[dict], athlete_data: dict) -> Li
         try:
             new_row['athlete_sport'] = athlete_data[new_row['handshake_username'].upper()]
             new_row['is_athlete'] = True
+            athlete_dept_row = new_row.copy()
+            athlete_dept_row['department'] = Departments.SOAR_ATHLETICS.value.name
+            result.append(athlete_dept_row)
         except KeyError:
             new_row['athlete_sport'] = None
         result.append(new_row)

@@ -225,12 +225,14 @@ class TestAthleteData(unittest.TestCase):
             {
                 'handshake_username': 'gt29fj',
                 'handshake_id': '8029439',
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'department': 'comp_elec_eng'
             },
             {
                 'handshake_username': '203rf8',
                 'handshake_id': '92839843',
-                'school_year': 'Freshman'
+                'school_year': 'Freshman',
+                'department': 'humanities'
             },
         ]
 
@@ -247,6 +249,16 @@ class TestAthleteData(unittest.TestCase):
                 'school_year': 'Junior',
                 'extraneous_field': 'something',
                 'is_athlete': True,
+                'athlete_sport': 'Water Polo',
+                'department': 'soar_athletics'
+            },
+            {
+                'handshake_username': 'f94t7r',
+                'handshake_id': '8029439',
+                'major': 'B.S. Comp. Sci.: Computer Science',
+                'school_year': 'Junior',
+                'extraneous_field': 'something',
+                'is_athlete': True,
                 'athlete_sport': 'Water Polo'
             },
             {
@@ -254,15 +266,25 @@ class TestAthleteData(unittest.TestCase):
                 'handshake_id': '8029439',
                 'school_year': 'Junior',
                 'is_athlete': True,
-                'athlete_sport': 'Soccer'
+                'athlete_sport': 'Soccer',
+                'department': 'soar_athletics'
+            },
+            {
+                'handshake_username': 'gt29fj',
+                'handshake_id': '8029439',
+                'school_year': 'Junior',
+                'is_athlete': True,
+                'athlete_sport': 'Soccer',
+                'department': 'comp_elec_eng'
             },
             {
                 'handshake_username': '203rf8',
                 'handshake_id': '92839843',
                 'school_year': 'Freshman',
                 'is_athlete': False,
-                'athlete_sport': None
-            },
+                'athlete_sport': None,
+                'department': 'humanities'
+            }
         ]
         self.assertEqual(expected, enrich_with_athlete_data(test_data, test_athlete_data))
 
