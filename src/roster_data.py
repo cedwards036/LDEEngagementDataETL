@@ -129,18 +129,27 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
     :return: an enriched dataset including department affiliations and colleges for each student
     """
 
+    def _clean_major(major: str) -> str:
+        colon_loc = major.find(':')
+        if colon_loc == -1:
+            return major
+        else:
+            return major[colon_loc + 1:].strip()
+
     def _enrich_row(row: dict) -> dict:
         new_row = row.copy()
         new_row['department'] = dept_college_data[new_row['major']]['department']
         new_row['college'] = dept_college_data[new_row['major']]['college']
+        new_row['major'] = _clean_major(new_row['major'])
         return new_row
 
     def _student_is_freshman_with_defined_major(row: dict) -> bool:
         return row['school_year'] == 'Freshman' and row['department'] != 'soar_fye_ksas'
 
     def _enrich_fye_row(row: dict) -> dict:
-        fye_row = new_row.copy()
+        fye_row = row.copy()
         fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
+        new_row['major'] = _clean_major(new_row['major'])
         return fye_row
 
     def _get_fye_dept_from_college(college: str) -> str:
@@ -155,6 +164,7 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
         new_row = row.copy()
         new_row['department'] = None
         new_row['college'] = None
+        new_row['major'] = _clean_major(new_row['major'])
         return new_row
 
     result = []

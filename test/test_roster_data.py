@@ -330,7 +330,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
+                'major': 'Computer Science',
                 'school_year': 'Junior',
                 'department': 'comp_elec_eng',
                 'college': 'wse'
@@ -338,7 +338,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'major': 'Applied Math and Stats',
                 'school_year': 'Junior',
                 'department': 'misc_eng',
                 'college': 'wse'
@@ -346,7 +346,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
+                'major': 'English',
                 'school_year': 'Sophomore',
                 'department': 'lit_lang_film',
                 'college': 'ksas'
@@ -403,7 +403,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'major': 'Applied Math and Stats',
                 'school_year': 'Freshman',
                 'department': 'misc_eng',
                 'college': 'wse'
@@ -411,7 +411,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'major': 'Applied Math and Stats',
                 'school_year': 'Freshman',
                 'department': 'soar_fye_wse',
                 'college': 'wse'
@@ -419,7 +419,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
+                'major': 'English',
                 'school_year': 'Freshman',
                 'department': 'lit_lang_film',
                 'college': 'ksas'
@@ -427,7 +427,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
+                'major': 'English',
                 'school_year': 'Freshman',
                 'department': 'soar_fye_ksas',
                 'college': 'ksas'
