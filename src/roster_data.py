@@ -128,23 +128,45 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
     :param dept_college_data: a dict mapping username to dept and college data
     :return: an enriched dataset including department affiliations and colleges for each student
     """
+
+    def _enrich_row(row: dict) -> dict:
+        new_row = row.copy()
+        new_row['department'] = dept_college_data[new_row['major']]['department']
+        new_row['college'] = dept_college_data[new_row['major']]['college']
+        return new_row
+
+    def _student_is_freshman_with_defined_major(row: dict) -> bool:
+        return row['school_year'] == 'Freshman' and row['department'] != 'soar_fye_ksas'
+
+    def _enrich_fye_row(row: dict) -> dict:
+        fye_row = new_row.copy()
+        fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
+        return fye_row
+
+    def _get_fye_dept_from_college(college: str) -> str:
+        if college == 'ksas':
+            return Departments.SOAR_FYE_KSAS.value.name
+        elif college == 'wse':
+            return Departments.SOAR_FYE_WSE.value.name
+        else:
+            raise ValueError(f'Unknown college value "{college}"')
+
+    def _enrich_no_dept_row(row: dict) -> dict:
+        new_row = row.copy()
+        new_row['department'] = None
+        new_row['college'] = None
+        return new_row
+
     result = []
     for row in student_data:
         try:
-            new_row = row.copy()
-            new_row['department'] = dept_college_data[new_row['major']]['department']
-            new_row['college'] = dept_college_data[new_row['major']]['college']
+            new_row = _enrich_row(row)
             result.append(new_row)
-            if new_row['school_year'] == 'Freshman' and new_row['department'] != 'soar_fye_ksas':
-                fye_row = new_row.copy()
-                fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
-                result.append(fye_row)
-        except KeyError:
+            if _student_is_freshman_with_defined_major(new_row):
+                result.append(_enrich_fye_row(new_row))
+        except KeyError:  # when there is no lookup match for the student's major
             if row['major'] == '' or ('interdisciplinary studies' in row['major'].lower()):
-                new_row = row.copy()
-                new_row['department'] = None
-                new_row['college'] = None
-                result.append(new_row)
+                result.append(_enrich_no_dept_row(row))
             else:
                 raise ValueError(f'Student {row["handshake_username"]} has unexpected major "{row["major"]}"')
     return result
@@ -172,12 +194,3 @@ def enrich_with_athlete_data(student_data: List[dict], athlete_data: dict) -> Li
             new_row['athlete_sport'] = None
         result.append(new_row)
     return result
-
-
-def _get_fye_dept_from_college(college: str) -> str:
-    if college == 'ksas':
-        return Departments.SOAR_FYE_KSAS.value.name
-    elif college == 'wse':
-        return Departments.SOAR_FYE_WSE.value.name
-    else:
-        raise ValueError(f'Unknown college value "{college}"')
