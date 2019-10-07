@@ -452,3 +452,76 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             }
         ]
         self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))
+
+    def test_enrich_und_eng_freshman_data(self):
+        test_data = [
+            {
+                'handshake_username': '8498j3g',
+                'handshake_id': '173978344',
+                'major': 'Und Eng',
+                'school_year': 'Freshman'
+            },
+            {
+                'handshake_username': '3538493',
+                'handshake_id': '23920843',
+                'major': 'Bachelors: Und Eng',
+                'school_year': 'Freshman'
+            },
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'major': 'B.S. AMS: Applied Math and Stats',
+                'school_year': 'Freshman'
+            }
+        ]
+
+        test_dept_college_data = {
+            'Und Eng': {
+                'department': 'soar_fye_wse',
+                'college': 'wse'
+            },
+            'Bachelors: Und Eng': {
+                'department': 'soar_fye_wse',
+                'college': 'wse'
+            },
+            'B.S. AMS: Applied Math and Stats': {
+                'department': 'misc_eng',
+                'college': 'wse'
+            }
+        }
+
+        expected = [
+            {
+                'handshake_username': '8498j3g',
+                'handshake_id': '173978344',
+                'major': 'Und Eng',
+                'school_year': 'Freshman',
+                'department': 'soar_fye_wse',
+                'college': 'wse'
+            },
+            {
+                'handshake_username': '3538493',
+                'handshake_id': '23920843',
+                'major': 'Und Eng',
+                'school_year': 'Freshman',
+                'department': 'soar_fye_wse',
+                'college': 'wse'
+            },
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'major': 'Applied Math and Stats',
+                'school_year': 'Freshman',
+                'department': 'misc_eng',
+                'college': 'wse'
+            },
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'major': 'Applied Math and Stats',
+                'school_year': 'Freshman',
+                'department': 'soar_fye_wse',
+                'college': 'wse'
+            }
+        ]
+        self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))

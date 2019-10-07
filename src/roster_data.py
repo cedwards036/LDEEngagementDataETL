@@ -110,13 +110,16 @@ def enrich_with_handshake_data(student_data: List[dict], handshake_lookup_data: 
     """
     result = []
     for row in student_data:
-        handshake_record = handshake_lookup_data[row['handshake_username'].upper()]
-        for major in handshake_record['majors']:
-            new_row = row.copy()
-            new_row['handshake_id'] = handshake_record['handshake_id']
-            new_row['major'] = major
-            new_row['school_year'] = handshake_record['school_year']
-            result.append(new_row)
+        try:
+            handshake_record = handshake_lookup_data[row['handshake_username'].upper()]
+            for major in handshake_record['majors']:
+                new_row = row.copy()
+                new_row['handshake_id'] = handshake_record['handshake_id']
+                new_row['major'] = major
+                new_row['school_year'] = handshake_record['school_year']
+                result.append(new_row)
+        except KeyError:
+            raise ValueError(f'No match found for user "{row["handshake_username"]}"')
     return result
 
 
@@ -143,7 +146,6 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
                 return True
         return False
 
-
     def _enrich_row(row: dict) -> dict:
         new_row = row.copy()
         new_row['department'] = dept_college_data[new_row['major']]['department']
@@ -152,7 +154,7 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
         return new_row
 
     def _student_is_freshman_with_defined_major(row: dict) -> bool:
-        return row['school_year'] == 'Freshman' and row['department'] != 'soar_fye_ksas'
+        return row['school_year'] == 'Freshman' and row['department'] != 'soar_fye_ksas' and row['major'] != 'Und Eng'
 
     def _enrich_fye_row(row: dict) -> dict:
         fye_row = row.copy()
