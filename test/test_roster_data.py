@@ -373,6 +373,12 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'handshake_id': '4325243',
                 'major': 'B.A.: English',
                 'school_year': 'Freshman'
+            },
+            {
+                'handshake_username': '2398ru3',
+                'handshake_id': '93938028',
+                'major': 'M.S.: Computer Science',
+                'school_year': 'Masters'
             }
         ]
 
@@ -388,6 +394,10 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             'B.A.: English': {
                 'department': 'lit_lang_film',
                 'college': 'ksas'
+            },
+            'M.S.: Computer Science': {
+                'department': 'eng_masters',
+                'college': 'wse'
             }
         }
 
@@ -432,5 +442,13 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'department': 'soar_fye_ksas',
                 'college': 'ksas'
             },
+            {
+                'handshake_username': '2398ru3',
+                'handshake_id': '93938028',
+                'major': 'M.S.: Computer Science',
+                'department': 'eng_masters',
+                'college': 'wse',
+                'school_year': 'Masters'
+            }
         ]
         self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))

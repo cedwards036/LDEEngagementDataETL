@@ -8,8 +8,9 @@ from src.roster_data import run_students_etl
 STUDENT_DATA_DIR = 'S:\\Reporting & Data\\Life Design Educator Engagement\\StudentData'
 ROSTER_FILEPATHS = [
     f'{STUDENT_DATA_DIR}\\sis_undergrads_2019_09_20.csv',
+    f'{STUDENT_DATA_DIR}\\sis_graduate_students_2019_10_02.csv',
 ]
-HANDSHAKE_DATA_FILEPATH = f'{STUDENT_DATA_DIR}\\handshake_hwd_students_2019_09_16.csv'
+HANDSHAKE_DATA_FILEPATH = f'{STUDENT_DATA_DIR}\\handshake_hwd_students_2019_10_07.csv'
 MAJORS_FILEPATH = f'{STUDENT_DATA_DIR}\\all_majors_2019_09_18.csv'
 ATHLETE_FILEPATH = f'{STUDENT_DATA_DIR}\\student_athlete_roster_2019_09_19.csv'
 

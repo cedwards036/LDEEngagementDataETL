@@ -131,10 +131,18 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
 
     def _clean_major(major: str) -> str:
         colon_loc = major.find(':')
-        if colon_loc == -1:
+        if colon_loc == -1 or _is_masters_degree(major):
             return major
         else:
             return major[colon_loc + 1:].strip()
+
+    def _is_masters_degree(major: str) -> bool:
+        masters_prefixes = ['M.S.E.', 'M.A.', 'M.S.', 'M.F.A']
+        for prefix in masters_prefixes:
+            if major.startswith(prefix):
+                return True
+        return False
+
 
     def _enrich_row(row: dict) -> dict:
         new_row = row.copy()
