@@ -4,22 +4,44 @@ from src.common import read_csv
 from src.data_model import Departments
 
 
-def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
-                     major_data_filepath: str, athlete_filepath: str) -> List[dict]:
+def run_data_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
+                      major_data_filepath: str, athlete_filepath: str) -> List[dict]:
     ALLOWED_FIELDS_FOR_DATA_FILE = [
         'handshake_id', 'handshake_username', 'department', 'college', 'major',
         'school_year', 'is_athlete', 'athlete_sport'
     ]
     major_data = _extract_major_data(major_data_filepath)
+    full_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath,
+                                 athlete_filepath)
+    return filter_list_of_dicts(
+        enrich_with_dept_college_data_for_data_file(full_data, major_data),
+        ALLOWED_FIELDS_FOR_DATA_FILE)
+
+
+def run_roster_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
+                        major_data_filepath: str, athlete_filepath: str) -> List[dict]:
+    ALLOWED_FIELDS_FOR_DATA_FILE = [
+        'handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
+        'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'athlete_sport'
+    ]
+    major_data = _extract_major_data(major_data_filepath)
+    full_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath,
+                                 athlete_filepath)
+    return filter_list_of_dicts(
+        enrich_with_dept_college_data_for_roster_file(full_data, major_data),
+        ALLOWED_FIELDS_FOR_DATA_FILE)
+
+
+def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
+                     athlete_filepath: str) -> List[dict]:
     handshake_data = _extract_handshake_data(handshake_data_filepath)
     roster_data = _extract_sis_rosters(sis_roster_filepaths)
     athlete_data = _extract_athlete_data(athlete_filepath)
-    return filter_list_of_dicts(enrich_with_athlete_data(
-        enrich_with_dept_college_data_for_data_file(
-            filter_handshake_data_with_sis_roster(handshake_data, roster_data),
-            major_data),
-        athlete_data),
-        ALLOWED_FIELDS_FOR_DATA_FILE)
+    return enrich_with_athlete_data(
+        filter_handshake_data_with_sis_roster(
+            handshake_data, roster_data
+        ), athlete_data,
+    )
 
 
 def _extract_major_data(filepath: str) -> dict:
@@ -90,6 +112,7 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     result = {}
     for row in raw_major_data:
         result[row['major']] = {
+            'major': row['major'],
             'department': row['department'],
             'college': row['college']
         }
@@ -126,21 +149,27 @@ def filter_handshake_data_with_sis_roster(handshake_data: dict, sis_data: List[d
     return result
 
 
-def enrich_with_dept_college_data_for_data_file(student_data: List[dict], dept_college_data: dict) -> List[dict]:
+def get_major_dept_college_data(student_data: dict, dept_college_data: dict) -> List[dict]:
     """
-    Enrich student data with appropriate department affiliation and college data.
-
-    :param student_data: student data with 'major' and 'school_year' fields
-    :param dept_college_data: a dict mapping username to dept and college data
-    :return: an enriched dataset including department affiliations and colleges for each student
+    Given a row of student data and a major-dept-college lookup dict, produce a
+    list of major-dept-college data relevant to that student.
     """
 
-    def _clean_major(major: str) -> str:
-        colon_loc = major.find(':')
-        if colon_loc == -1 or _is_masters_degree(major):
-            return major
-        else:
-            return major[colon_loc + 1:].strip()
+    def _look_up_dept_college_data(major: str) -> dict:
+        try:
+            result = dept_college_data[major].copy()
+            result['major'] = _clean_major(result['major'])
+            return result
+        except KeyError:
+            raise ValueError(f'Unknown major "{major}"')
+
+    def _create_fye_copy(dept_college_data_row: dict) -> dict:
+        result = dept_college_data_row.copy()
+        if dept_college_data_row['college'] == 'wse':
+            result['department'] = Departments.SOAR_FYE_WSE.value.name
+        elif dept_college_data_row['college'] == 'ksas':
+            result['department'] = Departments.SOAR_FYE_KSAS.value.name
+        return result
 
     def _is_masters_degree(major: str) -> bool:
         masters_prefixes = ['M.S.E.', 'M.A.', 'M.S.', 'M.F.A']
@@ -149,52 +178,71 @@ def enrich_with_dept_college_data_for_data_file(student_data: List[dict], dept_c
                 return True
         return False
 
-    def _enrich_row(row: dict, major: str) -> dict:
-        new_row = row.copy()
-        new_row['department'] = dept_college_data[major]['department']
-        new_row['college'] = dept_college_data[major]['college']
-        new_row['major'] = _clean_major(major)
-        del new_row['majors']
-        return new_row
-
-    def _student_is_freshman_with_defined_major(row: dict) -> bool:
-        return row['school_year'] == 'Freshman' and row['department'] != 'soar_fye_ksas' and row['major'] != 'Und Eng'
-
-    def _enrich_fye_row(row: dict) -> dict:
-        fye_row = row.copy()
-        fye_row['department'] = _get_fye_dept_from_college(fye_row['college'])
-        new_row['major'] = _clean_major(new_row['major'])
-        return fye_row
-
-    def _get_fye_dept_from_college(college: str) -> str:
-        if college == 'ksas':
-            return Departments.SOAR_FYE_KSAS.value.name
-        elif college == 'wse':
-            return Departments.SOAR_FYE_WSE.value.name
+    def _clean_major(major: str) -> str:
+        colon_loc = major.find(':')
+        if colon_loc == -1 or _is_masters_degree(major):
+            return major
         else:
-            raise ValueError(f'Unknown college value "{college}"')
+            return major[colon_loc + 1:].strip()
 
-    def _enrich_no_dept_row(row: dict, major: str) -> dict:
-        new_row = row.copy()
-        new_row['department'] = None
-        new_row['college'] = None
-        new_row['major'] = _clean_major(major)
-        del new_row['majors']
-        return new_row
+    FYE_DEPTS = [Departments.SOAR_FYE_WSE.value.name, Departments.SOAR_FYE_KSAS.value.name]
+    if not student_data['majors'] or student_data['majors'] == ['']:
+        return [{'major': '', 'department': '', 'college': ''}]
+    else:
+        result = []
+        for major in student_data['majors']:
+            if 'interdisciplinary studies' in major.lower():
+                return [{'major': major, 'department': '', 'college': ''}]
+            else:
+                data_row = _look_up_dept_college_data(major)
+                result.append(data_row)
+                if student_data['school_year'] == 'Freshman' and data_row['department'] not in FYE_DEPTS:
+                    result.append(_create_fye_copy(data_row))
+        return result
+
+
+def enrich_with_dept_college_data_for_data_file(student_data: List[dict], dept_college_data: dict) -> List[dict]:
+    """
+    Enrich student data with appropriate department affiliation and college data.
+
+    :param student_data: student data with 'major' and 'school_year' fields
+    :param dept_college_data: a dict mapping username to dept and college data
+    :return: an enriched dataset including department affiliations and colleges for each student
+    """
+    result = []
+    for student_row in student_data:
+        for data_row in get_major_dept_college_data(student_row, dept_college_data):
+            result_row = student_row.copy()
+            result_row.update(data_row)
+            del result_row['majors']
+            result.append(result_row)
+    return result
+
+
+def enrich_with_dept_college_data_for_roster_file(student_data: List[dict], dept_college_data: dict) -> List[dict]:
+    """
+    Enrich student data with appropriate department affiliation and college data.
+
+    :param student_data: student data with 'major' and 'school_year' fields
+    :param dept_college_data: a dict mapping username to dept and college data
+    :return: an enriched dataset including department affiliations and colleges for each student
+    """
+
+    def _get_uniques_from_field(major_dept_college_data: List[dict], field: str) -> List[str]:
+        return list(dict.fromkeys([row[field] for row in major_dept_college_data]))
 
     result = []
-    for row in student_data:
-        for major in row['majors']:
-            try:
-                new_row = _enrich_row(row, major)
-                result.append(new_row)
-                if _student_is_freshman_with_defined_major(new_row):
-                    result.append(_enrich_fye_row(new_row))
-            except KeyError:  # when there is no lookup match for the student's major
-                if major == '' or ('interdisciplinary studies' in major.lower()):
-                    result.append(_enrich_no_dept_row(row, major))
-                else:
-                    raise ValueError(f'Student {row["handshake_username"]} has unexpected major "{major}"')
+    for student_row in student_data:
+        supplemental_data = get_major_dept_college_data(student_row, dept_college_data)
+        majors_str = '; '.join(_get_uniques_from_field(supplemental_data, 'major'))
+        colleges_str = '; '.join(_get_uniques_from_field(supplemental_data, 'college'))
+        departments = _get_uniques_from_field(supplemental_data, 'department')
+        for department in departments:
+            result_row = student_row.copy()
+            result_row['department'] = department
+            result_row['majors'] = majors_str
+            result_row['colleges'] = colleges_str
+            result.append(result_row)
     return result
 
 

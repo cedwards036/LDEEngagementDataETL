@@ -2,6 +2,8 @@ import unittest
 
 from src.roster_data import (transform_handshake_data, transform_roster_data,
                              enrich_with_dept_college_data_for_data_file,
+                             enrich_with_dept_college_data_for_roster_file,
+                             get_major_dept_college_data,
                              filter_handshake_data_with_sis_roster,
                              transform_major_data, transform_athlete_data,
                              enrich_with_athlete_data, filter_dict)
@@ -113,10 +115,12 @@ class TestMajorData(unittest.TestCase):
 
         expected = {
             'English': {
+                'major': 'English',
                 'department': 'literature',
                 'college': 'ksas'
             },
             'Comp Sci': {
+                'major': 'Comp Sci',
                 'department': 'comp_sci',
                 'college': 'wse'
             }
@@ -357,7 +361,157 @@ class TestAthleteData(unittest.TestCase):
         self.assertEqual(expected, enrich_with_athlete_data(test_data, test_athlete_data))
 
 
+class TestGetMajorDeptCollegeData(unittest.TestCase):
+
+    def test_with_no_major(self):
+        test_student_data = [
+            {
+                'majors': [],
+                'school_year': 'Sophomore',
+            },
+            {
+                'majors': [''],
+                'school_year': 'Senior',
+            },
+        ]
+        test_dept_college_data = {}
+        expected = [{'major': '', 'department': '', 'college': ''}]
+        for row in test_student_data:
+            self.assertEqual(expected, get_major_dept_college_data(row, test_dept_college_data))
+
+    def test_interdisciplinary_major(self):
+        test_student_data = {
+            'majors': ['Interdisciplinary Studies'],
+            'school_year': 'Junior',
+        }
+        test_dept_college_data = {}
+        expected = [{'major': 'Interdisciplinary Studies', 'department': '', 'college': ''}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+    def test_no_match_throws_exception(self):
+        test_student_data = {
+            'majors': ['Some Unknown Major'],
+            'school_year': 'Sophomore',
+        }
+
+        test_dept_college_data = {
+            'B.S. Comp. Sci.: Computer Science': {
+                'major': 'B.S. Comp. Sci.: Computer Science',
+                'department': 'comp_elec_eng',
+                'college': 'wse'
+            }
+        }
+        with self.assertRaises(ValueError):
+            get_major_dept_college_data(test_student_data, test_dept_college_data)
+
+    def test_with_one_major(self):
+        test_student_data = {
+            'majors': ['B.S.: Comp. Sci.'],
+            'school_year': 'Sophomore',
+        }
+
+        test_dept_college_data = {
+            'B.S.: Comp. Sci.': {
+                'major': 'B.S.: Comp. Sci.',
+                'department': 'comp_elec_eng',
+                'college': 'wse'
+            }
+        }
+
+        expected = [{'major': 'Comp. Sci.', 'department': 'comp_elec_eng', 'college': 'wse'}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+    def test_with_multiple_majors(self):
+        test_student_data = {
+            'majors': ['B.S.: Comp. Sci.', 'M.S.E.: Mech Eng', 'Art History'],
+            'school_year': 'Sophomore',
+        }
+
+        test_dept_college_data = {
+            'B.S.: Comp. Sci.': {
+                'department': 'comp_elec_eng',
+                'college': 'wse',
+                'major': 'B.S.: Comp. Sci.'
+            },
+            'M.S.E.: Mech Eng': {
+                'department': 'eng_masters',
+                'college': 'wse',
+                'major': 'M.S.E.: Mech Eng'
+            },
+            'Art History': {
+                'department': 'hist_phil_hum',
+                'college': 'ksas',
+                'major': 'Art History'
+            }
+        }
+
+        expected = [{'major': 'Comp. Sci.', 'department': 'comp_elec_eng', 'college': 'wse'},
+                    {'major': 'M.S.E.: Mech Eng', 'department': 'eng_masters', 'college': 'wse'},
+                    {'major': 'Art History', 'department': 'hist_phil_hum', 'college': 'ksas'}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+    def test_wse_freshman_with_defined_major(self):
+        test_student_data = {
+            'majors': ['B.S.: Comp. Sci.'],
+            'school_year': 'Freshman',
+        }
+
+        test_dept_college_data = {
+            'B.S.: Comp. Sci.': {
+                'department': 'comp_elec_eng',
+                'college': 'wse',
+                'major': 'B.S.: Comp. Sci.'
+            }
+        }
+
+        expected = [{'major': 'Comp. Sci.', 'department': 'comp_elec_eng', 'college': 'wse'},
+                    {'major': 'Comp. Sci.', 'department': 'soar_fye_wse', 'college': 'wse'}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+    def test_ksas_freshman_with_defined_major(self):
+        test_student_data = {
+            'majors': ['B.A.: English'],
+            'school_year': 'Freshman',
+        }
+
+        test_dept_college_data = {
+            'B.A.: English': {
+                'department': 'lit_lang_film',
+                'college': 'ksas',
+                'major': 'B.A.: English'
+            }
+        }
+
+        expected = [{'major': 'English', 'department': 'lit_lang_film', 'college': 'ksas'},
+                    {'major': 'English', 'department': 'soar_fye_ksas', 'college': 'ksas'}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+    def test_freshman_with_undefined_major(self):
+        test_student_data = {
+            'majors': ['B.A.: Pre-Major', 'B.S.: Und Eng'],
+            'school_year': 'Freshman',
+        }
+
+        test_dept_college_data = {
+            'B.A.: Pre-Major': {
+                'department': 'soar_fye_ksas',
+                'college': 'ksas',
+                'major': 'B.A.: Pre-Major'
+            },
+            'B.S.: Und Eng': {
+                'department': 'soar_fye_wse',
+                'college': 'wse',
+                'major': 'B.S.: Und Eng'
+            }
+        }
+
+        expected = [{'major': 'Pre-Major', 'department': 'soar_fye_ksas', 'college': 'ksas'},
+                    {'major': 'Und Eng', 'department': 'soar_fye_wse', 'college': 'wse'}]
+        self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
+
+
 class TestDeptCollegeEnrichment(unittest.TestCase):
+
     def test_enrich_with_dept_and_college_data_for_data_file(self):
         test_data = [
             {
@@ -385,15 +539,18 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         test_dept_college_data = {
             'B.S. Comp. Sci.: Computer Science': {
                 'department': 'comp_elec_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'B.S. Comp. Sci.: Computer Science'
             },
             'B.S. AMS: Applied Math and Stats': {
                 'department': 'misc_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'B.S. AMS: Applied Math and Stats'
             },
             'B.A.: English': {
                 'department': 'lit_lang_film',
-                'college': 'ksas'
+                'college': 'ksas',
+                'major': 'B.A.: English'
             }
         }
 
@@ -437,6 +594,93 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         ]
         self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
 
+    def test_enrich_with_dept_and_college_data_for_roster_file(self):
+        test_data = [
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'majors': ['B.S. Comp. Sci.: Computer Science', 'History'],
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
+            },
+            {
+                'handshake_username': '82t349',
+                'handshake_id': '4325243',
+                'majors': ['B.A.: English', 'B.A.: German'],
+                'school_year': 'Senior',
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
+            },
+        ]
+
+        test_dept_college_data = {
+            'B.S. Comp. Sci.: Computer Science': {
+                'department': 'comp_elec_eng',
+                'college': 'wse',
+                'major': 'B.S. Comp. Sci.: Computer Science'
+            },
+            'History': {
+                'department': 'hist_phil_hum',
+                'college': 'ksas',
+                'major': 'History'
+            },
+            'B.A.: English': {
+                'department': 'lit_lang_film',
+                'college': 'ksas',
+                'major': 'B.A.: English'
+            },
+            'B.A.: German': {
+                'department': 'lit_lang_film',
+                'college': 'ksas',
+                'major': 'B.A.: German'
+            }
+        }
+
+        expected = [
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'majors': 'Computer Science; History',
+                'school_year': 'Junior',
+                'department': 'comp_elec_eng',
+                'colleges': 'wse; ksas',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
+            },
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'majors': 'Computer Science; History',
+                'school_year': 'Junior',
+                'department': 'hist_phil_hum',
+                'colleges': 'wse; ksas',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
+            },
+            {
+                'handshake_username': '82t349',
+                'handshake_id': '4325243',
+                'majors': 'English; German',
+                'school_year': 'Senior',
+                'department': 'lit_lang_film',
+                'colleges': 'ksas',
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
+            },
+        ]
+        self.assertEqual(expected, enrich_with_dept_college_data_for_roster_file(test_data, test_dept_college_data))
+
     def test_enrich_freshman_data(self):
         test_data = [
             {
@@ -462,19 +706,23 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         test_dept_college_data = {
             'Pre-Major': {
                 'department': 'soar_fye_ksas',
-                'college': 'ksas'
+                'college': 'ksas',
+                'major': 'Pre-Major'
             },
             'B.S. AMS: Applied Math and Stats': {
                 'department': 'misc_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'B.S. AMS: Applied Math and Stats'
             },
             'B.A.: English': {
                 'department': 'lit_lang_film',
-                'college': 'ksas'
+                'college': 'ksas',
+                'major': 'B.A.: English'
             },
             'M.S.: Computer Science': {
                 'department': 'eng_masters',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'M.S.: Computer Science'
             }
         }
 
@@ -555,15 +803,18 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         test_dept_college_data = {
             'Und Eng': {
                 'department': 'soar_fye_wse',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'Und Eng'
             },
             'Bachelors: Und Eng': {
                 'department': 'soar_fye_wse',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'Bachelors: Und Eng'
             },
             'B.S. AMS: Applied Math and Stats': {
                 'department': 'misc_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'major': 'B.S. AMS: Applied Math and Stats'
             }
         }
 
