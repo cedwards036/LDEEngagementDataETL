@@ -1,9 +1,10 @@
 import unittest
 
 from src.roster_data import (transform_handshake_data, transform_roster_data,
-                             enrich_with_handshake_data, enrich_with_dept_college_data,
+                             enrich_with_dept_college_data_for_data_file,
+                             filter_handshake_data_with_sis_roster,
                              transform_major_data, transform_athlete_data,
-                             enrich_with_athlete_data)
+                             enrich_with_athlete_data, filter_dict)
 
 
 class TestHandshakeData(unittest.TestCase):
@@ -126,7 +127,7 @@ class TestMajorData(unittest.TestCase):
 
 class TestRosterData(unittest.TestCase):
 
-    def test_transform_roster_data_single_majors(self):
+    def test_transform_roster_data(self):
         test_roster_data = [
             {
                 'FullName': 'Smith, John',
@@ -159,16 +160,7 @@ class TestRosterData(unittest.TestCase):
 
         self.assertEqual(expected, transform_roster_data(test_roster_data))
 
-    def test_enrich_with_handshake_data(self):
-        test_data = [
-            {
-                'handshake_username': '49gj40'
-            },
-            {
-                'handshake_username': '82t349'
-            }
-        ]
-
+    def test_filter_handshake_data_with_sis_roster(self):
         test_hs_data = {
             '49GJ40': {
                 'handshake_id': '8029439',
@@ -187,24 +179,32 @@ class TestRosterData(unittest.TestCase):
                 'first_name': 'Alice',
                 'pref_name': '',
                 'last_name': 'Stuewcz'
+            },
+            'JT45UY': {
+                'handshake_id': '9483059',
+                'majors': ['B.A.: Int. Studies'],
+                'school_year': 'Sophomore',
+                'email': 'bcol43@jhu.edu',
+                'first_name': 'Barnabus',
+                'pref_name': '',
+                'last_name': 'Charleston'
             }
         }
+
+        test_sis_data = [
+            {
+                'handshake_username': '49gj40'
+            },
+            {
+                'handshake_username': '82t349'
+            }
+        ]
 
         expected = [
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior',
                 'email': 'astu2@jhu.edu',
                 'first_name': 'Arthur',
@@ -214,15 +214,35 @@ class TestRosterData(unittest.TestCase):
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
+                'majors': ['B.A.: English'],
                 'school_year': 'Senior',
                 'email': 'astu3@jhu.edu',
                 'first_name': 'Alice',
                 'pref_name': '',
                 'last_name': 'Stuewcz'
+            },
+        ]
+
+        self.assertEqual(expected, filter_handshake_data_with_sis_roster(test_hs_data, test_sis_data))
+
+    def test_filter_handshake_data_with_sis_roster_throws_error_when_student_not_found(self):
+        test_hs_data = {
+            '49GJ40': {},
+            '82T349': {},
+            'JT45UY': {}
+        }
+
+        test_sis_data = [
+            {
+                'handshake_username': '49GJ40'
+            },
+            {
+                'handshake_username': '325245'
             }
         ]
-        self.assertEqual(expected, enrich_with_handshake_data(test_data, test_hs_data))
+
+        with self.assertRaises(ValueError):
+            filter_handshake_data_with_sis_roster(test_hs_data, test_sis_data)
 
 
 class TestAthleteData(unittest.TestCase):
@@ -336,27 +356,30 @@ class TestAthleteData(unittest.TestCase):
         ]
         self.assertEqual(expected, enrich_with_athlete_data(test_data, test_athlete_data))
 
+
 class TestDeptCollegeEnrichment(unittest.TestCase):
-    def test_enrich_with_dept_and_college_data(self):
+    def test_enrich_with_dept_and_college_data_for_data_file(self):
         test_data = [
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
-                'school_year': 'Junior'
+                'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
-                'school_year': 'Sophomore'
-            }
+                'majors': ['B.A.: English'],
+                'school_year': 'Senior',
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
+            },
         ]
 
         test_dept_college_data = {
@@ -381,7 +404,11 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'major': 'Computer Science',
                 'school_year': 'Junior',
                 'department': 'comp_elec_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             {
                 'handshake_username': '49gj40',
@@ -389,43 +416,45 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'major': 'Applied Math and Stats',
                 'school_year': 'Junior',
                 'department': 'misc_eng',
-                'college': 'wse'
+                'college': 'wse',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
                 'major': 'English',
-                'school_year': 'Sophomore',
+                'school_year': 'Senior',
                 'department': 'lit_lang_film',
-                'college': 'ksas'
+                'college': 'ksas',
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
             },
         ]
-        self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))
+        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
 
     def test_enrich_freshman_data(self):
         test_data = [
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'Pre-Major',
-                'school_year': 'Freshman'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'majors': ['Pre-Major', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Freshman'
             },
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'major': 'B.A.: English',
+                'majors': ['B.A.: English'],
                 'school_year': 'Freshman'
             },
             {
                 'handshake_username': '2398ru3',
                 'handshake_id': '93938028',
-                'major': 'M.S.: Computer Science',
+                'majors': ['M.S.: Computer Science'],
                 'school_year': 'Masters'
             }
         ]
@@ -499,26 +528,26 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'school_year': 'Masters'
             }
         ]
-        self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))
+        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
 
     def test_enrich_und_eng_freshman_data(self):
         test_data = [
             {
                 'handshake_username': '8498j3g',
                 'handshake_id': '173978344',
-                'major': 'Und Eng',
+                'majors': ['Und Eng'],
                 'school_year': 'Freshman'
             },
             {
                 'handshake_username': '3538493',
                 'handshake_id': '23920843',
-                'major': 'Bachelors: Und Eng',
+                'majors': ['Bachelors: Und Eng'],
                 'school_year': 'Freshman'
             },
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
-                'major': 'B.S. AMS: Applied Math and Stats',
+                'majors': ['B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Freshman'
             }
         ]
@@ -572,4 +601,22 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'college': 'wse'
             }
         ]
-        self.assertEqual(expected, enrich_with_dept_college_data(test_data, test_dept_college_data))
+        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
+
+
+class TestFilterDict(unittest.TestCase):
+
+    def test_filter_dict(self):
+        test_dict = {
+            'field_a': 1,
+            'field_b': 2,
+            'field_c': 3,
+            'field_d': 4,
+            'field_e': 5
+        }
+        allowed_fields = ['field_d', 'field_a']
+        expected = {
+            'field_a': 1,
+            'field_d': 4,
+        }
+        self.assertEqual(expected, filter_dict(test_dict, allowed_fields))
