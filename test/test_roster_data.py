@@ -15,14 +15,20 @@ class TestHandshakeData(unittest.TestCase):
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. Comp. Sci.: Computer Science',
                 'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu'
+                'Students Email': 'astu2@jhu.edu',
+                'Students First Name': 'Arthur',
+                'Students Preferred Name': 'Art',
+                'Students Last Name': 'Student'
             },
             {
                 'Students ID': '4325243',
                 'Students Username': '82t349',
                 'Majors Name': 'B.A.: English',
                 'School Year Name': 'Senior',
-                'Students Email': 'bstu2@jhu.edu'
+                'Students Email': 'bstu2@jhu.edu',
+                'Students First Name': 'Benjamin',
+                'Students Preferred Name': '',
+                'Students Last Name': 'Stuart'
             }
         ]
 
@@ -31,13 +37,19 @@ class TestHandshakeData(unittest.TestCase):
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science'],
                 'school_year': 'Junior',
-                'email': 'astu2@jhu.edu'
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
                 'school_year': 'Senior',
-                'email': 'bstu2@jhu.edu'
+                'email': 'bstu2@jhu.edu',
+                'first_name': 'Benjamin',
+                'pref_name': '',
+                'last_name': 'Stuart'
             }
         }
 
@@ -50,14 +62,20 @@ class TestHandshakeData(unittest.TestCase):
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. Comp. Sci.: Computer Science',
                 'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu'
+                'Students Email': 'astu2@jhu.edu',
+                'Students First Name': 'Arthur',
+                'Students Preferred Name': 'Art',
+                'Students Last Name': 'Student'
             },
             {
                 'Students ID': '8029439',
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. AMS: Applied Math and Stats',
                 'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu'
+                'Students Email': 'astu2@jhu.edu',
+                'Students First Name': 'Arthur',
+                'Students Preferred Name': 'Art',
+                'Students Last Name': 'Student'
             },
         ]
 
@@ -66,7 +84,10 @@ class TestHandshakeData(unittest.TestCase):
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior',
-                'email': 'astu2@jhu.edu'
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
         }
 
@@ -153,13 +174,19 @@ class TestRosterData(unittest.TestCase):
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior',
-                'email': 'astu2@jhu.edu'
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
                 'school_year': 'Senior',
-                'email': 'astu3@jhu.edu'
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
             }
         }
 
@@ -169,21 +196,30 @@ class TestRosterData(unittest.TestCase):
                 'handshake_id': '8029439',
                 'major': 'B.S. Comp. Sci.: Computer Science',
                 'school_year': 'Junior',
-                'email': 'astu2@jhu.edu'
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'major': 'B.S. AMS: Applied Math and Stats',
                 'school_year': 'Junior',
-                'email': 'astu2@jhu.edu'
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
             },
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
                 'major': 'B.A.: English',
                 'school_year': 'Senior',
-                'email': 'astu3@jhu.edu'
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
             }
         ]
         self.assertEqual(expected, enrich_with_handshake_data(test_data, test_hs_data))
