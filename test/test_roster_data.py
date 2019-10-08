@@ -14,13 +14,15 @@ class TestHandshakeData(unittest.TestCase):
                 'Students ID': '8029439',
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. Comp. Sci.: Computer Science',
-                'School Year Name': 'Junior'
+                'School Year Name': 'Junior',
+                'Students Email': 'astu2@jhu.edu'
             },
             {
                 'Students ID': '4325243',
                 'Students Username': '82t349',
                 'Majors Name': 'B.A.: English',
-                'School Year Name': 'Senior'
+                'School Year Name': 'Senior',
+                'Students Email': 'bstu2@jhu.edu'
             }
         ]
 
@@ -28,12 +30,14 @@ class TestHandshakeData(unittest.TestCase):
             '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science'],
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu'
             },
             '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
-                'school_year': 'Senior'
+                'school_year': 'Senior',
+                'email': 'bstu2@jhu.edu'
             }
         }
 
@@ -45,13 +49,15 @@ class TestHandshakeData(unittest.TestCase):
                 'Students ID': '8029439',
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. Comp. Sci.: Computer Science',
-                'School Year Name': 'Junior'
+                'School Year Name': 'Junior',
+                'Students Email': 'astu2@jhu.edu'
             },
             {
                 'Students ID': '8029439',
                 'Students Username': '49gj40',
                 'Majors Name': 'B.S. AMS: Applied Math and Stats',
-                'School Year Name': 'Junior'
+                'School Year Name': 'Junior',
+                'Students Email': 'astu2@jhu.edu'
             },
         ]
 
@@ -59,7 +65,8 @@ class TestHandshakeData(unittest.TestCase):
             '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu'
             },
         }
 
@@ -145,12 +152,14 @@ class TestRosterData(unittest.TestCase):
             '49GJ40': {
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu'
             },
             '82T349': {
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
-                'school_year': 'Senior'
+                'school_year': 'Senior',
+                'email': 'astu3@jhu.edu'
             }
         }
 
@@ -159,19 +168,22 @@ class TestRosterData(unittest.TestCase):
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu'
             },
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'major': 'B.S. AMS: Applied Math and Stats',
-                'school_year': 'Junior'
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu'
             },
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
                 'major': 'B.A.: English',
-                'school_year': 'Senior'
+                'school_year': 'Senior',
+                'email': 'astu3@jhu.edu'
             }
         ]
         self.assertEqual(expected, enrich_with_handshake_data(test_data, test_hs_data))

@@ -58,7 +58,8 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
         lookup_dict[row['Students Username'].upper()] = {
             'handshake_id': row['Students ID'],
             'majors': [row['Majors Name']],
-            'school_year': row['School Year Name']
+            'school_year': row['School Year Name'],
+            'email': row['Students Email']
         }
         return lookup_dict
 
@@ -117,6 +118,7 @@ def enrich_with_handshake_data(student_data: List[dict], handshake_lookup_data: 
                 new_row['handshake_id'] = handshake_record['handshake_id']
                 new_row['major'] = major
                 new_row['school_year'] = handshake_record['school_year']
+                new_row['email'] = handshake_record['email']
                 result.append(new_row)
         except KeyError:
             raise ValueError(f'No match found for user "{row["handshake_username"]}"')
