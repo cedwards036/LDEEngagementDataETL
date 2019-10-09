@@ -3,6 +3,7 @@ from typing import List
 
 from src.common import read_csv
 from src.data_model import Departments
+from src.student_data_etl.student_data_record import EducationDataRecord
 
 
 def run_data_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
@@ -106,11 +107,11 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     """
     result = {}
     for row in raw_major_data:
-        result[row['major']] = {
-            'major': row['major'],
-            'department': row['department'],
-            'college': row['college']
-        }
+        result[row['major']] = EducationDataRecord(
+            major=row['major'],
+            department=row['department'],
+            college=row['college']
+        )
     return result
 
 
@@ -148,26 +149,26 @@ def filter_handshake_data_with_sis_roster(handshake_data: dict, sis_data: List[d
     return result
 
 
-def get_major_dept_college_data(student_data: dict, dept_college_data: dict) -> List[dict]:
+def get_major_dept_college_data(student_data: dict, dept_college_data: dict) -> List[EducationDataRecord]:
     """
     Given a row of student data and a major-dept-college lookup dict, produce a
     list of major-dept-college data relevant to that student.
     """
 
-    def _look_up_dept_college_data(major: str) -> dict:
+    def _look_up_dept_college_data(major: str) -> EducationDataRecord:
         try:
             result = dept_college_data[major].copy()
-            result['major'] = _clean_major(result['major'])
+            result.major = _clean_major(result.major)
             return result
         except KeyError:
             raise ValueError(f'Unknown major "{major}"')
 
-    def _create_fye_copy(dept_college_data_row: dict) -> dict:
-        result = dept_college_data_row.copy()
-        if dept_college_data_row['college'] == 'wse':
-            result['department'] = Departments.SOAR_FYE_WSE.value.name
-        elif dept_college_data_row['college'] == 'ksas':
-            result['department'] = Departments.SOAR_FYE_KSAS.value.name
+    def _create_fye_copy(education_data_record: EducationDataRecord) -> EducationDataRecord:
+        result = education_data_record.copy()
+        if education_data_record.college == 'wse':
+            result.department = Departments.SOAR_FYE_WSE.value.name
+        elif education_data_record.college == 'ksas':
+            result.department = Departments.SOAR_FYE_KSAS.value.name
         return result
 
     def _is_masters_degree(major: str) -> bool:
@@ -186,16 +187,16 @@ def get_major_dept_college_data(student_data: dict, dept_college_data: dict) -> 
 
     FYE_DEPTS = [Departments.SOAR_FYE_WSE.value.name, Departments.SOAR_FYE_KSAS.value.name]
     if not student_data['majors'] or student_data['majors'] == ['']:
-        return [{'major': '', 'department': '', 'college': ''}]
+        return [EducationDataRecord()]
     else:
         result = []
         for major in student_data['majors']:
             if 'interdisciplinary studies' in major.lower():
-                return [{'major': major, 'department': '', 'college': ''}]
+                return [EducationDataRecord(major=major)]
             else:
                 data_row = _look_up_dept_college_data(major)
                 result.append(data_row)
-                if student_data['school_year'] == 'Freshman' and data_row['department'] not in FYE_DEPTS:
+                if student_data['school_year'] == 'Freshman' and data_row.department not in FYE_DEPTS:
                     result.append(_create_fye_copy(data_row))
         return result
 
@@ -212,7 +213,7 @@ def enrich_with_dept_college_data_for_data_file(student_data: List[dict], dept_c
     for student_row in student_data:
         for data_row in get_major_dept_college_data(student_row, dept_college_data):
             result_row = student_row.copy()
-            result_row.update(data_row)
+            result_row.update(data_row.to_dict())
             del result_row['majors']
             result.append(result_row)
     return result
@@ -227,8 +228,13 @@ def enrich_with_dept_college_data_for_roster_file(student_data: List[dict], dept
     :return: an enriched dataset including department affiliations and colleges for each student
     """
 
-    def _get_uniques_from_field(major_dept_college_data: List[dict], field: str) -> List[str]:
-        return list(dict.fromkeys([row[field] for row in major_dept_college_data]))
+    def _get_uniques_from_field(education_data_records: List[EducationDataRecord], field: str) -> List[str]:
+        education_data_dicts = [record.to_dict() for record in education_data_records]
+        result = list(dict.fromkeys([row[field] for row in education_data_dicts]))
+        if result == [None]:
+            return []
+        else:
+            return result
 
     result = []
     for student_row in student_data:
