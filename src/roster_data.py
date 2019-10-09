@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List
 
 from src.common import read_csv
@@ -11,10 +12,10 @@ def run_data_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: 
         'school_year', 'is_athlete', 'athlete_sport'
     ]
     major_data = _extract_major_data(major_data_filepath)
-    full_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath,
-                                 athlete_filepath)
-    return filter_list_of_dicts(
-        enrich_with_dept_college_data_for_data_file(full_data, major_data),
+    athlete_data = _extract_athlete_data(athlete_filepath)
+    student_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath)
+    return filter_list_of_dicts(enrich_with_athlete_data_for_data_file(
+        enrich_with_dept_college_data_for_data_file(student_data, major_data), athlete_data),
         ALLOWED_FIELDS_FOR_DATA_FILE)
 
 
@@ -22,26 +23,20 @@ def run_roster_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath
                         major_data_filepath: str, athlete_filepath: str) -> List[dict]:
     ALLOWED_FIELDS_FOR_DATA_FILE = [
         'handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-        'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'athlete_sport'
+        'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'athlete_sports'
     ]
     major_data = _extract_major_data(major_data_filepath)
-    full_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath,
-                                 athlete_filepath)
-    return filter_list_of_dicts(
-        enrich_with_dept_college_data_for_roster_file(full_data, major_data),
+    athlete_data = _extract_athlete_data(athlete_filepath)
+    student_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath)
+    return filter_list_of_dicts(enrich_with_athlete_data_for_roster_file(
+        enrich_with_dept_college_data_for_roster_file(student_data, major_data), athlete_data),
         ALLOWED_FIELDS_FOR_DATA_FILE)
 
 
-def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
-                     athlete_filepath: str) -> List[dict]:
+def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str) -> List[dict]:
     handshake_data = _extract_handshake_data(handshake_data_filepath)
     roster_data = _extract_sis_rosters(sis_roster_filepaths)
-    athlete_data = _extract_athlete_data(athlete_filepath)
-    return enrich_with_athlete_data(
-        filter_handshake_data_with_sis_roster(
-            handshake_data, roster_data
-        ), athlete_data,
-    )
+    return filter_handshake_data_with_sis_roster(handshake_data, roster_data)
 
 
 def _extract_major_data(filepath: str) -> dict:
@@ -128,7 +123,11 @@ def transform_athlete_data(raw_athlete_data: List[dict]) -> dict:
     """
     result = {}
     for row in raw_athlete_data:
-        result[row['University ID'].upper()] = row['Sport']
+        hopkins_id = row['University ID'].upper()
+        if hopkins_id not in result:
+            result[hopkins_id] = [row['Sport']]
+        else:
+            result[hopkins_id].append(row['Sport'])
     return result
 
 
@@ -246,28 +245,108 @@ def enrich_with_dept_college_data_for_roster_file(student_data: List[dict], dept
     return result
 
 
-def enrich_with_athlete_data(student_data: List[dict], athlete_data: dict) -> List[dict]:
+class AthleteUsernameUsageRecorder:
+    def __init__(self):
+        self._data = defaultdict(int)
+
+    def record_usage(self, username: str):
+        self._data[username] += 1
+
+    def username_is_not_fully_processed(self, username: str, expected_count: int):
+        return self._data[username] < expected_count
+
+
+def create_athlete_data_enricher(add_sport_data_func: callable, process_row_func: callable) -> callable:
+    def _create_athlete_row_copy(row: dict) -> dict:
+        new_row = row.copy()
+        new_row['is_athlete'] = True
+        return new_row
+
+    def _create_non_athlete_row_copy(row: dict) -> dict:
+        new_row = row.copy()
+        new_row['is_athlete'] = False
+        return new_row
+
+    def _create_soar_athletics_row(row: dict) -> dict:
+        soar_athletics_row = row.copy()
+        soar_athletics_row['department'] = Departments.SOAR_ATHLETICS.value.name
+        return soar_athletics_row
+
+    def _get_enriched_data_from_row(row: dict, usage_recorder: AthleteUsernameUsageRecorder,
+                                    usage_limit: int, sport_data) -> List[dict]:
+        result = []
+        new_row = _create_athlete_row_copy(row)
+        new_row = add_sport_data_func(new_row, sport_data)
+        result.append(new_row)
+        if usage_recorder.username_is_not_fully_processed(new_row['handshake_username'], usage_limit):
+            result.append(_create_soar_athletics_row(new_row))
+            usage_recorder.record_usage(row['handshake_username'])
+        return result
+
+    def enricher_func(student_data: List[dict], athlete_data: dict) -> List[dict]:
+        result = []
+        username_usage_recorder = AthleteUsernameUsageRecorder()
+        for row in student_data:
+            try:
+                result += process_row_func(row, athlete_data, username_usage_recorder,
+                                           _get_enriched_data_from_row)
+            except KeyError:
+                new_row = _create_non_athlete_row_copy(row)
+                new_row = add_sport_data_func(new_row, sport_data=None)
+                result.append(new_row)
+        return result
+
+    return enricher_func
+
+
+def enrich_with_athlete_data_for_data_file(student_data: List[dict], athlete_data: dict) -> List[dict]:
     """
-    Enrich student data with appropriate department affiliation and college data.
+    Enrich student data with student athlete status in preparation for dashboard data file output.
 
     :param student_data: student data with a 'handshake_username' field
     :param athlete_data: a dict mapping student username to athlete status info
     :return: an enriched dataset including athlete info for each student
     """
-    result = []
-    for row in student_data:
-        new_row = row.copy()
-        new_row['is_athlete'] = False
-        try:
-            new_row['athlete_sport'] = athlete_data[new_row['handshake_username'].upper()]
-            new_row['is_athlete'] = True
-            athlete_dept_row = new_row.copy()
-            athlete_dept_row['department'] = Departments.SOAR_ATHLETICS.value.name
-            result.append(athlete_dept_row)
-        except KeyError:
-            new_row['athlete_sport'] = None
-        result.append(new_row)
-    return result
+
+    def _add_sport_data_to_row(row: dict, sport_data) -> dict:
+        row['athlete_sport'] = sport_data
+        return row
+
+    def _process_row(row: dict, athlete_data: dict, usage_recorder: AthleteUsernameUsageRecorder,
+                     row_enrichment_func: callable) -> List[dict]:
+        result = []
+        sports = athlete_data[row['handshake_username'].upper()]
+        for sport_data in sports:
+            result += row_enrichment_func(row, usage_recorder, len(sports), sport_data)
+        return result
+
+    data_enricher = create_athlete_data_enricher(_add_sport_data_to_row, _process_row)
+    return data_enricher(student_data, athlete_data)
+
+
+def enrich_with_athlete_data_for_roster_file(student_data: List[dict], athlete_data: dict) -> List[dict]:
+    """
+    Enrich student data with student athlete status in preparation for roster file output.
+
+    :param student_data: student data with a 'handshake_username' field
+    :param athlete_data: a dict mapping student username to athlete status info
+    :return: an enriched dataset including athlete info for each student
+    """
+
+    def _add_sport_data_to_row(row: dict, sport_data) -> dict:
+        if not sport_data:
+            row['athlete_sports'] = None
+        else:
+            row['athlete_sports'] = '; '.join(sport_data)
+        return row
+
+    def _process_row(row: dict, athlete_data: dict, usage_recorder: AthleteUsernameUsageRecorder,
+                     row_enrichment_func: callable) -> List[dict]:
+        sport_data = athlete_data[row['handshake_username'].upper()]
+        return row_enrichment_func(row, usage_recorder, 1, sport_data)
+
+    data_enricher = create_athlete_data_enricher(_add_sport_data_to_row, _process_row)
+    return data_enricher(student_data, athlete_data)
 
 
 def filter_list_of_dicts(list_of_dicts: List[dict], allowed_fields: list) -> List[dict]:

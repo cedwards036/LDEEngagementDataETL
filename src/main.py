@@ -1,7 +1,7 @@
 from src.career_fairs import run_career_fair_etl
 from src.common import BrowsingSession, CONFIG
 from src.events import run_events_etl
-from src.file_writer import write_engagement_data, write_to_csv
+from src.file_writers import write_engagement_data, write_to_csv, write_roster_excel_file
 from src.office_hours import run_office_hours_etl
 from src.roster_data import run_data_file_etl, run_roster_file_etl
 
@@ -27,4 +27,4 @@ if __name__ == '__main__':
     student_data = run_data_file_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH, ATHLETE_FILEPATH)
     roster_data = run_roster_file_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH, ATHLETE_FILEPATH)
     write_to_csv(CONFIG['student_data_filepath'], student_data)
-    write_to_csv(CONFIG['student_roster_filepath'], roster_data)
+    write_roster_excel_file(CONFIG['student_roster_filepath'], roster_data)
