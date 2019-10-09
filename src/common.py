@@ -6,7 +6,7 @@ from typing import List
 
 from autohandshake import HandshakeSession, HandshakeBrowser, InsightsPage, FileType
 
-CONFIG_FILEPATH = '../config.json'
+CONFIG_FILEPATH = f'{os.path.dirname(os.path.abspath(__file__))}/../config.json'
 
 
 def load_config(config_filepath: str):
