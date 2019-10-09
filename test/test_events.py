@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from src.events import transform_events_data
+from src.engagement_data_etl.events import transform_events_data
 
 
 class TestEventsTransformation(unittest.TestCase):

@@ -1,13 +1,13 @@
 import unittest
 
-from src.roster_data import (transform_handshake_data, transform_roster_data,
-                             enrich_with_dept_college_data_for_data_file,
-                             enrich_with_dept_college_data_for_roster_file,
-                             get_major_dept_college_data,
-                             filter_handshake_data_with_sis_roster,
-                             transform_major_data, transform_athlete_data,
-                             enrich_with_athlete_data_for_data_file,
-                             enrich_with_athlete_data_for_roster_file, filter_dict)
+from src.student_data_etl.roster_data import (transform_handshake_data, transform_roster_data,
+                                              enrich_with_dept_college_data_for_data_file,
+                                              enrich_with_dept_college_data_for_roster_file,
+                                              get_major_dept_college_data,
+                                              filter_handshake_data_with_sis_roster,
+                                              transform_major_data, transform_athlete_data,
+                                              enrich_with_athlete_data_for_data_file,
+                                              enrich_with_athlete_data_for_roster_file, filter_dict)
 
 
 class TestHandshakeData(unittest.TestCase):

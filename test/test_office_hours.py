@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from src.office_hours import transform_office_hours_data
+from src.engagement_data_etl.office_hours import transform_office_hours_data
 
 
 class TestOfficeHourDataTransformation(unittest.TestCase):

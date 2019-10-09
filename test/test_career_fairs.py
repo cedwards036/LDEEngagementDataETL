@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from src.career_fairs import transform_fair_data
+from src.engagement_data_etl.career_fairs import transform_fair_data
 
 
 class TestCareerFairTransformation(unittest.TestCase):
