@@ -1,3 +1,4 @@
+import copy
 from typing import List
 
 
@@ -45,8 +46,9 @@ class StudentDataRecord:
     def __init__(self, handshake_username: str = None, handshake_id: str = None,
                  email: str = None, first_name: str = None, pref_name: str = None,
                  last_name: str = None, school_year: str = None,
-                 education_data: EducationDataRecord = None,
+                 education_data: List[EducationDataRecord] = None,
                  additional_departments: List[str] = None):
+
         self._data = {
             'handshake_username': handshake_username,
             'handshake_id': handshake_id,
@@ -55,6 +57,64 @@ class StudentDataRecord:
             'pref_name': pref_name,
             'last_name': last_name,
             'school_year': school_year,
-            'education_data': education_data,
-            'additional_departments': additional_departments
+            'education_data': [],
+            'additional_departments': [],
+            'majors': [],
+            'colleges': [],
+            'departments': []
         }
+        if education_data:
+            for record in education_data:
+                self.add_education_record(record)
+        if additional_departments:
+            for department in additional_departments:
+                self.add_additional_department(department)
+
+    @property
+    def colleges(self):
+        return self._data['colleges'].copy()
+
+    @property
+    def majors(self):
+        return self._data['majors'].copy()
+
+    @property
+    def departments(self):
+        return self._data['departments'].copy()
+
+    @property
+    def additional_departments(self):
+        return self._data['additional_departments'].copy()
+
+    def to_dict(self, fields: List[str] = None) -> dict:
+        result = copy.deepcopy(self._data)
+        if fields is not None:
+            result = {field: result[field] for field in fields}
+        return result
+
+    def add_education_record(self, record: EducationDataRecord):
+        self._add_value_to_unique_list(record, self._data['education_data'])
+        self._update_colleges_with_education_record(record)
+        self._update_majors_with_education_record(record)
+        self._update_depts_with_education_record(record)
+
+    def add_additional_department(self, department: str):
+        self._add_value_to_unique_list(department, self._data['additional_departments'])
+        self._add_value_to_unique_list(department, self._data['departments'])
+
+    def _update_colleges_with_education_record(self, education_data_record: EducationDataRecord):
+        if education_data_record.college is not None:
+            self._add_value_to_unique_list(education_data_record.college, self._data['colleges'])
+
+    def _update_majors_with_education_record(self, education_data_record: EducationDataRecord):
+        if education_data_record.major is not None:
+            self._add_value_to_unique_list(education_data_record.major, self._data['majors'])
+
+    def _update_depts_with_education_record(self, education_data_record: EducationDataRecord):
+        if education_data_record.department is not None:
+            self._add_value_to_unique_list(education_data_record.department, self._data['departments'])
+
+    @staticmethod
+    def _add_value_to_unique_list(value, unique_list: list):
+        if value not in unique_list:
+            unique_list.append(value)
