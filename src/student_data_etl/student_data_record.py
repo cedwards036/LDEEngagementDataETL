@@ -62,7 +62,7 @@ class StudentRecord:
             'pref_name': self._convert_empty_str_to_none(pref_name),
             'last_name': self._convert_empty_str_to_none(last_name),
             'school_year': self._convert_empty_str_to_none(school_year),
-            'education_data': [],
+            'education_records': [],
             'additional_departments': [],
             'is_athlete': False,
             'sports': [],
@@ -83,6 +83,10 @@ class StudentRecord:
     @property
     def handshake_username(self) -> str:
         return self._data['handshake_username']
+
+    @property
+    def education_records(self):
+        return copy.deepcopy(self._data['education_records'])
 
     @property
     def colleges(self) -> List[str]:
@@ -115,7 +119,7 @@ class StudentRecord:
         return result
 
     def add_education_record(self, record: EducationRecord):
-        self._add_value_to_unique_list(record, self._data['education_data'])
+        self._add_value_to_unique_list(record, self._data['education_records'])
         self._update_colleges_with_education_record(record)
         self._update_majors_with_education_record(record)
         self._update_depts_with_education_record(record)
@@ -158,5 +162,5 @@ class StudentRecord:
 
     def __str__(self):
         printable_dict = self.to_dict()
-        printable_dict['education_data'] = [str(record) for record in printable_dict['education_data']]
+        printable_dict['education_records'] = [str(record) for record in printable_dict['education_records']]
         return str(printable_dict)

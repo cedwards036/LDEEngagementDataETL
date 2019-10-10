@@ -3,6 +3,7 @@ from typing import List
 
 from src.common import read_csv
 from src.data_model import Departments
+from src.student_data_etl.output_formatters import format_for_roster_file
 from src.student_data_etl.student_data_record import EducationRecord, StudentRecord
 
 
@@ -22,16 +23,17 @@ def run_data_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: 
 
 def run_roster_file_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str,
                         major_data_filepath: str, athlete_filepath: str) -> List[dict]:
-    ALLOWED_FIELDS_FOR_DATA_FILE = [
-        'handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-        'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'athlete_sports'
-    ]
     major_data = _extract_major_data(major_data_filepath)
     athlete_data = _extract_athlete_data(athlete_filepath)
     student_data = run_students_etl(sis_roster_filepaths, handshake_data_filepath)
-    return filter_list_of_dicts(enrich_with_athlete_data_for_roster_file(
-        enrich_with_dept_college_data_for_roster_file(student_data, major_data), athlete_data),
-        ALLOWED_FIELDS_FOR_DATA_FILE)
+    return format_for_roster_file(
+        enrich_with_athlete_status(
+            enrich_with_dept_college_data(
+                student_data, major_data
+            ),
+            athlete_data
+        )
+    )
 
 
 def run_students_etl(sis_roster_filepaths: List[str], handshake_data_filepath: str) -> List[dict]:
@@ -241,38 +243,6 @@ def enrich_with_dept_college_data(student_data: List[dict], dept_college_data: d
         for education_record in get_major_dept_college_data(student_row, dept_college_data):
             student_record.add_education_record(education_record)
         result.append(student_record)
-    return result
-
-
-def enrich_with_dept_college_data_for_roster_file(student_data: List[dict], dept_college_data: dict) -> List[dict]:
-    """
-    Enrich student data with appropriate department affiliation and college data.
-
-    :param student_data: student data with 'major' and 'school_year' fields
-    :param dept_college_data: a dict mapping username to dept and college data
-    :return: an enriched dataset including department affiliations and colleges for each student
-    """
-
-    def _get_uniques_from_field(education_records: List[EducationRecord], field: str) -> List[str]:
-        education_data_dicts = [record.to_dict() for record in education_records]
-        result = list(dict.fromkeys([row[field] for row in education_data_dicts]))
-        if result == [None]:
-            return []
-        else:
-            return result
-
-    result = []
-    for student_row in student_data:
-        supplemental_data = get_major_dept_college_data(student_row, dept_college_data)
-        majors_str = '; '.join(_get_uniques_from_field(supplemental_data, 'major'))
-        colleges_str = '; '.join(_get_uniques_from_field(supplemental_data, 'college'))
-        departments = _get_uniques_from_field(supplemental_data, 'department')
-        for department in departments:
-            result_row = student_row.copy()
-            result_row['department'] = department
-            result_row['majors'] = majors_str
-            result_row['colleges'] = colleges_str
-            result.append(result_row)
     return result
 
 

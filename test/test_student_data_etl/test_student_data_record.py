@@ -174,7 +174,7 @@ class TestToDict(unittest.TestCase):
             'pref_name': 'Angie',
             'last_name': 'Student',
             'school_year': 'Sophomore',
-            'education_data': [
+            'education_records': [
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
                 EducationRecord(major='Data Science', department='misc_eng', college='wse')
             ],
@@ -192,11 +192,11 @@ class TestToDict(unittest.TestCase):
             'email': 'astudent14@jhu.edu',
             'pref_name': 'Angie',
             'school_year': 'Sophomore',
-            'education_data': [
+            'education_records': [
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
                 EducationRecord(major='Data Science', department='misc_eng', college='wse')
             ],
             'colleges': ['ksas', 'wse'],
         }
-        specified_fields = ['email', 'pref_name', 'school_year', 'education_data', 'colleges']
+        specified_fields = ['email', 'pref_name', 'school_year', 'education_records', 'colleges']
         self.assertEqual(expected, self.test_record.to_dict(specified_fields))

@@ -49,7 +49,7 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
 
     df = pd.DataFrame(data)
     df = df[['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-             'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'athlete_sports']]
+             'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'sports']]
 
     departments = sorted(df['department'].unique())
     with ExcelWriter(filepath) as writer:

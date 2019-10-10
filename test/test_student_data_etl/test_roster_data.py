@@ -2,7 +2,6 @@ import unittest
 
 from src.student_data_etl.roster_data import (transform_handshake_data, transform_roster_data,
                                               enrich_with_dept_college_data_for_data_file,
-                                              enrich_with_dept_college_data_for_roster_file,
                                               get_major_dept_college_data,
                                               filter_handshake_data_with_sis_roster,
                                               transform_major_data, transform_athlete_data,
@@ -895,93 +894,6 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             },
         ]
         self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
-
-    def test_enrich_with_dept_and_college_data_for_roster_file(self):
-        test_data = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': ['B.S. Comp. Sci.: Computer Science', 'History'],
-                'school_year': 'Junior',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'majors': ['B.A.: English', 'B.A.: German'],
-                'school_year': 'Senior',
-                'email': 'astu3@jhu.edu',
-                'first_name': 'Alice',
-                'pref_name': '',
-                'last_name': 'Stuewcz'
-            },
-        ]
-
-        test_dept_college_data = {
-            'B.S. Comp. Sci.: Computer Science': EducationRecord(
-                major='B.S. Comp. Sci.: Computer Science',
-                department='comp_elec_eng',
-                college='wse'
-            ),
-            'History': EducationRecord(
-                major='History',
-                department='hist_phil_hum',
-                college='ksas'
-            ),
-            'B.A.: English': EducationRecord(
-                major='B.A.: English',
-                department='lit_lang_film',
-                college='ksas'
-            ),
-            'B.A.: German': EducationRecord(
-                major='B.A.: German',
-                department='lit_lang_film',
-                college='ksas'
-            )
-        }
-
-        expected = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': 'Computer Science; History',
-                'school_year': 'Junior',
-                'department': 'comp_elec_eng',
-                'colleges': 'wse; ksas',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': 'Computer Science; History',
-                'school_year': 'Junior',
-                'department': 'hist_phil_hum',
-                'colleges': 'wse; ksas',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'majors': 'English; German',
-                'school_year': 'Senior',
-                'department': 'lit_lang_film',
-                'colleges': 'ksas',
-                'email': 'astu3@jhu.edu',
-                'first_name': 'Alice',
-                'pref_name': '',
-                'last_name': 'Stuewcz'
-            },
-        ]
-        self.assertEqual(expected, enrich_with_dept_college_data_for_roster_file(test_data, test_dept_college_data))
 
     def test_enrich_freshman_data(self):
         test_data = [
