@@ -7,9 +7,16 @@ from src.student_data_etl.roster_data import (transform_handshake_data, transfor
                                               filter_handshake_data_with_sis_roster,
                                               transform_major_data, transform_athlete_data,
                                               enrich_with_athlete_data_for_data_file,
-                                              enrich_with_athlete_data_for_roster_file, filter_dict)
-from src.student_data_etl.student_data_record import EducationDataRecord
+                                              enrich_with_athlete_data_for_roster_file, filter_dict,
+                                              enrich_with_dept_college_data,
+                                              enrich_with_athlete_status)
+from src.student_data_etl.student_data_record import EducationRecord, StudentRecord
 
+
+def assert_lists_of_student_records_are_equal(test_class, expected, actual):
+    expected_lod = [record.to_dict() for record in expected]
+    actual_lod = [record.to_dict() for record in actual]
+    test_class.assertEqual(expected_lod, actual_lod)
 
 class TestHandshakeData(unittest.TestCase):
 
@@ -116,12 +123,12 @@ class TestMajorData(unittest.TestCase):
         ]
 
         expected = {
-            'English': EducationDataRecord(
+            'English': EducationRecord(
                 major='English',
                 department='literature',
                 college='ksas'
             ),
-            'Comp Sci': EducationDataRecord(
+            'Comp Sci': EducationRecord(
                 major='Comp Sci',
                 department='comp_sci',
                 college='wse'
@@ -298,6 +305,83 @@ class TestAthleteData(unittest.TestCase):
             'GT29FJ': ['Soccer', 'Tennis']
         }
         self.assertEqual(expected, transform_athlete_data(test_data))
+
+    def test_enrich_student_data_with_athlete_status(self):
+        StudentRecord(
+            handshake_username='49gj40',
+            handshake_id='8029439',
+            email='astu2@jhu.edu',
+            first_name='Arthur',
+            pref_name='Art',
+            last_name='Student',
+            school_year='Junior',
+            education_data=[
+                EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
+                EducationRecord(major='Applied Math and Stats', department='misc_eng', college='wse')
+            ]
+        ),
+        test_data = [
+            StudentRecord(
+                handshake_username='f94t7r',
+                handshake_id='8029439',
+                school_year='Junior',
+                education_data=[
+                    EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse')
+                ]
+            ),
+            StudentRecord(
+                handshake_username='gt29fj',
+                handshake_id='3288234',
+                school_year='Sophomore',
+                education_data=[
+                    EducationRecord(major='English', department='lit_lang_film', college='ksas')
+                ]
+            ),
+            StudentRecord(
+                handshake_username='203rf8',
+                handshake_id='92839843',
+                school_year='Freshman',
+                education_data=[
+                    EducationRecord(major='History', department='hist_phil_hum', college='ksas')
+                ]
+            )
+        ]
+
+        test_athlete_data = {
+            'F94T7R': ['Water Polo'],
+            'GT29FJ': ['Soccer', 'Tennis']
+        }
+
+        expected = [
+            StudentRecord(
+                handshake_username='f94t7r',
+                handshake_id='8029439',
+                school_year='Junior',
+                education_data=[
+                    EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse')
+                ],
+                sports=['Water Polo']
+            ),
+            StudentRecord(
+                handshake_username='gt29fj',
+                handshake_id='3288234',
+                school_year='Sophomore',
+                education_data=[
+                    EducationRecord(major='English', department='lit_lang_film', college='ksas')
+                ],
+                sports=['Soccer', 'Tennis']
+            ),
+            StudentRecord(
+                handshake_username='203rf8',
+                handshake_id='92839843',
+                school_year='Freshman',
+                education_data=[
+                    EducationRecord(major='History', department='hist_phil_hum', college='ksas')
+                ]
+            )
+        ]
+        assert_lists_of_student_records_are_equal(self, expected,
+                                                  enrich_with_athlete_status(test_data, test_athlete_data))
 
     def test_enrich_student_data_with_athlete_status_for_data_file(self):
         test_data = [
@@ -528,7 +612,7 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
             },
         ]
         test_dept_college_data = {}
-        expected = [EducationDataRecord()]
+        expected = [EducationRecord()]
         for row in test_student_data:
             self.assertEqual(expected, get_major_dept_college_data(row, test_dept_college_data))
 
@@ -538,7 +622,7 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
             'school_year': 'Junior',
         }
         test_dept_college_data = {}
-        expected = [EducationDataRecord(major='Interdisciplinary Studies')]
+        expected = [EducationRecord(major='Interdisciplinary Studies')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_no_match_throws_exception(self):
@@ -548,7 +632,7 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.S. Comp. Sci.: Computer Science': EducationDataRecord(
+            'B.S. Comp. Sci.: Computer Science': EducationRecord(
                 major='B.S. Comp. Sci.: Computer Science',
                 department='comp_elec_eng',
                 college='wse'
@@ -564,13 +648,13 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.S.: Comp. Sci.': EducationDataRecord(
+            'B.S.: Comp. Sci.': EducationRecord(
                 major='B.S.: Comp. Sci.',
                 department='comp_elec_eng',
                 college='wse'
             )
         }
-        expected = [EducationDataRecord(
+        expected = [EducationRecord(
             major='Comp. Sci.',
             department='comp_elec_eng',
             college='wse'
@@ -584,26 +668,26 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.S.: Comp. Sci.': EducationDataRecord(
+            'B.S.: Comp. Sci.': EducationRecord(
                 major='B.S.: Comp. Sci.',
                 department='comp_elec_eng',
                 college='wse'
             ),
-            'M.S.E.: Mech Eng': EducationDataRecord(
+            'M.S.E.: Mech Eng': EducationRecord(
                 major='M.S.E.: Mech Eng',
                 department='eng_masters',
                 college='wse'
             ),
-            'Art History': EducationDataRecord(
+            'Art History': EducationRecord(
                 major='Art History',
                 department='hist_phil_hum',
                 college='ksas'
             )
         }
 
-        expected = [EducationDataRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse'),
-                    EducationDataRecord(major='M.S.E.: Mech Eng', department='eng_masters', college='wse'),
-                    EducationDataRecord(major='Art History', department='hist_phil_hum', college='ksas')]
+        expected = [EducationRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse'),
+                    EducationRecord(major='M.S.E.: Mech Eng', department='eng_masters', college='wse'),
+                    EducationRecord(major='Art History', department='hist_phil_hum', college='ksas')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_wse_freshman_with_defined_major(self):
@@ -613,14 +697,14 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.S.: Comp. Sci.': EducationDataRecord(
+            'B.S.: Comp. Sci.': EducationRecord(
                 major='B.S.: Comp. Sci.',
                 department='comp_elec_eng',
                 college='wse'
             )
         }
-        expected = [EducationDataRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse'),
-                    EducationDataRecord(major='Comp. Sci.', department='soar_fye_wse', college='wse')]
+        expected = [EducationRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse'),
+                    EducationRecord(major='Comp. Sci.', department='soar_fye_wse', college='wse')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_ksas_freshman_with_defined_major(self):
@@ -630,15 +714,15 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.A.: English': EducationDataRecord(
+            'B.A.: English': EducationRecord(
                 major='B.A.: English',
                 department='lit_lang_film',
                 college='ksas'
             )
         }
 
-        expected = [EducationDataRecord(major='English', department='lit_lang_film', college='ksas'),
-                    EducationDataRecord(major='English', department='soar_fye_ksas', college='ksas')]
+        expected = [EducationRecord(major='English', department='lit_lang_film', college='ksas'),
+                    EducationRecord(major='English', department='soar_fye_ksas', college='ksas')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_freshman_with_undefined_major(self):
@@ -648,16 +732,87 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
 
         test_dept_college_data = {
-            'B.A.: Pre-Major': EducationDataRecord(major='B.A.: Pre-Major', department='soar_fye_ksas', college='ksas'),
-            'B.S.: Und Eng': EducationDataRecord(major='B.S.: Und Eng', department='soar_fye_wse', college='wse'),
+            'B.A.: Pre-Major': EducationRecord(major='B.A.: Pre-Major', department='soar_fye_ksas', college='ksas'),
+            'B.S.: Und Eng': EducationRecord(major='B.S.: Und Eng', department='soar_fye_wse', college='wse'),
         }
 
-        expected = [EducationDataRecord(major='Pre-Major', department='soar_fye_ksas', college='ksas'),
-                    EducationDataRecord(major='Und Eng', department='soar_fye_wse', college='wse')]
+        expected = [EducationRecord(major='Pre-Major', department='soar_fye_ksas', college='ksas'),
+                    EducationRecord(major='Und Eng', department='soar_fye_wse', college='wse')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
 
 class TestDeptCollegeEnrichment(unittest.TestCase):
+
+    def test_enrich_with_dept_and_college_data(self):
+        test_data = [
+            {
+                'handshake_username': '49gj40',
+                'handshake_id': '8029439',
+                'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student'
+            },
+            {
+                'handshake_username': '82t349',
+                'handshake_id': '4325243',
+                'majors': ['B.A.: English'],
+                'school_year': 'Senior',
+                'email': 'astu3@jhu.edu',
+                'first_name': 'Alice',
+                'pref_name': '',
+                'last_name': 'Stuewcz'
+            },
+        ]
+
+        test_dept_college_data = {
+            'B.S. Comp. Sci.: Computer Science': EducationRecord(
+                major='B.S. Comp. Sci.: Computer Science',
+                department='comp_elec_eng',
+                college='wse'
+            ),
+            'B.S. AMS: Applied Math and Stats': EducationRecord(
+                major='B.S. AMS: Applied Math and Stats',
+                department='misc_eng',
+                college='wse'
+            ),
+            'B.A.: English': EducationRecord(
+                major='B.A.: English',
+                department='lit_lang_film',
+                college='ksas'
+            )
+        }
+
+        expected = [
+            StudentRecord(
+                handshake_username='49gj40',
+                handshake_id='8029439',
+                email='astu2@jhu.edu',
+                first_name='Arthur',
+                pref_name='Art',
+                last_name='Student',
+                school_year='Junior',
+                education_data=[
+                    EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
+                    EducationRecord(major='Applied Math and Stats', department='misc_eng', college='wse')
+                ]
+            ),
+            StudentRecord(
+                handshake_username='82t349',
+                handshake_id='4325243',
+                email='astu3@jhu.edu',
+                first_name='Alice',
+                last_name='Stuewcz',
+                school_year='Senior',
+                education_data=[
+                    EducationRecord(major='English', department='lit_lang_film', college='ksas')
+                ]
+            )
+        ]
+        assert_lists_of_student_records_are_equal(self, expected,
+                                                  enrich_with_dept_college_data(test_data, test_dept_college_data))
 
     def test_enrich_with_dept_and_college_data_for_data_file(self):
         test_data = [
@@ -684,17 +839,17 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         ]
 
         test_dept_college_data = {
-            'B.S. Comp. Sci.: Computer Science': EducationDataRecord(
+            'B.S. Comp. Sci.: Computer Science': EducationRecord(
                 major='B.S. Comp. Sci.: Computer Science',
                 department='comp_elec_eng',
                 college='wse'
             ),
-            'B.S. AMS: Applied Math and Stats': EducationDataRecord(
+            'B.S. AMS: Applied Math and Stats': EducationRecord(
                 major='B.S. AMS: Applied Math and Stats',
                 department='misc_eng',
                 college='wse'
             ),
-            'B.A.: English': EducationDataRecord(
+            'B.A.: English': EducationRecord(
                 major='B.A.: English',
                 department='lit_lang_film',
                 college='ksas'
@@ -766,22 +921,22 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         ]
 
         test_dept_college_data = {
-            'B.S. Comp. Sci.: Computer Science': EducationDataRecord(
+            'B.S. Comp. Sci.: Computer Science': EducationRecord(
                 major='B.S. Comp. Sci.: Computer Science',
                 department='comp_elec_eng',
                 college='wse'
             ),
-            'History': EducationDataRecord(
+            'History': EducationRecord(
                 major='History',
                 department='hist_phil_hum',
                 college='ksas'
             ),
-            'B.A.: English': EducationDataRecord(
+            'B.A.: English': EducationRecord(
                 major='B.A.: English',
                 department='lit_lang_film',
                 college='ksas'
             ),
-            'B.A.: German': EducationDataRecord(
+            'B.A.: German': EducationRecord(
                 major='B.A.: German',
                 department='lit_lang_film',
                 college='ksas'
@@ -851,22 +1006,22 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         ]
 
         test_dept_college_data = {
-            'Pre-Major': EducationDataRecord(
+            'Pre-Major': EducationRecord(
                 major='Pre-Major',
                 department='soar_fye_ksas',
                 college='ksas'
             ),
-            'B.S. AMS: Applied Math and Stats': EducationDataRecord(
+            'B.S. AMS: Applied Math and Stats': EducationRecord(
                 major='B.S. AMS: Applied Math and Stats',
                 department='misc_eng',
                 college='wse'
             ),
-            'B.A.: English': EducationDataRecord(
+            'B.A.: English': EducationRecord(
                 major='B.A.: English',
                 department='lit_lang_film',
                 college='ksas'
             ),
-            'M.S.: Computer Science': EducationDataRecord(
+            'M.S.: Computer Science': EducationRecord(
                 major='M.S.: Computer Science',
                 department='eng_masters',
                 college='wse'
@@ -948,17 +1103,17 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         ]
 
         test_dept_college_data = {
-            'Und Eng': EducationDataRecord(
+            'Und Eng': EducationRecord(
                 major='Und Eng',
                 department='soar_fye_wse',
                 college='wse'
             ),
-            'Bachelors: Und Eng': EducationDataRecord(
+            'Bachelors: Und Eng': EducationRecord(
                 major='Bachelors: Und Eng',
                 department='soar_fye_wse',
                 college='wse'
             ),
-            'B.S. AMS: Applied Math and Stats': EducationDataRecord(
+            'B.S. AMS: Applied Math and Stats': EducationRecord(
                 major='B.S. AMS: Applied Math and Stats',
                 department='misc_eng',
                 college='wse'
