@@ -331,7 +331,7 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         assert_lists_of_student_records_are_equal(self, expected, enrich_with_education_records(test_data, test_dept_college_data))
 
 
-class TestGetMajorDeptCollegeData(unittest.TestCase):
+class TestGetEducationRecordsForStudent(unittest.TestCase):
 
     def test_with_no_major(self):
         test_student_data = [
@@ -356,6 +356,22 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
         }
         test_dept_college_data = {}
         expected = [EducationRecord(major='Interdisciplinary Studies')]
+        self.assertEqual(expected, get_education_records_for_student(test_student_data, test_dept_college_data))
+
+    def test_interdisciplinary_major_alongside_other_majors(self):
+        test_student_data = {
+            'majors': ['Interdisciplinary Studies', 'Math'],
+            'school_year': 'Junior',
+        }
+        test_dept_college_data = {
+            'Math': EducationRecord(
+                major='Math',
+                department='phys_env_sci',
+                college='ksas'
+            )
+        }
+        expected = [EducationRecord(major='Interdisciplinary Studies'),
+                    EducationRecord(major='Math', department='phys_env_sci', college='ksas')]
         self.assertEqual(expected, get_education_records_for_student(test_student_data, test_dept_college_data))
 
     def test_no_match_throws_exception(self):
