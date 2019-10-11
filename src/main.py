@@ -3,7 +3,7 @@ from src.engagement_data_etl.career_fairs import run_career_fair_etl
 from src.engagement_data_etl.events import run_events_etl
 from src.engagement_data_etl.office_hours import run_office_hours_etl
 from src.file_writers import write_engagement_data, write_to_csv, write_roster_excel_file
-from src.student_data_etl.roster_data import run_data_file_etl, run_roster_file_etl
+from src.student_data_etl.etl_processes import run_data_file_etl, run_roster_file_etl
 
 # handshake data url: https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vc3R1ZGVudHM_cWlkPTdZa0VnSW5RQ1J2aGNBWE9PcXgyVkUmZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls
 
