@@ -5,6 +5,7 @@ from src.data_model import Departments
 
 
 class EducationRecord:
+    """A record of associated education data points including major, department, and college"""
 
     def __init__(self, major: str = None, department: str = None, college: str = None):
         self._data = {
@@ -47,6 +48,7 @@ class EducationRecord:
 
 
 class StudentRecord:
+    """A student record containing data about the student and their education affiliations"""
 
     def __init__(self, handshake_username: str = None, handshake_id: str = None,
                  email: str = None, first_name: str = None, pref_name: str = None,
@@ -83,6 +85,10 @@ class StudentRecord:
     @property
     def handshake_username(self) -> str:
         return self._data['handshake_username']
+
+    @property
+    def school_year(self) -> str:
+        return self._data['school_year']
 
     @property
     def education_records(self):

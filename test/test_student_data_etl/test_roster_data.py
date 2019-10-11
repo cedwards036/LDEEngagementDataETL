@@ -1,21 +1,24 @@
 import unittest
 
 from src.student_data_etl.roster_data import (transform_handshake_data, transform_roster_data,
-                                              enrich_with_dept_college_data_for_data_file,
                                               get_major_dept_college_data,
                                               filter_handshake_data_with_sis_roster,
                                               transform_major_data, transform_athlete_data,
-                                              enrich_with_athlete_data_for_data_file,
-                                              enrich_with_athlete_data_for_roster_file, filter_dict,
                                               enrich_with_dept_college_data,
                                               enrich_with_athlete_status)
 from src.student_data_etl.student_data_record import EducationRecord, StudentRecord
 
 
 def assert_lists_of_student_records_are_equal(test_class, expected, actual):
-    expected_lod = [record.to_dict() for record in expected]
-    actual_lod = [record.to_dict() for record in actual]
+    def _to_dict(record: StudentRecord):
+        result = record.to_dict()
+        result['education_records'] = [ed_record.to_dict() for ed_record in result['education_records']]
+        return result
+
+    expected_lod = [_to_dict(record) for record in expected]
+    actual_lod = [_to_dict(record) for record in actual]
     test_class.assertEqual(expected_lod, actual_lod)
+
 
 class TestHandshakeData(unittest.TestCase):
 
@@ -382,220 +385,6 @@ class TestAthleteData(unittest.TestCase):
         assert_lists_of_student_records_are_equal(self, expected,
                                                   enrich_with_athlete_status(test_data, test_athlete_data))
 
-    def test_enrich_student_data_with_athlete_status_for_data_file(self):
-        test_data = [
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': '203rf8',
-                'handshake_id': '92839843',
-                'school_year': 'Freshman',
-                'department': 'humanities'
-            },
-        ]
-
-        test_athlete_data = {
-            'F94T7R': ['Water Polo'],
-            'GT29FJ': ['Soccer', 'Tennis']
-        }
-
-        expected = [
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something',
-                'is_athlete': True,
-                'athlete_sport': 'Water Polo'
-            },
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something',
-                'is_athlete': True,
-                'athlete_sport': 'Water Polo',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Soccer',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Soccer',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Tennis',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Tennis',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': '203rf8',
-                'handshake_id': '92839843',
-                'school_year': 'Freshman',
-                'is_athlete': False,
-                'athlete_sport': None,
-                'department': 'humanities'
-            }
-        ]
-        self.assertEqual(expected, enrich_with_athlete_data_for_data_file(test_data, test_athlete_data))
-
-    def test_enrich_student_data_with_athlete_status_for_roster_file(self):
-        test_data = [
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': '203rf8',
-                'handshake_id': '92839843',
-                'school_year': 'Freshman',
-                'department': 'humanities'
-            },
-        ]
-
-        test_athlete_data = {
-            'F94T7R': ['Water Polo'],
-            'GT29FJ': ['Soccer', 'Tennis']
-        }
-
-        expected = [
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something',
-                'is_athlete': True,
-                'athlete_sports': 'Water Polo'
-            },
-            {
-                'handshake_username': 'f94t7r',
-                'handshake_id': '8029439',
-                'major': 'B.S. Comp. Sci.: Computer Science',
-                'school_year': 'Junior',
-                'extraneous_field': 'something',
-                'is_athlete': True,
-                'athlete_sports': 'Water Polo',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sports': 'Soccer; Tennis',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sports': 'Soccer; Tennis',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': '203rf8',
-                'handshake_id': '92839843',
-                'school_year': 'Freshman',
-                'is_athlete': False,
-                'athlete_sports': None,
-                'department': 'humanities'
-            }
-        ]
-        self.assertEqual(expected, enrich_with_athlete_data_for_roster_file(test_data, test_athlete_data))
-
-    def test_enrich_student_data_with_athlete_status_doesnt_create_duplicates(self):
-        test_data = [
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'department': 'misc_eng'
-            },
-        ]
-
-        test_athlete_data = {
-            'GT29FJ': ['Soccer']
-        }
-
-        expected = [
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Soccer',
-                'department': 'comp_elec_eng'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Soccer',
-                'department': 'soar_athletics'
-            },
-            {
-                'handshake_username': 'gt29fj',
-                'handshake_id': '8029439',
-                'school_year': 'Junior',
-                'is_athlete': True,
-                'athlete_sport': 'Soccer',
-                'department': 'misc_eng'
-            }
-        ]
-        self.assertEqual(expected, enrich_with_athlete_data_for_data_file(test_data, test_athlete_data))
-
 
 class TestGetMajorDeptCollegeData(unittest.TestCase):
 
@@ -702,8 +491,7 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
                 college='wse'
             )
         }
-        expected = [EducationRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse'),
-                    EducationRecord(major='Comp. Sci.', department='soar_fye_wse', college='wse')]
+        expected = [EducationRecord(major='Comp. Sci.', department='comp_elec_eng', college='wse')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_ksas_freshman_with_defined_major(self):
@@ -720,8 +508,7 @@ class TestGetMajorDeptCollegeData(unittest.TestCase):
             )
         }
 
-        expected = [EducationRecord(major='English', department='lit_lang_film', college='ksas'),
-                    EducationRecord(major='English', department='soar_fye_ksas', college='ksas')]
+        expected = [EducationRecord(major='English', department='lit_lang_film', college='ksas')]
         self.assertEqual(expected, get_major_dept_college_data(test_student_data, test_dept_college_data))
 
     def test_freshman_with_undefined_major(self):
@@ -813,13 +600,13 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         assert_lists_of_student_records_are_equal(self, expected,
                                                   enrich_with_dept_college_data(test_data, test_dept_college_data))
 
-    def test_enrich_with_dept_and_college_data_for_data_file(self):
+    def test_enrich_freshman_with_defined_majors_with_dept_and_college_data(self):
         test_data = [
             {
                 'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Junior',
+                'school_year': 'Freshman',
                 'email': 'astu2@jhu.edu',
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
@@ -828,8 +615,8 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
             {
                 'handshake_username': '82t349',
                 'handshake_id': '4325243',
-                'majors': ['B.A.: English'],
-                'school_year': 'Senior',
+                'majors': ['B.A.: English', 'B.S. Comp. Sci.: Computer Science'],
+                'school_year': 'Freshman',
                 'email': 'astu3@jhu.edu',
                 'first_name': 'Alice',
                 'pref_name': '',
@@ -856,232 +643,32 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
         }
 
         expected = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Computer Science',
-                'school_year': 'Junior',
-                'department': 'comp_elec_eng',
-                'college': 'wse',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Applied Math and Stats',
-                'school_year': 'Junior',
-                'department': 'misc_eng',
-                'college': 'wse',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'major': 'English',
-                'school_year': 'Senior',
-                'department': 'lit_lang_film',
-                'college': 'ksas',
-                'email': 'astu3@jhu.edu',
-                'first_name': 'Alice',
-                'pref_name': '',
-                'last_name': 'Stuewcz'
-            },
-        ]
-        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
-
-    def test_enrich_freshman_data(self):
-        test_data = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': ['Pre-Major', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Freshman'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'majors': ['B.A.: English'],
-                'school_year': 'Freshman'
-            },
-            {
-                'handshake_username': '2398ru3',
-                'handshake_id': '93938028',
-                'majors': ['M.S.: Computer Science'],
-                'school_year': 'Masters'
-            }
-        ]
-
-        test_dept_college_data = {
-            'Pre-Major': EducationRecord(
-                major='Pre-Major',
-                department='soar_fye_ksas',
-                college='ksas'
+            StudentRecord(
+                handshake_username='49gj40',
+                handshake_id='8029439',
+                email='astu2@jhu.edu',
+                first_name='Arthur',
+                pref_name='Art',
+                last_name='Student',
+                school_year='Freshman',
+                education_data=[
+                    EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
+                    EducationRecord(major='Applied Math and Stats', department='misc_eng', college='wse')
+                ],
+                additional_departments=['soar_fye_wse']
             ),
-            'B.S. AMS: Applied Math and Stats': EducationRecord(
-                major='B.S. AMS: Applied Math and Stats',
-                department='misc_eng',
-                college='wse'
-            ),
-            'B.A.: English': EducationRecord(
-                major='B.A.: English',
-                department='lit_lang_film',
-                college='ksas'
-            ),
-            'M.S.: Computer Science': EducationRecord(
-                major='M.S.: Computer Science',
-                department='eng_masters',
-                college='wse'
+            StudentRecord(
+                handshake_username='82t349',
+                handshake_id='4325243',
+                email='astu3@jhu.edu',
+                first_name='Alice',
+                last_name='Stuewcz',
+                school_year='Freshman',
+                education_data=[
+                    EducationRecord(major='English', department='lit_lang_film', college='ksas'),
+                    EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse')
+                ],
+                additional_departments=['soar_fye_wse', 'soar_fye_ksas']
             )
-        }
-
-        expected = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Pre-Major',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_ksas',
-                'college': 'ksas'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Applied Math and Stats',
-                'school_year': 'Freshman',
-                'department': 'misc_eng',
-                'college': 'wse'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Applied Math and Stats',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_wse',
-                'college': 'wse'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'major': 'English',
-                'school_year': 'Freshman',
-                'department': 'lit_lang_film',
-                'college': 'ksas'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'major': 'English',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_ksas',
-                'college': 'ksas'
-            },
-            {
-                'handshake_username': '2398ru3',
-                'handshake_id': '93938028',
-                'major': 'M.S.: Computer Science',
-                'department': 'eng_masters',
-                'college': 'wse',
-                'school_year': 'Masters'
-            }
         ]
-        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
-
-    def test_enrich_und_eng_freshman_data(self):
-        test_data = [
-            {
-                'handshake_username': '8498j3g',
-                'handshake_id': '173978344',
-                'majors': ['Und Eng'],
-                'school_year': 'Freshman'
-            },
-            {
-                'handshake_username': '3538493',
-                'handshake_id': '23920843',
-                'majors': ['Bachelors: Und Eng'],
-                'school_year': 'Freshman'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': ['B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Freshman'
-            }
-        ]
-
-        test_dept_college_data = {
-            'Und Eng': EducationRecord(
-                major='Und Eng',
-                department='soar_fye_wse',
-                college='wse'
-            ),
-            'Bachelors: Und Eng': EducationRecord(
-                major='Bachelors: Und Eng',
-                department='soar_fye_wse',
-                college='wse'
-            ),
-            'B.S. AMS: Applied Math and Stats': EducationRecord(
-                major='B.S. AMS: Applied Math and Stats',
-                department='misc_eng',
-                college='wse'
-            )
-        }
-
-        expected = [
-            {
-                'handshake_username': '8498j3g',
-                'handshake_id': '173978344',
-                'major': 'Und Eng',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_wse',
-                'college': 'wse'
-            },
-            {
-                'handshake_username': '3538493',
-                'handshake_id': '23920843',
-                'major': 'Und Eng',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_wse',
-                'college': 'wse'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Applied Math and Stats',
-                'school_year': 'Freshman',
-                'department': 'misc_eng',
-                'college': 'wse'
-            },
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'major': 'Applied Math and Stats',
-                'school_year': 'Freshman',
-                'department': 'soar_fye_wse',
-                'college': 'wse'
-            }
-        ]
-        self.assertEqual(expected, enrich_with_dept_college_data_for_data_file(test_data, test_dept_college_data))
-
-
-class TestFilterDict(unittest.TestCase):
-
-    def test_filter_dict(self):
-        test_dict = {
-            'field_a': 1,
-            'field_b': 2,
-            'field_c': 3,
-            'field_d': 4,
-            'field_e': 5
-        }
-        allowed_fields = ['field_d', 'field_a']
-        expected = {
-            'field_a': 1,
-            'field_d': 4,
-        }
-        self.assertEqual(expected, filter_dict(test_dict, allowed_fields))
+        assert_lists_of_student_records_are_equal(self, expected, enrich_with_dept_college_data(test_data, test_dept_college_data))
