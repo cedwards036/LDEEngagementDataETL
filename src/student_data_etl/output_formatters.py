@@ -1,17 +1,17 @@
 from typing import List, Union
 
+from src.common import convert_none_to_empty_str
 from src.student_data_etl.student_data_record import StudentRecord, EducationRecord
 
 
 def _prep_formatted_record_copy(student_record: StudentRecord, result_fields: List[str]) -> dict:
-    def _convert_none_to_empty_str(student_record_dict: dict) -> dict:
+    def _remove_none_from_student_record_dict(student_record_dict: dict) -> dict:
         for key in student_record_dict.keys():
-            if student_record_dict[key] is None:
-                student_record_dict[key] = ''
+            student_record_dict[key] = convert_none_to_empty_str(student_record_dict[key])
         return student_record_dict
 
     result = student_record.to_dict(result_fields)
-    return _convert_none_to_empty_str(result)
+    return _remove_none_from_student_record_dict(result)
 
 
 def format_for_roster_file(student_records: List[StudentRecord]) -> List[dict]:
@@ -64,18 +64,11 @@ def format_for_data_file(student_records: List[StudentRecord]) -> List[dict]:
 
         def __init__(self, major: str = '', department: str = '', college: str = '', sport: str = ''):
             self._data = {
-                'major': self._convert_none_to_empty_str(major),
-                'department': self._convert_none_to_empty_str(department),
-                'college': self._convert_none_to_empty_str(college),
-                'sport': self._convert_none_to_empty_str(sport)
+                'major': convert_none_to_empty_str(major),
+                'department': convert_none_to_empty_str(department),
+                'college': convert_none_to_empty_str(college),
+                'sport': convert_none_to_empty_str(sport)
             }
-
-        @staticmethod
-        def _convert_none_to_empty_str(value) -> str:
-            if value is None:
-                return ''
-            else:
-                return value
 
         @property
         def data(self) -> dict:

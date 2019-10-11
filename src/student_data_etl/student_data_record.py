@@ -1,6 +1,7 @@
 import copy
 from typing import List
 
+from src.common import convert_empty_str_to_none
 from src.data_model import Departments
 
 
@@ -57,13 +58,13 @@ class StudentRecord:
                  additional_departments: List[str] = None, sports: List[str] = None):
 
         self._data = {
-            'handshake_username': self._convert_empty_str_to_none(handshake_username),
-            'handshake_id': self._convert_empty_str_to_none(handshake_id),
-            'email': self._convert_empty_str_to_none(email),
-            'first_name': self._convert_empty_str_to_none(first_name),
-            'pref_name': self._convert_empty_str_to_none(pref_name),
-            'last_name': self._convert_empty_str_to_none(last_name),
-            'school_year': self._convert_empty_str_to_none(school_year),
+            'handshake_username': convert_empty_str_to_none(handshake_username),
+            'handshake_id': convert_empty_str_to_none(handshake_id),
+            'email': convert_empty_str_to_none(email),
+            'first_name': convert_empty_str_to_none(first_name),
+            'pref_name': convert_empty_str_to_none(pref_name),
+            'last_name': convert_empty_str_to_none(last_name),
+            'school_year': convert_empty_str_to_none(school_year),
             'education_records': [],
             'additional_departments': [],
             'is_athlete': False,
@@ -155,13 +156,6 @@ class StudentRecord:
     def _add_value_to_unique_list(value, unique_list: list):
         if value not in unique_list:
             unique_list.append(value)
-
-    @staticmethod
-    def _convert_empty_str_to_none(value: str):
-        if value == '':
-            return None
-        else:
-            return value
 
     def __eq__(self, other: 'StudentRecord'):
         return self.to_dict() == other.to_dict()

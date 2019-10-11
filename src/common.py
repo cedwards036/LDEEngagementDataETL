@@ -103,3 +103,10 @@ def convert_empty_str_to_none(value: str) -> Union[str, None]:
         return None
     else:
         return value
+
+
+def convert_none_to_empty_str(value: Union[str, None]) -> str:
+    if value == None:
+        return ''
+    else:
+        return value

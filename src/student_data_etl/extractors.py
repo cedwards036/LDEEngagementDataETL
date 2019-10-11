@@ -1,6 +1,6 @@
 from typing import List
 
-from src.common import read_csv
+from src.common import read_csv, convert_empty_str_to_none
 from src.student_data_etl.student_data_record import EducationRecord
 
 
@@ -70,18 +70,12 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     :return: a dict that allows the lookup of department and college given major
     """
 
-    def _convert_empty_str_to_none(value: str):
-        if value == '':
-            return None
-        else:
-            return value
-
     result = {}
     for row in raw_major_data:
         result[row['major']] = EducationRecord(
-            major=_convert_empty_str_to_none(row['major']),
-            department=_convert_empty_str_to_none(row['department']),
-            college=_convert_empty_str_to_none(row['college'])
+            major=convert_empty_str_to_none(row['major']),
+            department=convert_empty_str_to_none(row['department']),
+            college=convert_empty_str_to_none(row['college'])
         )
     return result
 
