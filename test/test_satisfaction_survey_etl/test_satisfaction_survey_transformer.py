@@ -1,5 +1,6 @@
 import unittest
 
+from src.data_model import EngagementTypes
 from src.satisfaction_survey_etl.survey_response import SurveyResponse
 from src.satisfaction_survey_etl.transformer import transform_survey_data
 
@@ -30,6 +31,7 @@ class TestSurveyExtractor(unittest.TestCase):
         expected = [SurveyResponse(
             nps=10,
             experience_advanced_development=True,
+            engagement_type=EngagementTypes.OFFICE_HOURS.value,
             office_hour_department='Biological and Brain Sciences',
         )]
         self.assertEqual(expected, transform_survey_data(test_data))
@@ -41,9 +43,9 @@ class TestSurveyExtractor(unittest.TestCase):
         expected = [SurveyResponse(
             nps=7,
             experience_advanced_development=False,
+            engagement_type=EngagementTypes.EVENT.value,
             event_id='306310',
         )]
-        print(transform_survey_data(test_data)[0].to_dict())
         self.assertEqual(expected, transform_survey_data(test_data))
 
     def test_transform_multiple_rows(self):
@@ -57,19 +59,20 @@ class TestSurveyExtractor(unittest.TestCase):
             SurveyResponse(
                 nps=10,
                 experience_advanced_development=True,
+                engagement_type=EngagementTypes.OFFICE_HOURS.value,
                 office_hour_department='Biological and Brain Sciences',
             ),
             SurveyResponse(
                 nps=5,
                 experience_advanced_development=False,
-                office_hour_department='Humanities: Social Sciences: Political Science, Economics, and Finance',
+                engagement_type=EngagementTypes.EVENT.value,
                 event_id='643736',
             ),
             SurveyResponse(
                 nps=7,
                 experience_advanced_development=True,
+                engagement_type=EngagementTypes.EVENT.value,
                 event_id='306310',
             )
         ]
-        print(transform_survey_data(test_data)[0].to_dict())
         self.assertEqual(expected, transform_survey_data(test_data))
