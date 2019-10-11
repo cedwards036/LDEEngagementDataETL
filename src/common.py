@@ -2,7 +2,7 @@ import csv
 import json
 import os
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from autohandshake import HandshakeSession, HandshakeBrowser, InsightsPage, FileType
 
@@ -96,3 +96,10 @@ def parse_date_string(date_str: str) -> datetime:
     :return:
     """
     return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+
+
+def convert_empty_str_to_none(value: str) -> Union[str, None]:
+    if value == '':
+        return None
+    else:
+        return value
