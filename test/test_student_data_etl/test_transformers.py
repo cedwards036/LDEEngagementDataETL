@@ -360,7 +360,7 @@ class TestGetEducationRecordsForStudent(unittest.TestCase):
 
     def test_interdisciplinary_major_alongside_other_majors(self):
         test_student_data = {
-            'majors': ['Interdisciplinary Studies', 'Math'],
+            'majors': ['B.S.: Interdisciplinary Studies', 'Math'],
             'school_year': 'Junior',
         }
         test_dept_college_data = {

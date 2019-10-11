@@ -108,7 +108,7 @@ def get_education_records_for_student(student_data: dict, dept_college_data: dic
         result = []
         for major in student_data['majors']:
             if 'interdisciplinary studies' in major.lower():
-                result.append(EducationRecord(major=major))
+                result.append(EducationRecord(major=_clean_major(major)))
             else:
                 data_row = _look_up_dept_college_data(major)
                 result.append(data_row)
