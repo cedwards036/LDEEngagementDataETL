@@ -36,6 +36,21 @@ class TestExtractorMiniTransformers(unittest.TestCase):
 
         self.assertEqual(expected, transform_major_data(test_data))
 
+    def test_transform_major_data_with_missing_values(self):
+        test_data = [
+            {
+                'major': 'English',
+                'department': '',
+                'college': ''
+            },
+        ]
+
+        expected = {
+            'English': EducationRecord(major='English'),
+        }
+
+        self.assertEqual(expected, transform_major_data(test_data))
+
     def test_transform_unique_handshake_data(self):
         test_data = [
             {

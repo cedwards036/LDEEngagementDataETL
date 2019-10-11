@@ -69,12 +69,19 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     :param raw_major_data: raw major data as read from a csv
     :return: a dict that allows the lookup of department and college given major
     """
+
+    def _convert_empty_str_to_none(value: str):
+        if value == '':
+            return None
+        else:
+            return value
+
     result = {}
     for row in raw_major_data:
         result[row['major']] = EducationRecord(
-            major=row['major'],
-            department=row['department'],
-            college=row['college']
+            major=_convert_empty_str_to_none(row['major']),
+            department=_convert_empty_str_to_none(row['department']),
+            college=_convert_empty_str_to_none(row['college'])
         )
     return result
 
