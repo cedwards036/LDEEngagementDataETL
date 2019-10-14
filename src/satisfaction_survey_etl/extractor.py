@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 from src.common import CONFIG
 
 
-def extract_survey_data() -> List[dict]:
+def extract_survey_data() -> List[List[str]]:
     SPREADSHEET_ID = CONFIG['google_sheets_spreadsheet_id']
     RANGE_NAME = CONFIG['google_sheets_range_name']
     sheet = _sheet_connection()
