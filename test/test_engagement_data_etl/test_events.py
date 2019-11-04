@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime
 
 from src.engagement_data_etl.events import transform_events_data
+from src.handshake_fields import EventFields
 
 
 class TestEventsTransformation(unittest.TestCase):
@@ -9,18 +10,18 @@ class TestEventsTransformation(unittest.TestCase):
     def test_transform_single_event_data_record(self):
         test_data = [
             {
-                "events.id": "340134",
-                "events.start_date_time": "2019-09-12 13:00:00",
-                "events.name": "Homewood: McKinsey Day Informational Chats",
-                "attendee_users_on_events.id": "2674069",
-                "attendees_on_events.registered": "Yes"
+                EventFields.ID: "340134",
+                EventFields.START_DATE_TIME: "2019-09-12 13:00:00",
+                EventFields.NAME: "Homewood: McKinsey Day Informational Chats",
+                EventFields.STUDENT_ID: "2674069",
+                EventFields.IS_PRE_REGISTERED: "Yes"
             }
         ]
 
         test_label_data = [
             {
-                "events.id": "340134",
-                "added_institution_labels_on_events.name": None
+                EventFields.ID: "340134",
+                EventFields.LABEL: None
             }
         ]
 
@@ -44,48 +45,48 @@ class TestEventsTransformation(unittest.TestCase):
     def test_transform_multiple_event_data_records(self):
         test_data = [
             {
-                "events.id": "340134",
-                "events.start_date_time": "2019-09-12 13:00:00",
-                "events.name": "Homewood: McKinsey Day Informational Chats",
-                "attendee_users_on_events.id": "2674069",
-                "attendees_on_events.registered": "Yes"
+                EventFields.ID: "340134",
+                EventFields.START_DATE_TIME: "2019-09-12 13:00:00",
+                EventFields.NAME: "Homewood: McKinsey Day Informational Chats",
+                EventFields.STUDENT_ID: "2674069",
+                EventFields.IS_PRE_REGISTERED: "Yes"
             },
             {
-                "events.id": "829853",
-                "events.start_date_time": "2019-09-01 09:30:00",
-                "events.name": "Homewood: BME Event",
-                "attendee_users_on_events.id": "2980985",
-                "attendees_on_events.registered": "No"
+                EventFields.ID: "829853",
+                EventFields.START_DATE_TIME: "2019-09-01 09:30:00",
+                EventFields.NAME: "Homewood: BME Event",
+                EventFields.STUDENT_ID: "2980985",
+                EventFields.IS_PRE_REGISTERED: "No"
             },
             {
-                "events.id": "1739573",
-                "events.start_date_time": "2019-09-05 15:00:00",
-                "events.name": "Homewood: ChemBE and SOAR SLI Co-Event",
-                "attendee_users_on_events.id": "233345",
-                "attendees_on_events.registered": "Yes"
+                EventFields.ID: "1739573",
+                EventFields.START_DATE_TIME: "2019-09-05 15:00:00",
+                EventFields.NAME: "Homewood: ChemBE and SOAR SLI Co-Event",
+                EventFields.STUDENT_ID: "233345",
+                EventFields.IS_PRE_REGISTERED: "Yes"
             },
         ]
 
         test_label_data = [
             {
-                "events.id": "340134",
-                "added_institution_labels_on_events.name": None
+                EventFields.ID: "340134",
+                EventFields.LABEL: None
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: bme dept"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: bme dept"
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: some other label"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: some other label"
             },
             {
-                "events.id": "1739573",
-                "added_institution_labels_on_events.name": "hwd: soar sli"
+                EventFields.ID: "1739573",
+                EventFields.LABEL: "hwd: soar sli"
             },
             {
-                "events.id": "1739573",
-                "added_institution_labels_on_events.name": "hwd: chembe and mat sci dept"
+                EventFields.ID: "1739573",
+                EventFields.LABEL: "hwd: chembe and mat sci dept"
             },
         ]
 
@@ -154,18 +155,18 @@ class TestEventsTransformation(unittest.TestCase):
     def test_transform_non_dept_labeled_event(self):
         test_data = [
             {
-                "events.id": "340134",
-                "events.start_date_time": "2019-09-12 13:00:00",
-                "events.name": "Homewood: McKinsey Day Informational Chats",
-                "attendee_users_on_events.id": "2674069",
-                "attendees_on_events.registered": "Yes"
+                EventFields.ID: "340134",
+                EventFields.START_DATE_TIME: "2019-09-12 13:00:00",
+                EventFields.NAME: "Homewood: McKinsey Day Informational Chats",
+                EventFields.STUDENT_ID: "2674069",
+                EventFields.IS_PRE_REGISTERED: "Yes"
             }
         ]
 
         test_label_data = [
             {
-                "events.id": "340134",
-                "added_institution_labels_on_events.name": "some other label"
+                EventFields.ID: "340134",
+                EventFields.LABEL: "some other label"
             }
         ]
 
@@ -189,38 +190,38 @@ class TestEventsTransformation(unittest.TestCase):
     def test_transform_no_dept_label_before_dept_label(self):
         test_data = [
             {
-                "events.id": "829853",
-                "events.start_date_time": "2019-09-01 09:30:00",
-                "events.name": "Homewood: BME Event",
-                "attendee_users_on_events.id": "2980985",
-                "attendees_on_events.registered": "No"
+                EventFields.ID: "829853",
+                EventFields.START_DATE_TIME: "2019-09-01 09:30:00",
+                EventFields.NAME: "Homewood: BME Event",
+                EventFields.STUDENT_ID: "2980985",
+                EventFields.IS_PRE_REGISTERED: "No"
             },
         ]
 
         test_label_data = [
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: some other label"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: some other label"
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": None
+                EventFields.ID: "829853",
+                EventFields.LABEL: None
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: bme dept"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: bme dept"
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: yet another label"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: yet another label"
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: stem & innovation academy"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: stem & innovation academy"
             },
             {
-                "events.id": "829853",
-                "added_institution_labels_on_events.name": "hwd: a third label"
+                EventFields.ID: "829853",
+                EventFields.LABEL: "hwd: a third label"
             },
         ]
 

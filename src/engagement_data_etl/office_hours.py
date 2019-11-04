@@ -4,6 +4,7 @@ from autohandshake import HandshakeBrowser
 
 from src.common import InsightsReport, parse_date_string
 from src.data_model import Departments, Department, EngagementRecord, EngagementTypes, Mediums
+from src.handshake_fields import AppointmentFields
 
 APPT_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD02QlpEZlFQbTFLcGR3dzN5Rzl2eEFNJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
@@ -36,20 +37,20 @@ def transform_office_hours_data(raw_data: List[dict]) -> List[EngagementRecord]:
 def _transform_data_row(raw_data_row: dict) -> EngagementRecord:
     return EngagementRecord(
         engagement_type=EngagementTypes.OFFICE_HOURS,
-        handshake_engagement_id=raw_data_row['appointments.id'],
-        start_date_time=parse_date_string(raw_data_row['appointments.start_date_time']),
+        handshake_engagement_id=raw_data_row[AppointmentFields.ID],
+        start_date_time=parse_date_string(raw_data_row[AppointmentFields.START_DATE_TIME]),
         medium=_get_medium(raw_data_row),
-        engagement_name=raw_data_row['appointment_type_on_appointments.name'],
+        engagement_name=raw_data_row[AppointmentFields.TYPE],
         engagement_department=_get_department_from_type(raw_data_row),
-        student_handshake_id=raw_data_row['student_on_appointments.id'],
-        student_school_year_at_time_of_engagement=raw_data_row['student_school_year_on_appointments.name'],
+        student_handshake_id=raw_data_row[AppointmentFields.STUDENT_ID],
+        student_school_year_at_time_of_engagement=raw_data_row[AppointmentFields.STUDENT_SCHOOL_YEAR],
         student_pre_registered=_student_pre_registered(raw_data_row),
-        associated_staff_email=raw_data_row['staff_member_on_appointments.email_address']
+        associated_staff_email=raw_data_row[AppointmentFields.STAFF_MEMBER_EMAIL]
     )
 
 
 def _get_medium(raw_data_row: dict) -> Mediums:
-    lower_medium_str = raw_data_row['appointment_medium_on_appointments.name'].lower()
+    lower_medium_str = raw_data_row[AppointmentFields.MEDIUM].lower()
     if 'in-person' in lower_medium_str:
         return Mediums.IN_PERSON
     elif 'virtual' in lower_medium_str or 'phone' in lower_medium_str:
@@ -57,7 +58,7 @@ def _get_medium(raw_data_row: dict) -> Mediums:
     elif 'email' in lower_medium_str:
         return Mediums.EMAIL
     else:
-        raise ValueError(f'Unknown medium: {raw_data_row["appointment_medium_on_appointments.name"]}')
+        raise ValueError(f'Unknown medium: {raw_data_row[AppointmentFields.MEDIUM]}')
 
 
 def _get_department_from_type(raw_data_row: dict) -> Department:
@@ -92,8 +93,8 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Pre-Med': Departments.PRE_PROF.value,
         'Homewood: Non-Office Hour Interaction': Departments.NO_DEPARTMENT.value
     }
-    return appt_type_to_dept_mapping[raw_data_row['appointment_type_on_appointments.name']]
+    return appt_type_to_dept_mapping[raw_data_row[AppointmentFields.TYPE]]
 
 
 def _student_pre_registered(raw_data_row: dict) -> bool:
-    return raw_data_row['appointments.walkin'] == 'No'
+    return raw_data_row[AppointmentFields.IS_DROP_IN] == 'No'

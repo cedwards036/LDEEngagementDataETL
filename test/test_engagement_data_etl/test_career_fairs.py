@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime
 
 from src.engagement_data_etl.career_fairs import transform_fair_data
+from src.handshake_fields import CareerFairFields
 
 
 class TestCareerFairTransformation(unittest.TestCase):
@@ -9,11 +10,11 @@ class TestCareerFairTransformation(unittest.TestCase):
     def test_transform_single_fair_data_record(self):
         test_data = [
             {
-                "session_career_fair_on_career_fair_session_attendees.id": "9813",
-                "career_fair_session_on_career_fair_session_attendees.start_date_time_time": "2019-09-26 11:00:00",
-                "session_career_fair_on_career_fair_session_attendees.name": "Homewood: Johns Hopkins University Fall 2019 Career Fair",
-                "user_on_career_fair_session_attendees.id": "2674562",
-                "career_fair_session_attendees.registered": "Yes"
+                CareerFairFields.ID: "9813",
+                CareerFairFields.START_DATE_TIME: "2019-09-26 11:00:00",
+                CareerFairFields.NAME: "Homewood: Johns Hopkins University Fall 2019 Career Fair",
+                CareerFairFields.STUDENT_ID: "2674562",
+                CareerFairFields.IS_PRE_REGISTERED: "Yes"
             },
         ]
 

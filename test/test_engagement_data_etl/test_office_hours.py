@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime
 
 from src.engagement_data_etl.office_hours import transform_office_hours_data
+from src.handshake_fields import AppointmentFields
 
 
 class TestOfficeHourDataTransformation(unittest.TestCase):
@@ -9,14 +10,14 @@ class TestOfficeHourDataTransformation(unittest.TestCase):
     def test_data_transformation_on_ldl_office_hour(self):
         test_data = [
             {
-                "appointments.id": "4298790",
-                "appointments.start_date_time": "2019-09-05 11:57:51",
-                "appointment_medium_on_appointments.name": "In-Person",
-                "appointment_type_on_appointments.name": "Homewood: Social Sciences: Political Science, Economics, and Finance",
-                "staff_member_on_appointments.email_address": "cbillin4@jhu.edu",
-                "student_on_appointments.id": "4218008",
-                "student_school_year_on_appointments.name": "Junior",
-                "appointments.walkin": "Yes"
+                AppointmentFields.ID: "4298790",
+                AppointmentFields.START_DATE_TIME: "2019-09-05 11:57:51",
+                AppointmentFields.MEDIUM: "In-Person",
+                AppointmentFields.TYPE: "Homewood: Social Sciences: Political Science, Economics, and Finance",
+                AppointmentFields.STAFF_MEMBER_EMAIL: "cbillin4@jhu.edu",
+                AppointmentFields.STUDENT_ID: "4218008",
+                AppointmentFields.STUDENT_SCHOOL_YEAR: "Junior",
+                AppointmentFields.IS_DROP_IN: "Yes"
             }
         ]
 
@@ -40,14 +41,14 @@ class TestOfficeHourDataTransformation(unittest.TestCase):
     def test_data_transformation_on_pre_prof(self):
         test_data = [
             {
-                'appointments.id': '4146716',
-                'appointments.start_date_time': '2019-08-19 10:00:00',
-                'appointment_medium_on_appointments.name': 'Virtual Appointment (Coach will Contact You)',
-                'appointment_type_on_appointments.name': 'Homewood: Pre-Med',
-                'staff_member_on_appointments.email_address': 'kelli.johnson@jhu.edu',
-                'student_on_appointments.id': '14140603',
-                'student_school_year_on_appointments.name': 'Alumni',
-                'appointments.walkin': 'No'
+                AppointmentFields.ID: '4146716',
+                AppointmentFields.START_DATE_TIME: '2019-08-19 10:00:00',
+                AppointmentFields.MEDIUM: 'Virtual Appointment (Coach will Contact You)',
+                AppointmentFields.TYPE: 'Homewood: Pre-Med',
+                AppointmentFields.STAFF_MEMBER_EMAIL: 'kelli.johnson@jhu.edu',
+                AppointmentFields.STUDENT_ID: '14140603',
+                AppointmentFields.STUDENT_SCHOOL_YEAR: 'Alumni',
+                AppointmentFields.IS_DROP_IN: 'No'
             }
         ]
 

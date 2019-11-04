@@ -19,15 +19,22 @@ ATHLETE_FILEPATH = f'{STUDENT_DATA_DIR}\\student_athlete_roster_2019_09_19.csv'
 
 if __name__ == '__main__':
     with BrowsingSession() as browser:
+        print('Pulling office hour data...')
         clean_appt_data = run_office_hours_etl(browser)
+        print('Pulling event data...')
         clean_event_data = run_events_etl(browser)
+        print('Pulling career fair data...')
         clean_fair_data = run_career_fair_etl(browser)
         engagement_data = clean_appt_data + clean_event_data + clean_fair_data
         write_engagement_data(CONFIG['engagement_data_filepath'], engagement_data)
 
+    print('Pulling student roster data...')
     student_data = run_data_file_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH, ATHLETE_FILEPATH)
     roster_data = run_roster_file_etl(ROSTER_FILEPATHS, HANDSHAKE_DATA_FILEPATH, MAJORS_FILEPATH, ATHLETE_FILEPATH)
+    print('Pulling satisfaction survey data...')
     survey_data = run_survey_etl(clean_event_data)
+    print('Writing output files...')
     write_to_csv(CONFIG['survey_data_filepath'], survey_data)
     write_to_csv(CONFIG['student_data_filepath'], student_data)
     write_roster_excel_file(CONFIG['student_roster_filepath'], roster_data)
+    print('Complete!')

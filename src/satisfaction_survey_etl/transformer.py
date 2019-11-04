@@ -61,7 +61,7 @@ def add_event_depts_to_survey_data(event_data: dict, survey_data: List[SurveyRes
             try:
                 response.department = event_data[response.event_id]
             except KeyError:
-                raise ValueError(f'No match found for survey event id "{response.event_id}"')
+                print(f'No match found for survey event id "{response.event_id}"')
     return survey_data
 
 
@@ -71,5 +71,5 @@ def convert_office_hour_depts_in_survey_data(survey_data: List[SurveyResponse], 
             try:
                 response.department = conversion_dict[response.office_hour_department]
             except KeyError:
-                raise ValueError(f'No match found for survey event id "{response.event_id}"')
+                print(f'No match found for survey office hour department "{response.office_hour_department}"')
     return survey_data

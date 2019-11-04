@@ -4,6 +4,7 @@ from autohandshake import HandshakeBrowser
 
 from src.common import InsightsReport, parse_date_string
 from src.data_model import EngagementRecord, EngagementTypes, Mediums, Departments, Department
+from src.handshake_fields import EventFields
 
 EVENTS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1XdnpaMTl2N2hJa0d4V0NUTlNQN1U3JmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
@@ -40,7 +41,7 @@ def transform_events_data(raw_events_data: List[dict], raw_events_labels_data: L
     result = []
     dept_data = _build_dept_lookup_dict(raw_events_labels_data)
     for raw_data_row in raw_events_data:
-        for department in dept_data[raw_data_row['events.id']]['depts']:
+        for department in dept_data[raw_data_row[EventFields.ID]]['depts']:
             result.append(_transform_data_row(raw_data_row, department))
     return result
 
@@ -51,15 +52,15 @@ def _build_dept_lookup_dict(raw_events_labels_data: List[dict]) -> dict:
         dept_data = _ensure_event_is_in_lookup_data(row, dept_data)
         department = _get_department_from_label(row)
         if department is not None:
-            dept_data[row['events.id']] = _add_valid_dept(department, dept_data[row['events.id']])
+            dept_data[row[EventFields.ID]] = _add_valid_dept(department, dept_data[row[EventFields.ID]])
         else:
-            dept_data[row['events.id']] = _add_invalid_dept(dept_data[row['events.id']])
+            dept_data[row[EventFields.ID]] = _add_invalid_dept(dept_data[row[EventFields.ID]])
     return dept_data
 
 
 def _ensure_event_is_in_lookup_data(event_data_row: dict, dept_data: dict) -> dict:
-    if event_data_row['events.id'] not in dept_data.keys():
-        dept_data[event_data_row['events.id']] = {'depts': [], 'contains_valid_dept': False}
+    if event_data_row[EventFields.ID] not in dept_data.keys():
+        dept_data[event_data_row[EventFields.ID]] = {'depts': [], 'contains_valid_dept': False}
     return dept_data
 
 
@@ -81,12 +82,12 @@ def _add_invalid_dept(dept_record: dict) -> dict:
 def _transform_data_row(raw_data_row: dict, engagement_department: Department) -> EngagementRecord:
     return EngagementRecord(
         engagement_type=EngagementTypes.EVENT,
-        handshake_engagement_id=raw_data_row['events.id'],
-        start_date_time=parse_date_string(raw_data_row['events.start_date_time']),
+        handshake_engagement_id=raw_data_row[EventFields.ID],
+        start_date_time=parse_date_string(raw_data_row[EventFields.START_DATE_TIME]),
         medium=Mediums.IN_PERSON,
-        engagement_name=raw_data_row['events.name'],
+        engagement_name=raw_data_row[EventFields.NAME],
         engagement_department=engagement_department,
-        student_handshake_id=raw_data_row['attendee_users_on_events.id'],
+        student_handshake_id=raw_data_row[EventFields.STUDENT_ID],
         student_school_year_at_time_of_engagement=None,
         student_pre_registered=_student_pre_registered(raw_data_row),
         associated_staff_email=None
@@ -94,7 +95,7 @@ def _transform_data_row(raw_data_row: dict, engagement_department: Department) -
 
 
 def _student_pre_registered(raw_data_row: dict) -> bool:
-    return raw_data_row['attendees_on_events.registered'] == 'Yes'
+    return raw_data_row[EventFields.IS_PRE_REGISTERED] == 'Yes'
 
 
 def _get_department_from_label(raw_data_row: dict):
@@ -124,6 +125,6 @@ def _get_department_from_label(raw_data_row: dict):
         'hwd: stem & innovation academy': Departments.STEM_ACADEMY.value,
     }
     try:
-        return label_to_dept_mapping[raw_data_row['added_institution_labels_on_events.name']]
+        return label_to_dept_mapping[raw_data_row[EventFields.LABEL]]
     except KeyError:
         return None
