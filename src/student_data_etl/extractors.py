@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List
 
 from src.common import read_csv, convert_empty_str_to_none
@@ -53,12 +54,16 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
         }
         return lookup_dict
 
+    def _append_major_to_lookup_entry(row, result):
+        result[row['Students Username'].upper()]['majors'].append(row['Majors Name'])
+        return result
+
     result = {}
     for row in raw_handshake_data:
         if row['Students Username'].upper() not in result:
             result = _add_new_username_to_lookup(row, result)
         else:
-            result[row['Students Username'].upper()]['majors'].append(row['Majors Name'])
+            result = _append_major_to_lookup_entry(row, result)
     return result
 
 
@@ -69,15 +74,13 @@ def transform_major_data(raw_major_data: List[dict]) -> dict:
     :param raw_major_data: raw major data as read from a csv
     :return: a dict that allows the lookup of department and college given major
     """
-
-    result = {}
-    for row in raw_major_data:
-        result[row['major']] = EducationRecord(
+    return {
+        row['major']: EducationRecord(
             major=convert_empty_str_to_none(row['major']),
             department=convert_empty_str_to_none(row['department']),
-            college=convert_empty_str_to_none(row['college'])
-        )
-    return result
+            college=convert_empty_str_to_none(row['college']))
+        for row in raw_major_data
+    }
 
 
 def transform_athlete_data(raw_athlete_data: List[dict]) -> dict:
@@ -87,11 +90,7 @@ def transform_athlete_data(raw_athlete_data: List[dict]) -> dict:
     :param raw_athlete_data: raw athlete data as read from a csv
     :return: a dict that allows the lookup of sports team given hopkins ID
     """
-    result = {}
+    result = defaultdict(list)
     for row in raw_athlete_data:
-        hopkins_id = row['University ID'].upper()
-        if hopkins_id not in result:
-            result[hopkins_id] = [row['Sport']]
-        else:
-            result[hopkins_id].append(row['Sport'])
+        result[row['University ID'].upper()].append(row['Sport'])
     return result
