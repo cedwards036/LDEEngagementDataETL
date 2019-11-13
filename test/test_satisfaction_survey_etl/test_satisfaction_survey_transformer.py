@@ -1,3 +1,5 @@
+import io
+import sys
 import unittest
 
 from src.data_model import (EngagementTypes, EngagementRecord, Departments,
@@ -196,7 +198,9 @@ class TestAddEventDeptsToSurveyData(unittest.TestCase):
 
         self.assertEqual(expected, add_event_depts_to_survey_data(test_event_data, test_survey_data))
 
-    def test_throws_error_when_no_event_match_is_found(self):
+    def test_prints_warning_when_no_event_match_is_found(self):
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
         test_event_data = {
             '643736': 'no_dept',
         }
@@ -209,9 +213,9 @@ class TestAddEventDeptsToSurveyData(unittest.TestCase):
                 event_id='306310',
             )
         ]
-
-        with self.assertRaises(ValueError):
-            add_event_depts_to_survey_data(test_event_data, test_survey_data)
+        add_event_depts_to_survey_data(test_event_data, test_survey_data)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(f'WARNING: Satisfaction survey event id "306310" does not appear in Handshake data\n', captured_output.getvalue())
 
 
 class TestConvertOfficeHourDeptsInSurveyData(unittest.TestCase):
