@@ -7,7 +7,7 @@ from src.data_model import Departments, Department, EngagementRecord, Engagement
 from src.handshake_fields import AppointmentFields
 
 APPT_INSIGHTS_REPORT = InsightsReport(
-    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD02QlpEZlFQbTFLcGR3dzN5Rzl2eEFNJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD1yT0hJV3dtbGVVOVpsTG9TeUY2UWJrJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
     date_field_category='Appointments',
     date_field_title='Start Date Date'
 )
@@ -97,9 +97,11 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: STEM and Innovation Academy': Departments.STEM_ACADEMY,
         'Homewood: Pre-Law': Departments.PRE_PROF,
         'Homewood: Pre-Health/Other Health Professions': Departments.PRE_PROF,
+        '(Archived) Homewood: Pre-Health/Other Health Professions': Departments.PRE_PROF,
         'Homewood: Pre-Health': Departments.PRE_PROF,
         'Homewood: Pre-Dental': Departments.PRE_PROF,
         'Homewood: Pre-Med': Departments.PRE_PROF,
+        '(Archived) Homewood: Pre-Med': Departments.PRE_PROF,
         'Homewood: Non-Office Hour Interaction': Departments.NO_DEPARTMENT
     }
     return appt_type_to_dept_mapping[raw_data_row[AppointmentFields.TYPE]].value
