@@ -1,7 +1,7 @@
 from typing import List
 
 from src.student_data_etl.extractors import extract_athlete_data, extract_sis_rosters, extract_handshake_data, extract_major_data
-from src.student_data_etl.output_formatters import format_for_roster_file, format_for_data_file
+from src.student_data_etl.output_formatters import format_student_records_for_roster_file, format_student_records_for_data_file
 from src.student_data_etl.transformers import enrich_with_education_records, enrich_with_athlete_status, filter_handshake_data_with_sis_roster
 
 
@@ -35,5 +35,5 @@ def _create_student_output_etl_function(formatter: callable) -> callable:
     return run_etl
 
 
-run_roster_file_etl = _create_student_output_etl_function(format_for_roster_file)
-run_data_file_etl = _create_student_output_etl_function(format_for_data_file)
+run_roster_file_etl = _create_student_output_etl_function(format_student_records_for_roster_file)
+run_data_file_etl = _create_student_output_etl_function(format_student_records_for_data_file)

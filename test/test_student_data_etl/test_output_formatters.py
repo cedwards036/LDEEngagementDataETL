@@ -1,6 +1,6 @@
 import unittest
 
-from src.student_data_etl.output_formatters import format_for_roster_file, format_for_data_file
+from src.student_data_etl.output_formatters import format_student_records_for_roster_file, format_student_records_for_data_file
 from src.student_data_etl.student_data_record import StudentRecord, EducationRecord
 
 
@@ -21,7 +21,7 @@ class TestFormatForRosterFile(unittest.TestCase):
             'majors': '',
             'colleges': ''
         }]
-        self.assertEqual(expected, format_for_roster_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_roster_file([test_record]))
 
     def test_record_with_one_complete_education_record(self):
         test_record = StudentRecord(
@@ -49,7 +49,7 @@ class TestFormatForRosterFile(unittest.TestCase):
             'majors': 'Computer Science',
             'colleges': 'wse'
         }]
-        self.assertEqual(expected, format_for_roster_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_roster_file([test_record]))
 
     def test_record_with_incomplete_education_record(self):
         test_records = [
@@ -103,7 +103,7 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'colleges': ''
             },
         ]
-        self.assertEqual(expected, format_for_roster_file(test_records))
+        self.assertEqual(expected, format_student_records_for_roster_file(test_records))
 
     def test_record_with_full_data(self):
         test_record = StudentRecord(
@@ -162,7 +162,7 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'colleges': 'wse; ksas'
             },
         ]
-        self.assertEqual(expected, format_for_roster_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_roster_file([test_record]))
 
     def test_multiple_records(self):
         test_records = [
@@ -247,7 +247,7 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'colleges': 'wse'
             },
         ]
-        self.assertEqual(expected, format_for_roster_file(test_records))
+        self.assertEqual(expected, format_student_records_for_roster_file(test_records))
 
 
 class TestFormatForDataFile(unittest.TestCase):
@@ -264,7 +264,7 @@ class TestFormatForDataFile(unittest.TestCase):
             'is_athlete': False,
             'sport': ''
         }]
-        self.assertEqual(expected, format_for_data_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_data_file([test_record]))
 
     def test_record_with_one_complete_education_record(self):
         test_record = StudentRecord(
@@ -289,7 +289,7 @@ class TestFormatForDataFile(unittest.TestCase):
             'is_athlete': False,
             'sport': ''
         }]
-        self.assertEqual(expected, format_for_data_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_data_file([test_record]))
 
     def test_full_record_with_additional_departments_and_sports(self):
         test_record = StudentRecord(
@@ -429,7 +429,7 @@ class TestFormatForDataFile(unittest.TestCase):
                 'sport': 'Lacrosse'
             },
         ]
-        self.assertEqual(expected, format_for_data_file([test_record]))
+        self.assertEqual(expected, format_student_records_for_data_file([test_record]))
 
     def test_multiple_records(self):
         test_records = [
@@ -489,7 +489,7 @@ class TestFormatForDataFile(unittest.TestCase):
             },
 
         ]
-        self.assertEqual(expected, format_for_data_file(test_records))
+        self.assertEqual(expected, format_student_records_for_data_file(test_records))
 
     def test_incomplete_records(self):
         test_records = [
@@ -535,4 +535,4 @@ class TestFormatForDataFile(unittest.TestCase):
                 'sport': ''
             }
         ]
-        self.assertEqual(expected, format_for_data_file(test_records))
+        self.assertEqual(expected, format_student_records_for_data_file(test_records))

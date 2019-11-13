@@ -5,19 +5,11 @@ from src.student_data_etl.student_data_record import StudentRecord, EducationRec
 
 
 def _prep_formatted_record_copy(student_record: StudentRecord, result_fields: List[str]) -> dict:
-    def _remove_none_from_student_record_dict(student_record_dict: dict) -> dict:
-        for key in student_record_dict.keys():
-            student_record_dict[key] = convert_none_to_empty_str(student_record_dict[key])
-        return student_record_dict
-
     result = student_record.to_dict(result_fields)
-    return _remove_none_from_student_record_dict(result)
+    return {key: convert_none_to_empty_str(value) for key, value in result.items()}
 
 
-def format_for_roster_file(student_records: List[StudentRecord]) -> List[dict]:
-    """
-    Format student records for outputting to a multi-tab LDE Roster excel file
-    """
+def format_student_records_for_roster_file(student_records: List[StudentRecord]) -> List[dict]:
     def _list_to_str(lst: List[str]):
         return '; '.join(lst)
 
@@ -41,24 +33,86 @@ def format_for_roster_file(student_records: List[StudentRecord]) -> List[dict]:
         result_record['majors'] = ''
         return result_record
 
+    def _add_department_records_to_result(result_fields: List[str], student_record: StudentRecord) -> List[dict]:
+        result = []
+        for department in student_record.departments:
+            result.append(_create_full_formatted_record(student_record, department, result_fields))
+        return result
+
+    def _create_formatted_records_from_raw_student_record(result_fields: List[str], student_record: StudentRecord) -> List[dict]:
+        if student_record.departments:
+            return _add_department_records_to_result(result_fields, student_record)
+        elif student_record.majors:
+            return [_create_full_formatted_record(student_record, None, result_fields)]
+        else:  # record has no enrichment data
+            return [_create_blank_formatted_record(student_record, result_fields)]
+
     result_fields = ['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
                      'school_year', 'is_athlete', 'sports', 'majors', 'colleges']
     result = []
     for student_record in student_records:
-        if student_record.departments:
-            for department in student_record.departments:
-                result.append(_create_full_formatted_record(student_record, department, result_fields))
-        elif student_record.majors:
-            result.append(_create_full_formatted_record(student_record, None, result_fields))
-        else:  # record has no enrichment data
-            result.append(_create_blank_formatted_record(student_record, result_fields))
+        result += _create_formatted_records_from_raw_student_record(result_fields, student_record)
     return result
 
 
-def format_for_data_file(student_records: List[StudentRecord]) -> List[dict]:
-    """
-    Format student records for outputting to a data-analysis-friendly csv
-    """
+class _DataFileRecordFormatter:
+
+    def __init__(self, student_record: StudentRecord):
+        self._student_record = student_record
+        self._result_fields = ['handshake_username', 'handshake_id', 'school_year', 'is_athlete']
+
+    def format(self) -> List[dict]:
+        if self._student_record.education_records:
+            return self._create_formatted_records_from_education_data()
+        elif self._student_record.additional_departments:
+            return self._create_formatted_records(EducationRecord())
+        else:  # record has no enrichment data
+            return [self._create_formatted_record(self.RowSpecificData())]
+
+    def _create_formatted_records_from_education_data(self):
+        result = []
+        for education_record in self._student_record.education_records:
+            result += self._create_formatted_records(education_record)
+        return result
+
+    def _create_formatted_records(self, education_record: EducationRecord) -> List[dict]:
+        result = []
+        departments = self._get_department_list(education_record)
+        for department in departments:
+            result += self._create_formatted_records_for_department(department, education_record)
+        return result
+
+    def _get_department_list(self, education_record: EducationRecord):
+        departments = self._student_record.additional_departments
+        if (education_record.department is not None) or (not departments):
+            departments.append(education_record.department)
+        return departments
+
+    def _create_formatted_records_for_department(self, department: str, education_record: EducationRecord):
+        if self._student_record.sports:
+            return self._create_formatted_records_with_sports_data(department, education_record)
+        else:
+            return self._create_formatted_records_with_no_sports_data(department, education_record)
+
+    def _create_formatted_records_with_sports_data(self, department: str, education_record: EducationRecord):
+        return [
+            self._create_formatted_record(
+                self.RowSpecificData(major=education_record.major,
+                                     department=department,
+                                     college=education_record.college,
+                                     sport=sport)
+            ) for sport in self._student_record.sports
+        ]
+
+    def _create_formatted_records_with_no_sports_data(self, department: str, education_record: EducationRecord):
+        return [self._create_formatted_record(self.RowSpecificData(major=education_record.major,
+                                                                   department=department,
+                                                                   college=education_record.college))]
+
+    def _create_formatted_record(self, row_specific_data: 'RowSpecificData') -> dict:
+        result_record = _prep_formatted_record_copy(self._student_record, self._result_fields)
+        result_record.update(row_specific_data.data)
+        return result_record
 
     class RowSpecificData:
 
@@ -74,41 +128,9 @@ def format_for_data_file(student_records: List[StudentRecord]) -> List[dict]:
         def data(self) -> dict:
             return self._data.copy()
 
-    def _create_formatted_records(student_record: StudentRecord, education_record: EducationRecord = None) -> List[dict]:
-        result = []
-        departments = student_record.additional_departments
-        if education_record is None:
-            education_record = EducationRecord()
-        else:
-            departments.append(education_record.department)
-        for department in departments:
-            if student_record.sports:
-                for sport in student_record.sports:
-                    result.append(_create_formatted_record(student_record, result_fields, RowSpecificData(major=education_record.major,
-                                                                                                          department=department,
-                                                                                                          college=education_record.college,
-                                                                                                          sport=sport)))
-            else:
-                result.append(_create_formatted_record(student_record, result_fields, RowSpecificData(major=education_record.major,
-                                                                                                      department=department,
-                                                                                                      college=education_record.college)))
-        return result
 
-    def _create_formatted_record(student_record: StudentRecord, result_fields: List[str],
-                                 row_specific_data: RowSpecificData) -> dict:
-        result_record = _prep_formatted_record_copy(student_record, result_fields)
-        result_record.update(row_specific_data.data)
-        return result_record
-
-    result_fields = ['handshake_username', 'handshake_id', 'school_year', 'is_athlete']
-
+def format_student_records_for_data_file(student_records: List[StudentRecord]) -> List[dict]:
     result = []
     for student_record in student_records:
-        if student_record.education_records:
-            for education_record in student_record.education_records:
-                result += _create_formatted_records(student_record, education_record)
-        elif student_record.additional_departments:
-            result += _create_formatted_records(student_record)
-        else:  # record has no enrichment data
-            result.append(_create_formatted_record(student_record, result_fields, RowSpecificData()))
+        result += _DataFileRecordFormatter(student_record).format()
     return result
