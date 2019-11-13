@@ -26,6 +26,7 @@ def run_survey_etl(event_data: List[EngagementRecord]) -> List[dict]:
         'SOAR: Student Leadership and Involvement': Departments.SOAR_SLI.value.name,
         'Social Sciences: International Studies, Sociology, and Anthropology': Departments.INT_SOC_ANTH.value.name,
         'Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN.value.name,
+        'Humanities: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN.value.name
     }
     responses = transform_survey_data(extract_survey_data(), event_data, dept_conversion_dict)
     return [response.to_dict() for response in responses]
