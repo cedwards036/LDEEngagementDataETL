@@ -29,7 +29,7 @@ class BrowsingSession(HandshakeSession):
 
     def __init__(self, max_wait_time=300):
         super().__init__(CONFIG['handshake_url'], CONFIG['handshake_email'],
-                         download_dir=CONFIG['download_dir'], max_wait_time=max_wait_time)
+                         download_dir=CONFIG['download_dir'], chromedriver_path=CONFIG['chromedriver_path'], max_wait_time=max_wait_time)
 
 
 class InsightsReport:
