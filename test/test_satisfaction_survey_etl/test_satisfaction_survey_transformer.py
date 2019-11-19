@@ -1,6 +1,7 @@
 import io
 import sys
 import unittest
+from typing import List
 
 from src.data_model import (EngagementTypes, EngagementRecord, Departments,
                             Mediums)
@@ -11,30 +12,31 @@ from src.satisfaction_survey_etl.transformer import (parse_raw_survey_data,
                                                      convert_office_hour_depts_in_survey_data)
 
 
+def assert_survey_data_is_equal(test_obj, expected: List[SurveyResponse], actual: List[SurveyResponse]):
+    expected_dicts = [response.to_dict() for response in expected]
+    actual_dicts = [response.to_dict() for response in actual]
+    test_obj.assertEqual(expected_dicts, actual_dicts)
+
+
 class TestSurveyTransformer(unittest.TestCase):
-    test_data = [
-        ['9/4/2019 14:40:04', '10', 'Yes', '', 'It was great!', 'Biological and Brain Sciences'],
-        ['9/4/2019 14:40:14', '10', 'Yes', '', '', 'Biological and Brain Sciences'],
-        ['9/4/2019 18:51:40', '5', 'No', 'Everything was written in the book already', '',
-         'Humanities: Social Sciences: Political Science, Economics, and Finance', '306310'],
-        ['9/4/2019 18:51:42', '10', 'Yes', '', '', '', '306310']
-    ]
 
     def test_transform_incomplete_row(self):
         test_data = [
             ['9/4/2019 14:40:04', '10', 'Yes', '', 'It was great!']
         ]
         expected = [SurveyResponse(
+            response_id="1",
             nps=10,
             experience_advanced_development=True
         )]
-        self.assertEqual(expected, parse_raw_survey_data(test_data))
+        assert_survey_data_is_equal(self, expected, parse_raw_survey_data(test_data))
 
     def test_transform_one_office_hour_row(self):
         test_data = [
             ['9/4/2019 14:40:04', '10', 'Yes', '', 'It was great!', 'Biological and Brain Sciences']
         ]
         expected = [SurveyResponse(
+            response_id="1",
             nps=10,
             experience_advanced_development=True,
             engagement_type=EngagementTypes.OFFICE_HOURS.value,
@@ -47,6 +49,7 @@ class TestSurveyTransformer(unittest.TestCase):
             ['9/4/2019 18:51:42', '7', 'No', '', '', '', '306310']
         ]
         expected = [SurveyResponse(
+            response_id="1",
             nps=7,
             experience_advanced_development=False,
             engagement_type=EngagementTypes.EVENT.value,
@@ -63,18 +66,21 @@ class TestSurveyTransformer(unittest.TestCase):
         ]
         expected = [
             SurveyResponse(
+                response_id="1",
                 nps=10,
                 experience_advanced_development=True,
                 engagement_type=EngagementTypes.OFFICE_HOURS.value,
                 office_hour_department='Biological and Brain Sciences',
             ),
             SurveyResponse(
+                response_id="2",
                 nps=5,
                 experience_advanced_development=False,
                 engagement_type=EngagementTypes.EVENT.value,
                 event_id='643736',
             ),
             SurveyResponse(
+                response_id="3",
                 nps=7,
                 experience_advanced_development=True,
                 engagement_type=EngagementTypes.EVENT.value,

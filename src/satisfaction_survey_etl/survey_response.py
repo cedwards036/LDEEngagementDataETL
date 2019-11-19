@@ -3,10 +3,11 @@ from src.common import convert_empty_str_to_none
 
 class SurveyResponse:
 
-    def __init__(self, nps: int = None, experience_advanced_development: bool = None,
+    def __init__(self, response_id: str = None, nps: int = None, experience_advanced_development: bool = None,
                  engagement_type: str = None, office_hour_department: str = None,
                  event_id: str = None, department: str = None):
         self._data = {
+            'response_id': response_id,
             'nps': nps,
             'experience_advanced_development': experience_advanced_development,
             'engagement_type': engagement_type,

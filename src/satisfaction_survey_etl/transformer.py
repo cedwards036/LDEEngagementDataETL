@@ -14,10 +14,10 @@ def transform_survey_data(raw_data: List[List[str]], event_data: List[Engagement
 
 
 def parse_raw_survey_data(raw_data: List[List[str]]) -> List[SurveyResponse]:
-    return [_parse_raw_survey_data_row(row) for row in raw_data]
+    return [_parse_raw_survey_data_row(row, row_index) for row_index, row in enumerate(raw_data)]
 
 
-def _parse_raw_survey_data_row(row: List[str]) -> SurveyResponse:
+def _parse_raw_survey_data_row(row: List[str], row_index: int) -> SurveyResponse:
     def _get_nps_from_row(row: List[str]):
         return int(row[1])
 
@@ -43,6 +43,7 @@ def _parse_raw_survey_data_row(row: List[str]) -> SurveyResponse:
             return None
 
     return SurveyResponse(
+        response_id=str(row_index + 1),
         nps=_get_nps_from_row(row),
         experience_advanced_development=_get_development_answer_from_row(row),
         engagement_type=_get_engagement_type_from_row(row),
