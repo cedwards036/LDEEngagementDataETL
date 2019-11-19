@@ -61,7 +61,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'Students Email': 'astu2@jhu.edu',
                 'Students First Name': 'Arthur',
                 'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student'
+                'Students Last Name': 'Student',
+                'Institution Labels Name List': ''
             },
             {
                 'Students ID': '4325243',
@@ -71,7 +72,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'Students Email': 'bstu2@jhu.edu',
                 'Students First Name': 'Benjamin',
                 'Students Preferred Name': '',
-                'Students Last Name': 'Stuart'
+                'Students Last Name': 'Stuart',
+                'Institution Labels Name List': ''
             }
         ]
 
@@ -83,7 +85,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'email': 'astu2@jhu.edu',
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
-                'last_name': 'Student'
+                'last_name': 'Student',
+                'is_pre_med': False
             },
             '82T349': {
                 'handshake_id': '4325243',
@@ -92,7 +95,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'email': 'bstu2@jhu.edu',
                 'first_name': 'Benjamin',
                 'pref_name': '',
-                'last_name': 'Stuart'
+                'last_name': 'Stuart',
+                'is_pre_med': False
             }
         }
 
@@ -108,7 +112,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'Students Email': 'astu2@jhu.edu',
                 'Students First Name': 'Arthur',
                 'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student'
+                'Students Last Name': 'Student',
+                'Institution Labels Name List': ''
             },
             {
                 'Students ID': '8029439',
@@ -118,7 +123,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'Students Email': 'astu2@jhu.edu',
                 'Students First Name': 'Arthur',
                 'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student'
+                'Students Last Name': 'Student',
+                'Institution Labels Name List': ''
             },
         ]
 
@@ -130,7 +136,38 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'email': 'astu2@jhu.edu',
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
-                'last_name': 'Student'
+                'last_name': 'Student',
+                'is_pre_med': False
+            },
+        }
+
+        self.assertEqual(expected, transform_handshake_data(test_data))
+
+    def test_transform_pre_med_handshake_data(self):
+        test_data = [
+            {
+                'Students ID': '8029439',
+                'Students Username': '49gj40',
+                'Majors Name': 'B.S. Comp. Sci.: Computer Science',
+                'School Year Name': 'Junior',
+                'Students Email': 'astu2@jhu.edu',
+                'Students First Name': 'Arthur',
+                'Students Preferred Name': 'Art',
+                'Students Last Name': 'Student',
+                'Institution Labels Name List': 'system gen: hwd, hwd: pre-health, ferpa'
+            }
+        ]
+
+        expected = {
+            '49GJ40': {
+                'handshake_id': '8029439',
+                'majors': ['B.S. Comp. Sci.: Computer Science'],
+                'school_year': 'Junior',
+                'email': 'astu2@jhu.edu',
+                'first_name': 'Arthur',
+                'pref_name': 'Art',
+                'last_name': 'Student',
+                'is_pre_med': True
             },
         }
 

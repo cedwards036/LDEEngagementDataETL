@@ -64,7 +64,8 @@ def enrich_with_education_records(student_data: List[dict], education_data: dict
             first_name=student_row['first_name'],
             pref_name=student_row['pref_name'],
             last_name=student_row['last_name'],
-            school_year=student_row['school_year']
+            school_year=student_row['school_year'],
+            is_pre_med=student_row['is_pre_med']
         )
         for education_record in get_education_records_for_student(student_row, education_data):
             student_record.add_education_record(education_record)

@@ -48,7 +48,8 @@ def format_student_records_for_roster_file(student_records: List[StudentRecord])
             return [_create_blank_formatted_record(student_record, result_fields)]
 
     result_fields = ['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-                     'school_year', 'is_athlete', 'sports', 'majors', 'colleges']
+                     'school_year', 'is_athlete', 'sports', 'majors', 'colleges',
+                     'is_pre_med']
     result = []
     for student_record in student_records:
         result += _create_formatted_records_from_raw_student_record(result_fields, student_record)
@@ -59,7 +60,7 @@ class _DataFileRecordFormatter:
 
     def __init__(self, student_record: StudentRecord):
         self._student_record = student_record
-        self._result_fields = ['handshake_username', 'handshake_id', 'school_year', 'is_athlete']
+        self._result_fields = ['handshake_username', 'handshake_id', 'school_year', 'is_pre_med', 'is_athlete']
 
     def format(self) -> List[dict]:
         if self._student_record.education_records:

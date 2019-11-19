@@ -50,7 +50,8 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
             'email': row['Students Email'],
             'first_name': row['Students First Name'],
             'pref_name': row['Students Preferred Name'],
-            'last_name': row['Students Last Name']
+            'last_name': row['Students Last Name'],
+            'is_pre_med': 'hwd: pre-health' in row['Institution Labels Name List']
         }
         return lookup_dict
 

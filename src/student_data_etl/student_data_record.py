@@ -55,7 +55,8 @@ class StudentRecord:
                  email: str = None, first_name: str = None, pref_name: str = None,
                  last_name: str = None, school_year: str = None,
                  education_data: List[EducationRecord] = None,
-                 additional_departments: List[str] = None, sports: List[str] = None):
+                 additional_departments: List[str] = None, sports: List[str] = None,
+                 is_pre_med: bool = False):
 
         self._data = {
             'handshake_username': convert_empty_str_to_none(handshake_username),
@@ -68,6 +69,7 @@ class StudentRecord:
             'education_records': [],
             'additional_departments': [],
             'is_athlete': False,
+            'is_pre_med': is_pre_med,
             'sports': [],
             'majors': [],
             'colleges': [],
@@ -114,6 +116,10 @@ class StudentRecord:
     @property
     def is_athlete(self) -> bool:
         return self._data['is_athlete']
+
+    @property
+    def is_pre_med(self) -> bool:
+        return self._data['is_pre_med']
 
     @property
     def sports(self) -> List[str]:

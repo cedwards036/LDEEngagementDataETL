@@ -26,7 +26,11 @@ def write_to_csv(filepath: str, data: List[dict]):
 def write_roster_excel_file(filepath: str, data: List[dict]):
     """Write student roster data to a multi-sheet excel file"""
 
-    def _adjust_column_widths(df, worksheet):
+    def _set_column_order(df: pd.DataFrame) -> pd.DataFrame:
+        return df[['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
+                   'department', 'colleges', 'majors', 'school_year', 'is_pre_med', 'is_athlete', 'sports']]
+
+    def _adjust_column_widths(df: pd.DataFrame, worksheet):
         """Thanks to https://stackoverflow.com/a/40535454"""
         for idx, col in enumerate(df):  # loop through all columns
             series = df[col]
@@ -48,8 +52,7 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
         _adjust_column_widths(dept_roster, worksheet)
 
     df = pd.DataFrame(data)
-    df = df[['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-             'department', 'colleges', 'majors', 'school_year', 'is_athlete', 'sports']]
+    df = _set_column_order(df)
 
     departments = sorted(df['department'].unique())
     with ExcelWriter(filepath) as writer:
