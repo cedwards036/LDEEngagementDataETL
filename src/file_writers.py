@@ -28,7 +28,8 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
 
     def _set_column_order(df: pd.DataFrame) -> pd.DataFrame:
         return df[['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-                   'department', 'colleges', 'majors', 'school_year', 'is_pre_med', 'is_athlete', 'sports']]
+                   'department', 'colleges', 'majors', 'school_year', 'is_pre_med',
+                   'has_activated_handshake', 'has_completed_profile', 'is_athlete', 'sports']]
 
     def _adjust_column_widths(df: pd.DataFrame, worksheet):
         """Thanks to https://stackoverflow.com/a/40535454"""

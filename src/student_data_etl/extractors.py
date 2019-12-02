@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import List
 
 from src.common import read_csv, convert_empty_str_to_none
+from src.handshake_fields import StudentFields
 from src.student_data_etl.student_data_record import EducationRecord
 
 
@@ -43,25 +44,27 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
     """
 
     def _add_new_username_to_lookup(row: dict, lookup_dict: dict) -> dict:
-        lookup_dict[row['Students Username'].upper()] = {
-            'handshake_id': row['Students ID'],
-            'majors': [row['Majors Name']],
-            'school_year': row['School Year Name'],
-            'email': row['Students Email'],
-            'first_name': row['Students First Name'],
-            'pref_name': row['Students Preferred Name'],
-            'last_name': row['Students Last Name'],
-            'is_pre_med': 'hwd: pre-health' in row['Institution Labels Name List']
+        lookup_dict[row[StudentFields.USERNAME].upper()] = {
+            'handshake_id': row[StudentFields.ID],
+            'majors': [row[StudentFields.MAJOR]],
+            'school_year': row[StudentFields.SCHOOL_YEAR],
+            'email': row[StudentFields.EMAIL],
+            'first_name': row[StudentFields.FIRST_NAME],
+            'pref_name': row[StudentFields.PREF_NAME],
+            'last_name': row[StudentFields.LAST_NAME],
+            'has_activated_handshake': row[StudentFields.HAS_LOGGED_IN] == 'Yes',
+            'has_completed_profile': row[StudentFields.HAS_COMPLETED_PROFILE] == 'Yes',
+            'is_pre_med': 'hwd: pre-health' in row[StudentFields.LABELS]
         }
         return lookup_dict
 
     def _append_major_to_lookup_entry(row, result):
-        result[row['Students Username'].upper()]['majors'].append(row['Majors Name'])
+        result[row[StudentFields.USERNAME].upper()]['majors'].append(row[StudentFields.MAJOR])
         return result
 
     result = {}
     for row in raw_handshake_data:
-        if row['Students Username'].upper() not in result:
+        if row[StudentFields.USERNAME].upper() not in result:
             result = _add_new_username_to_lookup(row, result)
         else:
             result = _append_major_to_lookup_entry(row, result)

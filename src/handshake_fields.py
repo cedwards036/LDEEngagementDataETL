@@ -30,3 +30,17 @@ class CareerFairFields:
     NAME = 'Career Fair Name'
     STUDENT_ID = 'Student Attendees ID'
     IS_PRE_REGISTERED = 'Career Fair Session Attendees Pre-Registered? (Yes / No)'
+
+
+class StudentFields:
+    ID = 'Students ID'
+    EMAIL = 'Students Email'
+    USERNAME = 'Students Username'
+    FIRST_NAME = 'Students First Name'
+    PREF_NAME = 'Students Preferred Name'
+    LAST_NAME = 'Students Last Name'
+    MAJOR = 'Majors Name'
+    SCHOOL_YEAR = 'School Year Name'
+    HAS_LOGGED_IN = 'Students Has Logged In? (Yes / No)'
+    HAS_COMPLETED_PROFILE = 'Profile Completion Profile Completed? (Yes / No)'
+    LABELS = 'Institution Labels Name List'

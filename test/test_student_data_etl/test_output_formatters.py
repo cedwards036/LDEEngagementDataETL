@@ -18,6 +18,8 @@ class TestFormatForRosterFile(unittest.TestCase):
             'department': '',
             'is_athlete': False,
             'is_pre_med': False,
+            'has_activated_handshake': False,
+            'has_completed_profile': False,
             'sports': '',
             'majors': '',
             'colleges': ''
@@ -34,6 +36,8 @@ class TestFormatForRosterFile(unittest.TestCase):
             last_name='Stuart',
             school_year='Sophomore',
             is_pre_med=True,
+            has_activated_handshake=False,
+            has_completed_profile=False,
             education_data=[
                 EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
             ]
@@ -48,6 +52,8 @@ class TestFormatForRosterFile(unittest.TestCase):
             'department': 'comp_elec_eng',
             'is_athlete': False,
             'is_pre_med': True,
+            'has_activated_handshake': False,
+            'has_completed_profile': False,
             'sports': '',
             'majors': 'Computer Science',
             'colleges': 'wse'
@@ -65,6 +71,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 last_name='Stuart',
                 school_year='Sophomore',
                 is_pre_med=False,
+                has_activated_handshake=True,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Und A&S', department=None, college='ksas'),
                 ]
@@ -77,6 +85,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 last_name='Smith',
                 school_year='Masters',
                 is_pre_med=False,
+                has_activated_handshake=True,
+                has_completed_profile=True,
                 sports=['Ice Hockey']
             )
         ]
@@ -91,6 +101,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': '',
                 'is_athlete': False,
                 'is_pre_med': False,
+                'has_activated_handshake': True,
+                'has_completed_profile': False,
                 'sports': '',
                 'majors': 'Und A&S',
                 'colleges': 'ksas'
@@ -105,6 +117,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'soar_athletics',
                 'is_athlete': True,
                 'is_pre_med': False,
+                'has_activated_handshake': True,
+                'has_completed_profile': True,
                 'sports': 'Ice Hockey',
                 'majors': '',
                 'colleges': ''
@@ -122,6 +136,8 @@ class TestFormatForRosterFile(unittest.TestCase):
             last_name='Stuart',
             school_year='Sophomore',
             is_pre_med=True,
+            has_activated_handshake=False,
+            has_completed_profile=False,
             education_data=[
                 EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
@@ -140,6 +156,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'comp_elec_eng',
                 'is_athlete': True,
                 'is_pre_med': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -154,6 +172,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'lit_lang_film',
                 'is_athlete': True,
                 'is_pre_med': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -168,6 +188,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'soar_athletics',
                 'is_athlete': True,
                 'is_pre_med': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -186,6 +208,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 last_name='Stuart',
                 school_year='Sophomore',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                     EducationRecord(major='English', department='lit_lang_film', college='ksas'),
@@ -201,6 +225,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 last_name='Smith',
                 school_year='Masters',
                 is_pre_med=True,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='M.S.E.: Data Science', department='ams_fm_data_science', college='wse'),
                 ]
@@ -217,6 +243,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'comp_elec_eng',
                 'is_athlete': True,
                 'is_pre_med': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -231,6 +259,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'lit_lang_film',
                 'is_athlete': True,
                 'is_pre_med': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -245,6 +275,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'soar_athletics',
                 'is_athlete': True,
                 'is_pre_med': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': 'Soccer; Lacrosse',
                 'majors': 'Computer Science; English; Electrical Eng',
                 'colleges': 'wse; ksas'
@@ -259,6 +291,8 @@ class TestFormatForRosterFile(unittest.TestCase):
                 'department': 'ams_fm_data_science',
                 'is_athlete': False,
                 'is_pre_med': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sports': '',
                 'majors': 'M.S.E.: Data Science',
                 'colleges': 'wse'
@@ -280,6 +314,8 @@ class TestFormatForDataFile(unittest.TestCase):
             'college': '',
             'is_athlete': False,
             'is_pre_med': False,
+            'has_activated_handshake': False,
+            'has_completed_profile': False,
             'sport': ''
         }]
         self.assertEqual(expected, format_student_records_for_data_file([test_record]))
@@ -294,6 +330,8 @@ class TestFormatForDataFile(unittest.TestCase):
             last_name='Stuart',
             school_year='Sophomore',
             is_pre_med=True,
+            has_activated_handshake=False,
+            has_completed_profile=False,
             education_data=[
                 EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
             ]
@@ -307,6 +345,8 @@ class TestFormatForDataFile(unittest.TestCase):
             'college': 'wse',
             'is_pre_med': True,
             'is_athlete': False,
+            'has_activated_handshake': False,
+            'has_completed_profile': False,
             'sport': ''
         }]
         self.assertEqual(expected, format_student_records_for_data_file([test_record]))
@@ -321,6 +361,8 @@ class TestFormatForDataFile(unittest.TestCase):
             last_name='Stuart',
             school_year='Freshman',
             is_pre_med=True,
+            has_activated_handshake=False,
+            has_completed_profile=False,
             education_data=[
                 EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                 EducationRecord(major='English', department='lit_lang_film', college='ksas')
@@ -338,6 +380,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -349,6 +393,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
             {
@@ -360,6 +406,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -371,6 +419,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
             {
@@ -382,6 +432,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -393,6 +445,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
             {
@@ -404,6 +458,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -415,6 +471,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
             {
@@ -426,6 +484,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -437,6 +497,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
             {
@@ -448,6 +510,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Soccer'
             },
             {
@@ -459,6 +523,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'ksas',
                 'is_pre_med': True,
                 'is_athlete': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': 'Lacrosse'
             },
         ]
@@ -475,6 +541,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 last_name='Stuart',
                 school_year='Sophomore',
                 is_pre_med=True,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Biomedical Engineering', department='bme', college='wse'),
                 ]
@@ -485,6 +553,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 email='bsmit15@jhu.edu',
                 school_year='Senior',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                     EducationRecord(major='Electrical Engineering', department='comp_elec_eng', college='wse')
@@ -501,6 +571,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': True,
                 'is_athlete': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': ''
             },
             {
@@ -512,6 +584,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': False,
                 'is_athlete': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': ''
             },
             {
@@ -523,6 +597,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': False,
                 'is_athlete': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': ''
             },
 
@@ -540,6 +616,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 last_name='Stuart',
                 school_year='Sophomore',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Biomedical Engineering', department=None, college='wse'),
                 ]
@@ -550,6 +628,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 email='bsmit15@jhu.edu',
                 school_year='Senior',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 additional_departments=['soar_fye_wse']
             )
         ]
@@ -563,6 +643,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': 'wse',
                 'is_pre_med': False,
                 'is_athlete': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': ''
             },
             {
@@ -574,6 +656,8 @@ class TestFormatForDataFile(unittest.TestCase):
                 'college': '',
                 'is_pre_med': False,
                 'is_athlete': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'sport': ''
             }
         ]

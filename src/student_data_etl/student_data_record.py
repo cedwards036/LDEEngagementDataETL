@@ -56,7 +56,8 @@ class StudentRecord:
                  last_name: str = None, school_year: str = None,
                  education_data: List[EducationRecord] = None,
                  additional_departments: List[str] = None, sports: List[str] = None,
-                 is_pre_med: bool = False):
+                 is_pre_med: bool = False, has_activated_handshake: bool = False,
+                 has_completed_profile: bool = False):
 
         self._data = {
             'handshake_username': convert_empty_str_to_none(handshake_username),
@@ -70,6 +71,8 @@ class StudentRecord:
             'additional_departments': [],
             'is_athlete': False,
             'is_pre_med': is_pre_med,
+            'has_activated_handshake': has_activated_handshake,
+            'has_completed_profile': has_completed_profile,
             'sports': [],
             'majors': [],
             'colleges': [],

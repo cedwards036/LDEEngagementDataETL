@@ -197,7 +197,9 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
                 'last_name': 'Student',
-                'is_pre_med': True
+                'is_pre_med': True,
+                'has_activated_handshake': True,
+                'has_completed_profile': True
             },
             {
                 'handshake_username': '82t349',
@@ -208,7 +210,9 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'first_name': 'Alice',
                 'pref_name': '',
                 'last_name': 'Stuewcz',
-                'is_pre_med': False
+                'is_pre_med': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False
             },
         ]
 
@@ -240,6 +244,8 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 last_name='Student',
                 school_year='Junior',
                 is_pre_med=True,
+                has_activated_handshake=True,
+                has_completed_profile=True,
                 education_data=[
                     EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                     EducationRecord(major='Applied Math and Stats', department='misc_eng', college='wse')
@@ -253,6 +259,8 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 last_name='Stuewcz',
                 school_year='Senior',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='English', department='lit_lang_film', college='ksas')
                 ]
@@ -272,7 +280,9 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
                 'last_name': 'Student',
-                'is_pre_med': False
+                'is_pre_med': False,
+                'has_activated_handshake': False,
+                'has_completed_profile': False
             },
             {
                 'handshake_username': '82t349',
@@ -283,7 +293,9 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 'first_name': 'Alice',
                 'pref_name': '',
                 'last_name': 'Stuewcz',
-                'is_pre_med': True
+                'is_pre_med': True,
+                'has_activated_handshake': False,
+                'has_completed_profile': False
             },
         ]
 
@@ -315,6 +327,8 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 last_name='Student',
                 school_year='Freshman',
                 is_pre_med=False,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse'),
                     EducationRecord(major='Applied Math and Stats', department='misc_eng', college='wse')
@@ -329,6 +343,8 @@ class TestDeptCollegeEnrichment(unittest.TestCase):
                 last_name='Stuewcz',
                 school_year='Freshman',
                 is_pre_med=True,
+                has_activated_handshake=False,
+                has_completed_profile=False,
                 education_data=[
                     EducationRecord(major='English', department='lit_lang_film', college='ksas'),
                     EducationRecord(major='Computer Science', department='comp_elec_eng', college='wse')

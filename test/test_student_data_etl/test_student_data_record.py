@@ -159,6 +159,8 @@ class TestToDict(unittest.TestCase):
             last_name='Student',
             school_year='Sophomore',
             is_pre_med=True,
+            has_activated_handshake=True,
+            has_completed_profile=False,
             education_data=[
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
                 EducationRecord(major='Data Science', department='misc_eng', college='wse')
@@ -176,6 +178,8 @@ class TestToDict(unittest.TestCase):
             'last_name': 'Student',
             'school_year': 'Sophomore',
             'is_pre_med': True,
+            'has_activated_handshake': True,
+            'has_completed_profile': False,
             'education_records': [
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
                 EducationRecord(major='Data Science', department='misc_eng', college='wse')

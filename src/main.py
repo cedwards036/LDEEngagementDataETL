@@ -6,14 +6,14 @@ from src.file_writers import write_engagement_data, write_to_csv, write_roster_e
 from src.satisfaction_survey_etl.etl_processes import run_survey_etl
 from src.student_data_etl.etl_processes import run_data_file_etl, run_roster_file_etl
 
-# handshake data url: https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vc3R1ZGVudHM_cWlkPWFTRm1TNjcwVkp5SUU4Nkk4RWNHOXMmZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls
+# handshake data url: https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vc3R1ZGVudHM_cWlkPXU1WUV1U0JCaERQUXFzU01TZWN1NDQmZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls
 
 STUDENT_DATA_DIR = 'S:\\Reporting & Data\\Life Design Educator Engagement\\StudentData'
 ROSTER_FILEPATHS = [
     f'{STUDENT_DATA_DIR}\\sis_undergrads_2019_09_20.csv',
     f'{STUDENT_DATA_DIR}\\sis_graduate_students_2019_10_02.csv',
 ]
-HANDSHAKE_DATA_FILEPATH = f'{STUDENT_DATA_DIR}\\handshake_hwd_students_2019_11_19.csv'
+HANDSHAKE_DATA_FILEPATH = f'{STUDENT_DATA_DIR}\\handshake_hwd_students_2019_12_02.csv'
 MAJORS_FILEPATH = f'{STUDENT_DATA_DIR}\\all_majors.csv'
 ATHLETE_FILEPATH = f'{STUDENT_DATA_DIR}\\student_athlete_roster_2019_09_19.csv'
 

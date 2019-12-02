@@ -1,5 +1,6 @@
 import unittest
 
+from src.handshake_fields import StudentFields
 from src.student_data_etl.extractors import (transform_athlete_data, transform_major_data,
                                              transform_handshake_data, transform_roster_data)
 from src.student_data_etl.student_data_record import EducationRecord
@@ -54,26 +55,30 @@ class TestExtractorMiniTransformers(unittest.TestCase):
     def test_transform_unique_handshake_data(self):
         test_data = [
             {
-                'Students ID': '8029439',
-                'Students Username': '49gj40',
-                'Majors Name': 'B.S. Comp. Sci.: Computer Science',
-                'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu',
-                'Students First Name': 'Arthur',
-                'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student',
-                'Institution Labels Name List': ''
+                StudentFields.ID: '8029439',
+                StudentFields.USERNAME: '49gj40',
+                StudentFields.MAJOR: 'B.S. Comp. Sci.: Computer Science',
+                StudentFields.SCHOOL_YEAR: 'Junior',
+                StudentFields.EMAIL: 'astu2@jhu.edu',
+                StudentFields.FIRST_NAME: 'Arthur',
+                StudentFields.PREF_NAME: 'Art',
+                StudentFields.LAST_NAME: 'Student',
+                StudentFields.HAS_LOGGED_IN: 'Yes',
+                StudentFields.HAS_COMPLETED_PROFILE: 'No',
+                StudentFields.LABELS: ''
             },
             {
-                'Students ID': '4325243',
-                'Students Username': '82t349',
-                'Majors Name': 'B.A.: English',
-                'School Year Name': 'Senior',
-                'Students Email': 'bstu2@jhu.edu',
-                'Students First Name': 'Benjamin',
-                'Students Preferred Name': '',
-                'Students Last Name': 'Stuart',
-                'Institution Labels Name List': ''
+                StudentFields.ID: '4325243',
+                StudentFields.USERNAME: '82t349',
+                StudentFields.MAJOR: 'B.A.: English',
+                StudentFields.SCHOOL_YEAR: 'Senior',
+                StudentFields.EMAIL: 'bstu2@jhu.edu',
+                StudentFields.FIRST_NAME: 'Benjamin',
+                StudentFields.PREF_NAME: '',
+                StudentFields.LAST_NAME: 'Stuart',
+                StudentFields.HAS_LOGGED_IN: 'No',
+                StudentFields.HAS_COMPLETED_PROFILE: 'No',
+                StudentFields.LABELS: ''
             }
         ]
 
@@ -86,6 +91,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
                 'last_name': 'Student',
+                'has_activated_handshake': True,
+                'has_completed_profile': False,
                 'is_pre_med': False
             },
             '82T349': {
@@ -96,6 +103,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'first_name': 'Benjamin',
                 'pref_name': '',
                 'last_name': 'Stuart',
+                'has_activated_handshake': False,
+                'has_completed_profile': False,
                 'is_pre_med': False
             }
         }
@@ -105,26 +114,30 @@ class TestExtractorMiniTransformers(unittest.TestCase):
     def test_transform_duplicate_handshake_data(self):
         test_data = [
             {
-                'Students ID': '8029439',
-                'Students Username': '49gj40',
-                'Majors Name': 'B.S. Comp. Sci.: Computer Science',
-                'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu',
-                'Students First Name': 'Arthur',
-                'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student',
-                'Institution Labels Name List': ''
+                StudentFields.ID: '8029439',
+                StudentFields.USERNAME: '49gj40',
+                StudentFields.MAJOR: 'B.S. Comp. Sci.: Computer Science',
+                StudentFields.SCHOOL_YEAR: 'Junior',
+                StudentFields.EMAIL: 'astu2@jhu.edu',
+                StudentFields.FIRST_NAME: 'Arthur',
+                StudentFields.PREF_NAME: 'Art',
+                StudentFields.LAST_NAME: 'Student',
+                StudentFields.HAS_LOGGED_IN: 'Yes',
+                StudentFields.HAS_COMPLETED_PROFILE: 'Yes',
+                StudentFields.LABELS: ''
             },
             {
-                'Students ID': '8029439',
-                'Students Username': '49gj40',
-                'Majors Name': 'B.S. AMS: Applied Math and Stats',
-                'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu',
-                'Students First Name': 'Arthur',
-                'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student',
-                'Institution Labels Name List': ''
+                StudentFields.ID: '8029439',
+                StudentFields.USERNAME: '49gj40',
+                StudentFields.MAJOR: 'B.S. AMS: Applied Math and Stats',
+                StudentFields.SCHOOL_YEAR: 'Junior',
+                StudentFields.EMAIL: 'astu2@jhu.edu',
+                StudentFields.FIRST_NAME: 'Arthur',
+                StudentFields.PREF_NAME: 'Art',
+                StudentFields.LAST_NAME: 'Student',
+                StudentFields.HAS_LOGGED_IN: 'Yes',
+                StudentFields.HAS_COMPLETED_PROFILE: 'Yes',
+                StudentFields.LABELS: ''
             },
         ]
 
@@ -137,6 +150,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
                 'last_name': 'Student',
+                'has_activated_handshake': True,
+                'has_completed_profile': True,
                 'is_pre_med': False
             },
         }
@@ -146,15 +161,17 @@ class TestExtractorMiniTransformers(unittest.TestCase):
     def test_transform_pre_med_handshake_data(self):
         test_data = [
             {
-                'Students ID': '8029439',
-                'Students Username': '49gj40',
-                'Majors Name': 'B.S. Comp. Sci.: Computer Science',
-                'School Year Name': 'Junior',
-                'Students Email': 'astu2@jhu.edu',
-                'Students First Name': 'Arthur',
-                'Students Preferred Name': 'Art',
-                'Students Last Name': 'Student',
-                'Institution Labels Name List': 'system gen: hwd, hwd: pre-health, ferpa'
+                StudentFields.ID: '8029439',
+                StudentFields.USERNAME: '49gj40',
+                StudentFields.MAJOR: 'B.S. Comp. Sci.: Computer Science',
+                StudentFields.SCHOOL_YEAR: 'Junior',
+                StudentFields.EMAIL: 'astu2@jhu.edu',
+                StudentFields.FIRST_NAME: 'Arthur',
+                StudentFields.PREF_NAME: 'Art',
+                StudentFields.LAST_NAME: 'Student',
+                StudentFields.HAS_LOGGED_IN: 'Yes',
+                StudentFields.HAS_COMPLETED_PROFILE: 'No',
+                StudentFields.LABELS: 'system gen: hwd, hwd: pre-health, ferpa'
             }
         ]
 
@@ -167,6 +184,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'first_name': 'Arthur',
                 'pref_name': 'Art',
                 'last_name': 'Student',
+                'has_activated_handshake': True,
+                'has_completed_profile': False,
                 'is_pre_med': True
             },
         }
