@@ -85,7 +85,7 @@ def _transform_data_row(raw_data_row: dict, engagement_department: Department) -
         handshake_engagement_id=raw_data_row[EventFields.ID],
         start_date_time=parse_date_string(raw_data_row[EventFields.START_DATE_TIME]),
         medium=Mediums.IN_PERSON,
-        engagement_name=raw_data_row[EventFields.NAME],
+        engagement_name=f'{raw_data_row[EventFields.NAME]} ({raw_data_row[EventFields.START_DATE_TIME]})',
         engagement_department=engagement_department,
         student_handshake_id=raw_data_row[EventFields.STUDENT_ID],
         student_school_year_at_time_of_engagement=None,
