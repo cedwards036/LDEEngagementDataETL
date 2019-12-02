@@ -32,6 +32,14 @@ class CareerFairFields:
     IS_PRE_REGISTERED = 'Career Fair Session Attendees Pre-Registered? (Yes / No)'
 
 
+class InterviewFields:
+    ID = 'Interview Schedules ID'
+    DATE_TIME = 'Interview Schedule Checkins Checked In At Time'
+    EMPLOYER = 'Employer Name'
+    STUDENT_ID = 'Students (Checked In) ID'
+    DATE_LIST = 'Interview Schedule Dates Date List'
+
+
 class StudentFields:
     ID = 'Students ID'
     EMAIL = 'Students Email'

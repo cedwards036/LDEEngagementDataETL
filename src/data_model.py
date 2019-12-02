@@ -65,6 +65,7 @@ class EngagementTypes(Enum):
     OFFICE_HOURS = 'office_hours'
     EVENT = 'event'
     CAREER_FAIR = 'career_fair'
+    INTERVIEW = 'interview'
 
 
 class Mediums(Enum):
