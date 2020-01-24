@@ -56,9 +56,9 @@ class RangeInsightsDateField(InsightsDateField):
     def _first_date_of_current_academic_year():
         JULY = 7
         if datetime.today().month < JULY:
-            return datetime(datetime.today().year, JULY, 1)
+            return datetime(datetime.today().year - 1, JULY, 1)
         else:
-            return datetime(datetime.today().year + 1, JULY, 1)
+            return datetime(datetime.today().year, JULY, 1)
 
 
 class NoInsightsDateField(InsightsDateField):
