@@ -2,14 +2,14 @@ from typing import List
 
 from autohandshake import HandshakeBrowser
 
-from src.common import InsightsReport, parse_date_string
+from src.common import InsightsReport, parse_date_string, RangeInsightsDateField
 from src.data_model import Departments, Department, EngagementRecord, EngagementTypes, Mediums
 from src.handshake_fields import AppointmentFields
 
 APPT_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD1yT0hJV3dtbGVVOVpsTG9TeUY2UWJrJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
-    date_field_category='Appointments',
-    date_field_title='Start Date Date'
+    date_field=RangeInsightsDateField(date_field_category='Appointments',
+                                      date_field_title='Start Date Date')
 )
 
 
@@ -72,13 +72,20 @@ def _get_medium(raw_data_row: dict) -> Mediums:
 def _get_department_from_type(raw_data_row: dict) -> Department:
     appt_type_to_dept_mapping = {
         'Homewood: AMS Career Advising - For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI,
-        'Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI,
+        '(Archived) Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI,
+        'Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI,  # Delete tomorrow
+        'Homewood: Brain Sciences': Departments.BRAIN_SCI,
+        'Homewood: Biological Sciences': Departments.BIO_SCI,
         'Homewood: Biomedical Engineering': Departments.BME,
         'Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI,
         'Homewood: Computer Science, Computer Engineering, and Electrical Engineering': Departments.COMP_ELEC_ENG,
         'Homewood: Engineering Masters Students': Departments.ENG_MASTERS,
-        'Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM,
-        'Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,
+        '(Archived) Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM,
+        '(Archived) Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,
+        'Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM,  # Delete tomorrow
+        'Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,  # Delete tomorrow
+        'Homewood: Humanities': Departments.HUMANITIES,
+        'Homewood: History': Departments.HISTORY,
         'Homewood: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN,
         'Homewood: Misc. Engineering': Departments.MISC_ENG,
         'Homewood: Peer Advisor Drop In': Departments.PA_DROP_INS,

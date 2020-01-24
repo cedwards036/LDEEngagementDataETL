@@ -45,7 +45,7 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
         if department == '':
             return 'no_department'
         else:
-            return department
+            return f'{department}_dept'
 
     def _write_department_roster_sheet(dept_roster: pd.DataFrame, sheet_name: str, writer: ExcelWriter):
         dept_roster.to_excel(writer, sheet_name=sheet_name, index=False)

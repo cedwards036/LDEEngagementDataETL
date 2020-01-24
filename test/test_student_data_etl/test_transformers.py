@@ -1,8 +1,7 @@
 import unittest
 
 from src.student_data_etl.student_data_record import EducationRecord, StudentRecord
-from src.student_data_etl.transformers import (filter_handshake_data_with_sis_roster,
-                                               enrich_with_athlete_status,
+from src.student_data_etl.transformers import (enrich_with_athlete_status,
                                                enrich_with_education_records,
                                                get_education_records_for_student)
 
@@ -16,92 +15,6 @@ def assert_lists_of_student_records_are_equal(test_class, expected, actual):
     expected_lod = [_to_dict(record) for record in expected]
     actual_lod = [_to_dict(record) for record in actual]
     test_class.assertEqual(expected_lod, actual_lod)
-
-
-class TestTransformers(unittest.TestCase):
-
-    def test_filter_handshake_data_with_sis_roster(self):
-        test_hs_data = {
-            '49GJ40': {
-                'handshake_id': '8029439',
-                'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Junior',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            '82T349': {
-                'handshake_id': '4325243',
-                'majors': ['B.A.: English'],
-                'school_year': 'Senior',
-                'email': 'astu3@jhu.edu',
-                'first_name': 'Alice',
-                'pref_name': '',
-                'last_name': 'Stuewcz'
-            },
-            'JT45UY': {
-                'handshake_id': '9483059',
-                'majors': ['B.A.: Int. Studies'],
-                'school_year': 'Sophomore',
-                'email': 'bcol43@jhu.edu',
-                'first_name': 'Barnabus',
-                'pref_name': '',
-                'last_name': 'Charleston'
-            }
-        }
-
-        test_sis_data = [
-            {
-                'handshake_username': '49gj40'
-            },
-            {
-                'handshake_username': '82t349'
-            }
-        ]
-
-        expected = [
-            {
-                'handshake_username': '49gj40',
-                'handshake_id': '8029439',
-                'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
-                'school_year': 'Junior',
-                'email': 'astu2@jhu.edu',
-                'first_name': 'Arthur',
-                'pref_name': 'Art',
-                'last_name': 'Student'
-            },
-            {
-                'handshake_username': '82t349',
-                'handshake_id': '4325243',
-                'majors': ['B.A.: English'],
-                'school_year': 'Senior',
-                'email': 'astu3@jhu.edu',
-                'first_name': 'Alice',
-                'pref_name': '',
-                'last_name': 'Stuewcz'
-            },
-        ]
-
-        self.assertEqual(expected, filter_handshake_data_with_sis_roster(test_hs_data, test_sis_data))
-
-    def test_filter_handshake_data_with_sis_roster_throws_error_when_student_not_found(self):
-        test_hs_data = {
-            '49GJ40': {},
-            '82T349': {},
-            'JT45UY': {}
-        }
-
-        test_sis_data = [
-            {
-                'handshake_username': '49GJ40'
-            },
-            {
-                'handshake_username': '325245'
-            }
-        ]
-        with self.assertRaises(ValueError):
-            filter_handshake_data_with_sis_roster(test_hs_data, test_sis_data)
 
 
 class TestAthleteStatusEnrichment(unittest.TestCase):

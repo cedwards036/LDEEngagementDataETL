@@ -1,17 +1,24 @@
 from collections import defaultdict
+from datetime import datetime, timedelta
 from typing import List
 
+from src.common import InsightsReport, HandshakeBrowser
 from src.common import read_csv, convert_empty_str_to_none
 from src.handshake_fields import StudentFields
 from src.student_data_etl.student_data_record import EducationRecord
 
+STUDENTS_INSIGHTS_REPORT = InsightsReport(
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vc3R1ZGVudHM_cWlkPVVBWjNRTzZIcTB5cUprSEtFbFQ4cG0mZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls',
+)
 
 def extract_major_data(filepath: str) -> dict:
     return transform_major_data(read_csv(filepath))
 
 
-def extract_handshake_data(filepath: str) -> dict:
-    return transform_handshake_data(read_csv(filepath))
+def extract_handshake_data(browser: HandshakeBrowser) -> List[dict]:
+    return transform_handshake_data(
+        filter_handshake_data(datetime.today(), STUDENTS_INSIGHTS_REPORT.extract_data(browser))
+    )
 
 
 def extract_athlete_data(filepath: str) -> dict:
@@ -35,16 +42,31 @@ def transform_roster_data(raw_sis_data: List[dict]) -> List[dict]:
     return [{'handshake_username': row['textbox7']} for row in raw_sis_data]
 
 
-def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
-    """
-    Create a lookup dict in the form {student_username: {info about student}}
+def filter_handshake_data(current_date: datetime, handshake_data: List[dict]) -> List[dict]:
+    def has_good_date_label(data_row: dict) -> bool:
+        good_labels = [f"temp: {(current_date - timedelta(days=i)).strftime('%Y-%m-%d')}" for i in range(4)]
+        for label in good_labels:
+            if label in data_row[StudentFields.LABELS]:
+                return True
+        return False
 
-    :param raw_handshake_data: raw Handshake student data containing account ID, major and school year info
-    :return: a dict that allows the lookup of Handshake data given a username
-    """
+    def is_not_ep(data_row: dict) -> bool:
+        return 'system gen: ep' not in data_row[StudentFields.LABELS]
 
-    def _add_new_username_to_lookup(row: dict, lookup_dict: dict) -> dict:
-        lookup_dict[row[StudentFields.USERNAME].upper()] = {
+    def does_not_have_hwd_location_label(data_row: dict) -> bool:
+        return 'system gen: hwd location' not in data_row[StudentFields.LABELS]
+
+    def is_homewood_undergrad_or_masters(data_row):
+        return has_good_date_label(data_row) and is_not_ep(data_row) and \
+               does_not_have_hwd_location_label(data_row)
+
+    return list(filter(is_homewood_undergrad_or_masters, handshake_data))
+
+
+def transform_handshake_data(raw_handshake_data: List[dict]) -> List[dict]:
+    def _transform_row(row: dict) -> dict:
+        return {
+            'handshake_username': row[StudentFields.USERNAME],
             'handshake_id': row[StudentFields.ID],
             'majors': [row[StudentFields.MAJOR]],
             'school_year': row[StudentFields.SCHOOL_YEAR],
@@ -56,18 +78,16 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> dict:
             'has_completed_profile': row[StudentFields.HAS_COMPLETED_PROFILE] == 'Yes',
             'is_pre_med': 'hwd: pre-health' in row[StudentFields.LABELS]
         }
-        return lookup_dict
 
-    def _append_major_to_lookup_entry(row, result):
-        result[row[StudentFields.USERNAME].upper()]['majors'].append(row[StudentFields.MAJOR])
-        return result
-
-    result = {}
+    result = []
+    lookup = {}
     for row in raw_handshake_data:
-        if row[StudentFields.USERNAME].upper() not in result:
-            result = _add_new_username_to_lookup(row, result)
+        if row[StudentFields.USERNAME] not in lookup:
+            transformed_row = _transform_row(row)
+            lookup[row[StudentFields.USERNAME]] = transformed_row
+            result.append(transformed_row)
         else:
-            result = _append_major_to_lookup_entry(row, result)
+            lookup[row[StudentFields.USERNAME]]['majors'].append(row[StudentFields.MAJOR])
     return result
 
 

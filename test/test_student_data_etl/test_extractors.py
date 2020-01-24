@@ -1,8 +1,10 @@
 import unittest
+from datetime import datetime, timedelta
 
 from src.handshake_fields import StudentFields
 from src.student_data_etl.extractors import (transform_athlete_data, transform_major_data,
-                                             transform_handshake_data, transform_roster_data)
+                                             transform_handshake_data, transform_roster_data,
+                                             filter_handshake_data)
 from src.student_data_etl.student_data_record import EducationRecord
 
 
@@ -52,6 +54,101 @@ class TestExtractorMiniTransformers(unittest.TestCase):
 
         self.assertEqual(expected, transform_major_data(test_data))
 
+    def test_filter_out_non_current_students(self):
+        test_date = datetime(2020, 1, 23)
+        good_labels = [f"temp: {(test_date - timedelta(days=i)).strftime('%Y-%m-%d')}" for i in range(4)]
+        test_data = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: good_labels[0]
+            },
+            {
+                StudentFields.ID: '4325243',
+                StudentFields.LABELS: good_labels[3]
+            },
+            {
+                StudentFields.ID: '32674545',
+                StudentFields.LABELS: good_labels[2]
+            },
+            {
+                StudentFields.ID: '111646',
+                StudentFields.LABELS: good_labels[1]
+            },
+            {
+                StudentFields.ID: 'badstudent1',
+                StudentFields.LABELS: 'temp: 2019-01-23'
+            },
+            {
+                StudentFields.ID: 'badstudent2',
+                StudentFields.LABELS: ''
+            }
+        ]
+
+        expected = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: good_labels[0]
+            },
+            {
+                StudentFields.ID: '4325243',
+                StudentFields.LABELS: good_labels[3]
+            },
+            {
+                StudentFields.ID: '32674545',
+                StudentFields.LABELS: good_labels[2]
+            },
+            {
+                StudentFields.ID: '111646',
+                StudentFields.LABELS: good_labels[1]
+            }
+        ]
+
+        self.assertEqual(expected, filter_handshake_data(test_date, test_data))
+
+    def test_filter_out_ep_students(self):
+        test_date = datetime(2020, 1, 23)
+        test_data = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}'
+            },
+            {
+                StudentFields.ID: 'epstudent',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}, system gen: ep'
+            }
+        ]
+
+        expected = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}'
+            },
+        ]
+
+        self.assertEqual(expected, filter_handshake_data(test_date, test_data))
+
+    def test_filter_out_hwd_location_labeled_students(self):
+        test_date = datetime(2020, 1, 23)
+        test_data = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}'
+            },
+            {
+                StudentFields.ID: 'epstudent',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}, system gen: hwd location'
+            }
+        ]
+
+        expected = [
+            {
+                StudentFields.ID: '8029439',
+                StudentFields.LABELS: f'temp: {test_date.strftime("%Y-%m-%d")}'
+            },
+        ]
+
+        self.assertEqual(expected, filter_handshake_data(test_date, test_data))
+
     def test_transform_unique_handshake_data(self):
         test_data = [
             {
@@ -82,8 +179,9 @@ class TestExtractorMiniTransformers(unittest.TestCase):
             }
         ]
 
-        expected = {
-            '49GJ40': {
+        expected = [
+            {
+                'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science'],
                 'school_year': 'Junior',
@@ -95,7 +193,8 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'has_completed_profile': False,
                 'is_pre_med': False
             },
-            '82T349': {
+            {
+                'handshake_username': '82t349',
                 'handshake_id': '4325243',
                 'majors': ['B.A.: English'],
                 'school_year': 'Senior',
@@ -107,7 +206,7 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'has_completed_profile': False,
                 'is_pre_med': False
             }
-        }
+        ]
 
         self.assertEqual(expected, transform_handshake_data(test_data))
 
@@ -141,8 +240,9 @@ class TestExtractorMiniTransformers(unittest.TestCase):
             },
         ]
 
-        expected = {
-            '49GJ40': {
+        expected = [
+            {
+                'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science', 'B.S. AMS: Applied Math and Stats'],
                 'school_year': 'Junior',
@@ -154,7 +254,7 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'has_completed_profile': True,
                 'is_pre_med': False
             },
-        }
+        ]
 
         self.assertEqual(expected, transform_handshake_data(test_data))
 
@@ -175,8 +275,9 @@ class TestExtractorMiniTransformers(unittest.TestCase):
             }
         ]
 
-        expected = {
-            '49GJ40': {
+        expected = [
+            {
+                'handshake_username': '49gj40',
                 'handshake_id': '8029439',
                 'majors': ['B.S. Comp. Sci.: Computer Science'],
                 'school_year': 'Junior',
@@ -188,7 +289,7 @@ class TestExtractorMiniTransformers(unittest.TestCase):
                 'has_completed_profile': False,
                 'is_pre_med': True
             },
-        }
+        ]
 
         self.assertEqual(expected, transform_handshake_data(test_data))
 

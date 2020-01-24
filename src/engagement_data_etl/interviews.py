@@ -2,14 +2,14 @@ from typing import List
 
 from autohandshake import HandshakeBrowser
 
-from src.common import InsightsReport, parse_date_string
+from src.common import InsightsReport, parse_date_string, RangeInsightsDateField
 from src.data_model import EngagementRecord, EngagementTypes, Mediums, Departments
 from src.handshake_fields import InterviewFields
 
 INTERVIEWS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vaW50ZXJ2aWV3X3NjaGVkdWxlcz9xaWQ9UXQ1OTFORFhJaWZ5MG9FdlMyUURYQiZlbWJlZF9kb21haW49aHR0cHM6JTJGJTJGYXBwLmpvaW5oYW5kc2hha2UuY29tJnRvZ2dsZT1maWw=',
-    date_field_category='Interview Schedule Dates',
-    date_field_title='Date Date'
+    date_field=RangeInsightsDateField(date_field_category='Interview Schedule Dates',
+                                      date_field_title='Date Date')
 )
 
 

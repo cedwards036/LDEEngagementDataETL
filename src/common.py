@@ -32,15 +32,49 @@ class BrowsingSession(HandshakeSession):
                          download_dir=CONFIG['download_dir'], chromedriver_path=CONFIG['chromedriver_path'], max_wait_time=max_wait_time)
 
 
+class InsightsDateField:
+
+    def set_report_date_range(self, insights_page: InsightsPage):
+        pass
+
+
+class RangeInsightsDateField(InsightsDateField):
+
+    def __init__(self, date_field_category: str, date_field_title: str):
+        self.date_field_category = date_field_category
+        self.date_field_title = date_field_title
+
+    def set_report_date_range(self, insights_page: InsightsPage):
+        START_DATE = self._first_date_of_current_academic_year()
+        END_DATE = datetime.today()
+        insights_page.set_date_range_filter(field_category=self.date_field_category,
+                                            field_title=self.date_field_title,
+                                            start_date=START_DATE, end_date=END_DATE)
+        return insights_page
+
+    @staticmethod
+    def _first_date_of_current_academic_year():
+        JULY = 7
+        if datetime.today().month < JULY:
+            return datetime(datetime.today().year, JULY, 1)
+        else:
+            return datetime(datetime.today().year + 1, JULY, 1)
+
+
+class NoInsightsDateField(InsightsDateField):
+
+    def set_report_date_range(self, insights_page: InsightsPage):
+        return insights_page
+
+
 class InsightsReport:
     """
     A specification of an Inisghts report and its filterable date field.
     """
 
-    def __init__(self, url: str, date_field_category: str, date_field_title):
+    def __init__(self, url: str, date_field: InsightsDateField = NoInsightsDateField()):
         self.url = url
-        self.date_field_category = date_field_category
-        self.date_field_title = date_field_title
+        self._date_field = date_field
 
     def extract_data(self, browser: HandshakeBrowser) -> List[dict]:
         """
@@ -51,17 +85,9 @@ class InsightsReport:
         :return: the raw, extracted data in list-of-dict format
         """
         insights_page = InsightsPage(self.url, browser)
-        insights_page = self._set_report_date_range(insights_page)
+        insights_page = self._date_field.set_report_date_range(insights_page)
         downloaded_filepath = insights_page.download_file(CONFIG['download_dir'], file_type=FileType.JSON)
         return read_and_delete_json(downloaded_filepath)
-
-    def _set_report_date_range(self, insights_page: InsightsPage):
-        START_DATE = datetime(2019, 7, 1)
-        END_DATE = datetime.today()
-        insights_page.set_date_range_filter(field_category=self.date_field_category,
-                                            field_title=self.date_field_title,
-                                            start_date=START_DATE, end_date=END_DATE)
-        return insights_page
 
 
 def read_and_delete_json(filepath: str) -> List[dict]:

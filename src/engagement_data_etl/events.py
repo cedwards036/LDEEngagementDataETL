@@ -2,20 +2,20 @@ from typing import List
 
 from autohandshake import HandshakeBrowser
 
-from src.common import InsightsReport, parse_date_string
+from src.common import InsightsReport, parse_date_string, RangeInsightsDateField
 from src.data_model import EngagementRecord, EngagementTypes, Mediums, Departments, Department
 from src.handshake_fields import EventFields
 
 EVENTS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1XdnpaMTl2N2hJa0d4V0NUTlNQN1U3JmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
-    date_field_category='Events',
-    date_field_title='Start Date Date'
+    date_field=RangeInsightsDateField(date_field_category='Events',
+                                      date_field_title='Start Date Date')
 )
 
 EVENTS_LABELS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1YeGVFWG9SV0h2NjZSdFBLcTI3NWYwJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
-    date_field_category='Events',
-    date_field_title='Start Date Date'
+    date_field=RangeInsightsDateField(date_field_category='Events',
+                                      date_field_title='Start Date Date')
 )
 
 
@@ -102,11 +102,15 @@ def _get_department_from_label(raw_data_row: dict):
     label_to_dept_mapping = {
         'hwd: fm and ams graduate students': Departments.AMS_FM_DATA_SCI.value,
         'hwd: bio and brain sci dept': Departments.BIO_BRAIN_SCI.value,
+        'hwd: brain sci dept': Departments.BRAIN_SCI.value,
+        'hwd: biological sci dept': Departments.BIO_SCI.value,
         'hwd: bme dept': Departments.BME.value,
         'hwd: chembe and mat sci dept': Departments.CHEMBE_MAT_SCI.value,
         'hwd: comp sci and electrical eng dept': Departments.COMP_ELEC_ENG.value,
         'hwd: eng masters students': Departments.ENG_MASTERS.value,
         'hwd: history, phil, and hum dept': Departments.HIST_PHIL_HUM.value,
+        'hwd: history dept': Departments.HISTORY.value,
+        'hwd: humanities dept': Departments.HUMANITIES.value,
         'hwd: lang, lit, film and media dept': Departments.LIT_LANG_FILM.value,
         'hwd: poli sci, econ, and finance dept': Departments.POL_ECON_FIN.value,
         'hwd: misc eng dept': Departments.MISC_ENG.value,

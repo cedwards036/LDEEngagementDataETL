@@ -4,23 +4,6 @@ from src.data_model import Departments
 from src.student_data_etl.student_data_record import StudentRecord, EducationRecord
 
 
-def filter_handshake_data_with_sis_roster(handshake_data: dict, sis_data: List[dict]) -> List[dict]:
-    """
-    Filter the given handshake data down to just those entries that appear in the SIS data.
-
-    If a student in the SIS data cannot be found in the handshake data, raise an exception.
-    """
-    result = []
-    for row in sis_data:
-        try:
-            new_row = handshake_data[row['handshake_username'].upper()].copy()
-            new_row['handshake_username'] = row['handshake_username']
-            result.append(new_row)
-        except KeyError:
-            raise ValueError(f'No match found for user "{row["handshake_username"]}"')
-    return result
-
-
 def enrich_with_athlete_status(student_data: List[StudentRecord], athlete_data: dict) -> List[StudentRecord]:
     """
     Enrich a list of Student Records with their athlete statuses.
@@ -105,14 +88,17 @@ def get_education_records_for_student(student_data: dict, dept_college_data: dic
         else:
             return major[colon_loc + 1:].strip()
 
-    if not student_data['majors'] or student_data['majors'] == ['']:
+    def _get_education_record_for_major(major: str) -> EducationRecord:
+        if 'interdisciplinary studies' in major.lower():
+            return EducationRecord(major=_clean_major(major))
+        else:
+            return _look_up_dept_college_data(major)
+
+    def _student_has_no_majors(student_data: dict) -> bool:
+        return (not student_data['majors']) or (student_data['majors'] == ['']) or \
+               ((student_data['majors'] == [None]))
+
+    if _student_has_no_majors(student_data):
         return [EducationRecord()]
     else:
-        result = []
-        for major in student_data['majors']:
-            if 'interdisciplinary studies' in major.lower():
-                result.append(EducationRecord(major=_clean_major(major)))
-            else:
-                data_row = _look_up_dept_college_data(major)
-                result.append(data_row)
-        return result
+        return [_get_education_record_for_major(major) for major in student_data['majors']]
