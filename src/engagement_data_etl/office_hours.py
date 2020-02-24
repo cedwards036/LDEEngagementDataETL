@@ -92,6 +92,7 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Physical and Environmental Sciences': Departments.PHYS_ENV_SCI,
         'Homewood: Pre-Health and Public Health Studies': Departments.PRE_PUB_HEALTH,
         'Homewood: SOAR: Athletics': Departments.SOAR_ATHLETICS,
+        'Homewood: SOAR: Diversity and Inclusion': Departments.SOAR_DIV_INCL,
         'Homewood: SOAR: First Year Experience (KSAS)': Departments.SOAR_FYE_KSAS,
         'Homewood: SOAR: First Year Experience (WSE)': Departments.SOAR_FYE_WSE,
         'Homewood: SOAR: Student Leadership and Involvement': Departments.SOAR_SLI,

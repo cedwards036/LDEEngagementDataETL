@@ -117,6 +117,7 @@ def _get_department_from_label(raw_data_row: dict):
         'hwd: physical and env sci dept': Departments.PHYS_ENV_SCI.value,
         'hwd: pre-health and pub health dept': Departments.PRE_PUB_HEALTH.value,
         'hwd: soar athletics': Departments.SOAR_ATHLETICS.value,
+        'hwd: soar diversity and inclusion': Departments.SOAR_DIV_INCL.value,
         'hwd: soar fye ksas': Departments.SOAR_FYE_KSAS.value,
         'hwd: soar fye wse': Departments.SOAR_FYE_WSE.value,
         'hwd: soar sli': Departments.SOAR_SLI.value,

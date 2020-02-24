@@ -50,6 +50,7 @@ class Departments(Enum):
     PHYS_ENV_SCI = Department('phys_env_sci', Categories.LDL_DEPARTMENT)
     PRE_PUB_HEALTH = Department('pre_pub_health', Categories.LDL_DEPARTMENT)
     SOAR_ATHLETICS = Department('soar_athletics', Categories.SOAR)
+    SOAR_DIV_INCL = Department('soar_div_incl', Categories.LDL_DEPARTMENT)
     SOAR_FYE_KSAS = Department('soar_fye_ksas', Categories.SOAR)
     SOAR_FYE_WSE = Department('soar_fye_wse', Categories.SOAR)
     SOAR_SLI = Department('soar_sli', Categories.SOAR)
