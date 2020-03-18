@@ -47,9 +47,10 @@ def format_student_records_for_roster_file(student_records: List[StudentRecord])
         else:  # record has no enrichment data
             return [_create_blank_formatted_record(student_record, result_fields)]
 
-    result_fields = ['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
-                     'school_year', 'is_athlete', 'sports', 'majors', 'colleges',
-                     'is_pre_med', 'has_activated_handshake', 'has_completed_profile']
+    result_fields = ['handshake_id', 'email', 'first_name', 'legal_first_name',
+                     'pref_first_name', 'last_name', 'school_year', 'is_athlete',
+                     'sports', 'majors', 'colleges', 'is_pre_med',
+                     'has_activated_handshake', 'has_completed_profile']
     result = []
     for student_record in student_records:
         result += _create_formatted_records_from_raw_student_record(result_fields, student_record)

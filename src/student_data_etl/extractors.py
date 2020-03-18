@@ -64,6 +64,12 @@ def filter_handshake_data(current_date: datetime, handshake_data: List[dict]) ->
 
 
 def transform_handshake_data(raw_handshake_data: List[dict]) -> List[dict]:
+    def _determine_first_name(row: dict) -> str:
+        if row[StudentFields.PREF_NAME]:
+            return row[StudentFields.PREF_NAME]
+        else:
+            return row[StudentFields.FIRST_NAME]
+
     def _transform_row(row: dict) -> dict:
         return {
             'handshake_username': row[StudentFields.USERNAME],
@@ -71,8 +77,9 @@ def transform_handshake_data(raw_handshake_data: List[dict]) -> List[dict]:
             'majors': [row[StudentFields.MAJOR]],
             'school_year': row[StudentFields.SCHOOL_YEAR],
             'email': row[StudentFields.EMAIL],
-            'first_name': row[StudentFields.FIRST_NAME],
-            'pref_name': row[StudentFields.PREF_NAME],
+            'first_name': _determine_first_name(row),
+            'legal_first_name': row[StudentFields.FIRST_NAME],
+            'pref_first_name': row[StudentFields.PREF_NAME],
             'last_name': row[StudentFields.LAST_NAME],
             'has_activated_handshake': row[StudentFields.HAS_LOGGED_IN] == 'Yes',
             'has_completed_profile': row[StudentFields.HAS_COMPLETED_PROFILE] == 'Yes',

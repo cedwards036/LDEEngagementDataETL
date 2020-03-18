@@ -52,8 +52,8 @@ class StudentRecord:
     """A student record containing data about the student and their education affiliations"""
 
     def __init__(self, handshake_username: str = None, handshake_id: str = None,
-                 email: str = None, first_name: str = None, pref_name: str = None,
-                 last_name: str = None, school_year: str = None,
+                 email: str = None, first_name=None, legal_first_name: str = None,
+                 pref_first_name: str = None, last_name: str = None, school_year: str = None,
                  education_data: List[EducationRecord] = None,
                  additional_departments: List[str] = None, sports: List[str] = None,
                  is_pre_med: bool = False, has_activated_handshake: bool = False,
@@ -64,7 +64,8 @@ class StudentRecord:
             'handshake_id': convert_empty_str_to_none(handshake_id),
             'email': convert_empty_str_to_none(email),
             'first_name': convert_empty_str_to_none(first_name),
-            'pref_name': convert_empty_str_to_none(pref_name),
+            'legal_first_name': convert_empty_str_to_none(legal_first_name),
+            'pref_first_name': convert_empty_str_to_none(pref_first_name),
             'last_name': convert_empty_str_to_none(last_name),
             'school_year': convert_empty_str_to_none(school_year),
             'education_records': [],

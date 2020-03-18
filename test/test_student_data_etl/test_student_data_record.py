@@ -154,8 +154,9 @@ class TestToDict(unittest.TestCase):
             handshake_username='astudent14',
             handshake_id='RT37H5',
             email='astudent14@jhu.edu',
-            first_name='Angelica',
-            pref_name='Angie',
+            first_name='Angie',
+            legal_first_name='Angelica',
+            pref_first_name='Angie',
             last_name='Student',
             school_year='Sophomore',
             is_pre_med=True,
@@ -173,8 +174,9 @@ class TestToDict(unittest.TestCase):
             'handshake_username': 'astudent14',
             'handshake_id': 'RT37H5',
             'email': 'astudent14@jhu.edu',
-            'first_name': 'Angelica',
-            'pref_name': 'Angie',
+            'first_name': 'Angie',
+            'legal_first_name': 'Angelica',
+            'pref_first_name': 'Angie',
             'last_name': 'Student',
             'school_year': 'Sophomore',
             'is_pre_med': True,
@@ -196,7 +198,7 @@ class TestToDict(unittest.TestCase):
     def test_to_dict_method_with_specified_fields(self):
         expected = {
             'email': 'astudent14@jhu.edu',
-            'pref_name': 'Angie',
+            'pref_first_name': 'Angie',
             'school_year': 'Sophomore',
             'education_records': [
                 EducationRecord(major='English', department='lit_lang_film', college='ksas'),
@@ -204,5 +206,5 @@ class TestToDict(unittest.TestCase):
             ],
             'colleges': ['ksas', 'wse'],
         }
-        specified_fields = ['email', 'pref_name', 'school_year', 'education_records', 'colleges']
+        specified_fields = ['email', 'pref_first_name', 'school_year', 'education_records', 'colleges']
         self.assertEqual(expected, self.test_record.to_dict(specified_fields))

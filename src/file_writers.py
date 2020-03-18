@@ -27,7 +27,7 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
     """Write student roster data to a multi-sheet excel file"""
 
     def _set_column_order(df: pd.DataFrame) -> pd.DataFrame:
-        return df[['handshake_id', 'email', 'first_name', 'pref_name', 'last_name',
+        return df[['handshake_id', 'email', 'first_name', 'legal_first_name', 'pref_first_name', 'last_name',
                    'department', 'colleges', 'majors', 'school_year', 'is_pre_med',
                    'has_activated_handshake', 'has_completed_profile', 'is_athlete', 'sports']]
 
