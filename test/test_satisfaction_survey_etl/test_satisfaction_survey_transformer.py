@@ -206,6 +206,7 @@ class TestAddEventDeptsToSurveyData(unittest.TestCase):
 
     def test_prints_warning_when_no_event_match_is_found(self):
         captured_output = io.StringIO()
+        old_stdout = sys.stdout
         sys.stdout = captured_output
         test_event_data = {
             '643736': 'no_dept',
@@ -220,7 +221,7 @@ class TestAddEventDeptsToSurveyData(unittest.TestCase):
             )
         ]
         add_event_depts_to_survey_data(test_event_data, test_survey_data)
-        sys.stdout = sys.__stdout__
+        sys.stdout = old_stdout
         self.assertEqual(f'WARNING: Satisfaction survey event id "306310" does not appear in Handshake data\n', captured_output.getvalue())
 
 
