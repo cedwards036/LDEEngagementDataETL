@@ -8,9 +8,8 @@ from src.satisfaction_survey_etl.etl_processes import run_survey_etl
 from src.student_data_etl.etl_processes import run_data_file_etl, run_roster_file_etl
 from src.student_data_etl.extractors import extract_handshake_data
 
-STUDENT_DATA_DIR = 'S:\\Reporting & Data\\Life Design Educator Engagement\\StudentData'
-MAJORS_FILEPATH = f'{STUDENT_DATA_DIR}\\all_majors.csv'
-ATHLETE_FILEPATH = f'{STUDENT_DATA_DIR}\\student_athlete_roster_2020_01_24.csv'
+MAJORS_FILEPATH = f'{CONFIG["student_data_dir"]}\\all_majors.csv'
+ATHLETE_FILEPATH = f'{CONFIG["student_data_dir"]}\\student_athlete_roster_2020_01_24.csv'
 
 if __name__ == '__main__':
     with BrowsingSession() as browser:
