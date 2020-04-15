@@ -25,23 +25,6 @@ def extract_athlete_data(filepath: str) -> dict:
     return transform_athlete_data(read_csv(filepath))
 
 
-def extract_sis_rosters(roster_filepaths: List[str]) -> List[dict]:
-    result = []
-    for filepath in roster_filepaths:
-        result += transform_roster_data(read_csv(filepath))
-    return result
-
-
-def transform_roster_data(raw_sis_data: List[dict]) -> List[dict]:
-    """
-    Transform raw SIS student data into a form usable by subsequent data enrichment functions
-
-    :param raw_sis_data: raw data pulled from SIS
-    :return: a list of dicts that can be passed to other data enrichment functions
-    """
-    return [{'handshake_username': row['textbox7']} for row in raw_sis_data]
-
-
 def filter_handshake_data(current_date: datetime, handshake_data: List[dict]) -> List[dict]:
     def has_good_date_label(data_row: dict) -> bool:
         good_labels = [f"temp: {(current_date - timedelta(days=i)).strftime('%Y-%m-%d')}" for i in range(4)]

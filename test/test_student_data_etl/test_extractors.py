@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 
 from src.handshake_fields import StudentFields
 from src.student_data_etl.extractors import (transform_athlete_data, transform_major_data,
-                                             transform_handshake_data, transform_roster_data,
-                                             filter_handshake_data)
+                                             transform_handshake_data, filter_handshake_data)
 from src.student_data_etl.student_data_record import EducationRecord
 
 
@@ -342,36 +341,3 @@ class TestExtractorMiniTransformers(unittest.TestCase):
             'GT29FJ': ['Soccer', 'Tennis']
         }
         self.assertEqual(expected, transform_athlete_data(test_data))
-
-    def test_transform_roster_data(self):
-        test_roster_data = [
-            {
-                'FullName': 'Smith, John',
-                'textbox7': '2f38987',
-                'TypeSubType': 'ASEN - Ugrad/Bachelors',
-                'Primary': 'Y',
-                'Status': 'UG Current',
-                'Alerts': 'N',
-                'StartTerm': 'AE Fall 2018'
-            },
-            {
-                'FullName': 'Johnson, Alice',
-                'textbox7': '7987243',
-                'TypeSubType': 'ASEN - Ugrad/Bachelors',
-                'Primary': 'Y',
-                'Status': 'UG Current',
-                'Alerts': 'N',
-                'StartTerm': 'AE Fall 2016'
-            }
-        ]
-
-        expected = [
-            {
-                'handshake_username': '2f38987'
-            },
-            {
-                'handshake_username': '7987243'
-            }
-        ]
-
-        self.assertEqual(expected, transform_roster_data(test_roster_data))
