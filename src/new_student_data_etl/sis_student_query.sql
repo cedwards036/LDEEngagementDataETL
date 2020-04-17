@@ -46,3 +46,9 @@ left join (
 	left join cmn_persons p on s.user_integration_id = p.Identifier1
 	where attribute_key = 'IS_PELL_ELIGIBLE'
 ) as pell on pell.Identifier1 = handshake.Identifier1
+
+where (system_label_names like '%system gen: hwd;%'
+   or system_label_names like '%system gen: dual degree hwd;%')
+   and system_label_names not like '%system gen: ep;%'
+   and not school_year_name = 'Doctorate'
+   and not school_year_name = 'Postdoctoral Studies'

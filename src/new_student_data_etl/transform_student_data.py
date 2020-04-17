@@ -63,3 +63,6 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
         student_dept_table = add_soar_departments(student_rows, student_dept_table)
     student_dept_table = student_dept_table.drop_duplicates().reset_index(drop=True)
     return student_dept_table
+
+def merge_with_student_department_data(students: pd.DataFrame, student_department_data: pd.DataFrame) -> pd.DataFrame:
+    return students.merge(student_department_data, how='left', on='hopkins_id')

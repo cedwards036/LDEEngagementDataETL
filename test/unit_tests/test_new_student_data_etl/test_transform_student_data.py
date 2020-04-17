@@ -9,6 +9,7 @@ from src.new_student_data_etl.transform_student_data import make_student_departm
 from src.new_student_data_etl.transform_student_data import make_student_department_table
 from src.new_student_data_etl.transform_student_data import melt_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
+from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
 
 
 class TestAddStudentColleges(unittest.TestCase):
@@ -52,6 +53,21 @@ class TestMergeWithHandshakeData(unittest.TestCase):
             'handshake_field': ['value1', 'value1', 'value2']
         })
         assert_frame_equal(expected, merge_with_handshake_data(students, handshake_data))
+
+
+class TestMergeWithStudentDepartmentData(unittest.TestCase):
+
+    def test_merges_with_student_department_data_on_hopkins_id(self):
+        students = pd.DataFrame({'hopkins_id': ['jf38ru', 'mmd09s']})
+        student_departments = pd.DataFrame({
+            'hopkins_id': ['jf38ru', 'mmd09s', 'jf38ru'],
+            'department': ['pol_sci_econ', 'comp_elec_eng', 'humanities']
+        })
+        expected = pd.DataFrame({
+            'hopkins_id': ['jf38ru', 'jf38ru', 'mmd09s'],
+            'department': ['pol_sci_econ', 'humanities', 'comp_elec_eng']
+        })
+        assert_frame_equal(expected, merge_with_student_department_data(students, student_departments))
 
 
 class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
