@@ -6,6 +6,7 @@ from pandas.testing import assert_frame_equal
 from src.new_student_data_etl.transform import add_major_metadata
 from src.new_student_data_etl.transform import make_student_department_subtable
 from src.new_student_data_etl.transform import make_student_department_table
+from src.new_student_data_etl.transform import melt_majors
 from src.data_model import Departments
 
 
@@ -20,6 +21,24 @@ class TestAddStudentColleges(unittest.TestCase):
             'major_department': ['pol_sci_econ', 'comp_elec_eng', 'pol_sci_econ']
         })
         assert_frame_equal(expected, add_major_metadata(students, major_metadata))
+
+
+class TestMeltMajors(unittest.TestCase):
+
+    def test_leaves_row_with_only_one_major_unchanged_except_for_the_column_name(self):
+        students = pd.DataFrame(data={'hopkins_id': ['fi9485'], 'majors': ['economics']})
+        expected = pd.DataFrame(data={'hopkins_id': ['fi9485'], 'major': ['economics']})
+        assert_frame_equal(expected, melt_majors(students))
+
+    def test_splits_major_string_into_separate_columns_and_unpivots_those_columns_into_a_single_major_column(self):
+        students = pd.DataFrame(data={'hopkins_id': ['uu9d32'], 'majors': ['economics;math;science']})
+        expected = pd.DataFrame(data={'hopkins_id': ['uu9d32', 'uu9d32', 'uu9d32'], 'major': ['economics', 'math', 'science']})
+        assert_frame_equal(expected, melt_majors(students))
+
+    def test_only_includes_rows_for_non_null_majors(self):
+        students = pd.DataFrame(data={'hopkins_id': ['uu9d32', '938tjg'], 'majors': ['economics;math;science', 'english']})
+        expected = pd.DataFrame(data={'hopkins_id': ['uu9d32', 'uu9d32', 'uu9d32', '938tjg'], 'major': ['economics', 'math', 'science', 'english']})
+        assert_frame_equal(expected, melt_majors(students))
 
 
 class TestMakeStudentDepartmentsSubTable(unittest.TestCase):

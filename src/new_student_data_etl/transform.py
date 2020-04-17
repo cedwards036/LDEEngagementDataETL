@@ -1,6 +1,16 @@
 import pandas as pd
 from src.data_model import Departments
 
+def melt_majors(students: pd.DataFrame) -> pd.DataFrame:
+    split_majors = students['majors'].str.split(';', expand=True)
+    split_major_columns = list(split_majors.columns)
+    split_majors['hopkins_id'] = students['hopkins_id']
+    melted_majors = split_majors.melt(id_vars=['hopkins_id'], value_vars=split_major_columns, value_name='major').dropna()
+    melted_majors = melted_majors.drop(columns=['variable'])
+    students = students.merge(melted_majors, how='left', on='hopkins_id')
+    students = students.drop(columns=['majors'])
+    return students
+
 def add_major_metadata(students: pd.DataFrame, major_metadata: pd.DataFrame) -> pd.DataFrame:
     result = students.merge(major_metadata, how='left', on='major')
     result = result.rename(columns={'department': 'major_department'})
