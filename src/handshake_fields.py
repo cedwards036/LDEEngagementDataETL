@@ -49,6 +49,7 @@ class StudentFields:
     LAST_NAME = 'Students Last Name'
     MAJOR = 'Majors Name'
     SCHOOL_YEAR = 'School Year Name'
+    AUTH_ID = 'Students Auth Identifier'
     HAS_LOGGED_IN = 'Students Has Logged In? (Yes / No)'
     HAS_COMPLETED_PROFILE = 'Profile Completion Profile Completed? (Yes / No)'
     LABELS = 'Institution Labels Name List'

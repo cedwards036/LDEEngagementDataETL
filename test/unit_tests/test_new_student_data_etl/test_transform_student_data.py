@@ -3,10 +3,10 @@ import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from src.new_student_data_etl.transform import add_major_metadata
-from src.new_student_data_etl.transform import make_student_department_subtable
-from src.new_student_data_etl.transform import make_student_department_table
-from src.new_student_data_etl.transform import melt_majors
+from src.new_student_data_etl.transform_student_data import add_major_metadata
+from src.new_student_data_etl.transform_student_data import make_student_department_subtable
+from src.new_student_data_etl.transform_student_data import make_student_department_table
+from src.new_student_data_etl.transform_student_data import melt_majors
 from src.data_model import Departments
 
 
