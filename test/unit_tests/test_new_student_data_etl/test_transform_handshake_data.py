@@ -1,14 +1,16 @@
 import unittest
+
 import pandas as pd
 from pandas.testing import assert_frame_equal, assert_series_equal
 
+from src.handshake_fields import StudentFields
+from src.new_student_data_etl.transform_handshake_data import add_pre_med_column
 from src.new_student_data_etl.transform_handshake_data import clean_logged_in_column
 from src.new_student_data_etl.transform_handshake_data import clean_profile_completion_column
 from src.new_student_data_etl.transform_handshake_data import convert_auth_id_to_jhed
-from src.new_student_data_etl.transform_handshake_data import add_pre_med_column
+from src.new_student_data_etl.transform_handshake_data import rename_handshake_id_column
 from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
 
-from src.handshake_fields import StudentFields
 
 class TestCleanLoggedInColumn(unittest.TestCase):
 
@@ -22,6 +24,7 @@ class TestCleanLoggedInColumn(unittest.TestCase):
         expected = pd.Series([True, False, None], name='has_activated_handshake')
         assert_series_equal(expected, clean_logged_in_column(handshake_data)['has_activated_handshake'])
 
+
 class TestCleanProfileCompletionColumn(unittest.TestCase):
 
     def test_renames_logged_in_column(self):
@@ -33,6 +36,7 @@ class TestCleanProfileCompletionColumn(unittest.TestCase):
         handshake_data = pd.DataFrame({StudentFields.HAS_COMPLETED_PROFILE: ['Yes', 'No', None]})
         expected = pd.Series([True, False, None], name='has_completed_profile')
         assert_series_equal(expected, clean_profile_completion_column(handshake_data)['has_completed_profile'])
+
 
 class TestConvertAuthIDToJHED(unittest.TestCase):
 
@@ -46,6 +50,7 @@ class TestConvertAuthIDToJHED(unittest.TestCase):
         expected = pd.Series(['ajhed123'], name='jhed')
         assert_series_equal(expected, convert_auth_id_to_jhed(handshake_data)['jhed'])
 
+
 class TestAddIsPreMedColumn(unittest.TestCase):
 
     def test_student_is_not_pre_med_if_student_does_not_have_the_pre_health_label(self):
@@ -58,11 +63,21 @@ class TestAddIsPreMedColumn(unittest.TestCase):
         expected = pd.DataFrame({StudentFields.LABELS: ['system gen: hwd, hwd: pre-health'], 'is_pre_med': [True]})
         assert_frame_equal(expected, add_pre_med_column(handshake_data))
 
+
+class TestRenameHandshakeIDColumn(unittest.TestCase):
+
+    def test_renames_handshake_id_field(self):
+        handshake_data = pd.DataFrame({StudentFields.ID: []})
+        result = rename_handshake_id_column(handshake_data)
+        assert_column_was_renamed(self, result, StudentFields.ID, 'handshake_id')
+
+
 class TestTransformHandshakeData(unittest.TestCase):
 
     def test_runs_all_handshake_data_cleaning_routines_and_drops_superfluous_columns(self):
         handshake_data = pd.DataFrame({
             StudentFields.HAS_LOGGED_IN: ['Yes', 'No'],
+            StudentFields.ID: ['1104932', '820934'],
             StudentFields.LABELS: ['system gen: bsph', 'hwd: pre-health'],
             StudentFields.AUTH_ID: ['jsmit2@johnshopkins.edu', 'ajohns4@johnshopkins.edu'],
             StudentFields.HAS_COMPLETED_PROFILE: ['No', 'Yes'],
@@ -71,12 +86,14 @@ class TestTransformHandshakeData(unittest.TestCase):
 
         expected = pd.DataFrame({
             'jhed': ['jsmit2', 'ajohns4'],
+            'handshake_id': ['1104932', '820934'],
             'has_activated_handshake': [True, False],
             'has_completed_profile': [False, True],
             'is_pre_med': [False, True],
         })
 
         assert_frame_equal(expected, transform_handshake_data(handshake_data))
+
 
 def assert_column_was_renamed(test_case, df, old_name, new_name):
     columns = df.columns
