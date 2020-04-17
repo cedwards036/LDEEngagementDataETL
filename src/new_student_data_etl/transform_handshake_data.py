@@ -46,8 +46,15 @@ def convert_auth_id_to_jhed(handshake_data: pd.DataFrame) -> pd.DataFrame:
     handshake_data = handshake_data.rename(columns={
         StudentFields.AUTH_ID: 'jhed'
     })
-    handshake_data['jhed'] = handshake_data['jhed'].apply(lambda auth_id: auth_id[:auth_id.find('@')])
+    handshake_data['jhed'] = handshake_data['jhed'].apply(extract_jhed_from_auth_id)
     return handshake_data
+
+
+def extract_jhed_from_auth_id(auth_id: str) -> str:
+    try:
+        return auth_id[:auth_id.index('@')]
+    except (AttributeError, ValueError):
+        return auth_id
 
 
 def add_pre_med_column(handshake_data: pd.DataFrame) -> pd.DataFrame:

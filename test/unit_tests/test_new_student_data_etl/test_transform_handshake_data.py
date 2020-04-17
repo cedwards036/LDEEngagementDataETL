@@ -50,6 +50,11 @@ class TestConvertAuthIDToJHED(unittest.TestCase):
         expected = pd.Series(['ajhed123'], name='jhed')
         assert_series_equal(expected, convert_auth_id_to_jhed(handshake_data)['jhed'])
 
+    def test_leaves_auth_id_unchanged_if_jhed_cannot_be_extracted(self):
+        handshake_data = pd.DataFrame({StudentFields.AUTH_ID: ['ajhed123', None]})
+        expected = pd.Series(['ajhed123', None], name='jhed')
+        assert_series_equal(expected, convert_auth_id_to_jhed(handshake_data)['jhed'])
+
 
 class TestAddIsPreMedColumn(unittest.TestCase):
 
