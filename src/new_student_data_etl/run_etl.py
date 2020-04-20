@@ -15,6 +15,8 @@ from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
 
+from src.new_student_data_etl.lde_roster_file import format_for_roster_file
+
 
 def read_file_to_string(file_path) -> str:
     with open(file_path, 'r') as file:
@@ -56,4 +58,10 @@ if __name__ == '__main__':
 
     print('Writing output to file...')
     students.to_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv', index=False)
+
+    print('Creating roster file...')
+    roster_file = format_for_roster_file(pd.DataFrame(read_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv')))
+    roster_file.to_excel('C:\\Users\\cedwar42\\Downloads\\new_roster_file.xlsx', index=False)
+
     print('Done!')
+
