@@ -18,10 +18,26 @@ def melt_majors(students: pd.DataFrame) -> pd.DataFrame:
     return students
 
 
+def clean_majors(students: pd.DataFrame) -> pd.DataFrame:
+
+    def clean_major(major: str) -> str:
+        lowercase_major = major.lower()
+        if ':' in lowercase_major:
+            if lowercase_major.startswith('m.') or lowercase_major.startswith('ph.d'):
+                return major
+            else:
+                return major[major.index(':') + 1:].strip()
+        else:
+            return major
+
+    students['major'] = students['major'].apply(clean_major)
+    return students
+
+
 def add_major_metadata(students: pd.DataFrame, major_metadata: pd.DataFrame) -> pd.DataFrame:
-    result = students.merge(major_metadata, how='left', on='major')
-    result = result.rename(columns={'department': 'major_department'})
-    return result
+    merged_data = students.merge(major_metadata, how='left', on='major')
+    merged_data = merged_data.rename(columns={'department': 'major_department'})
+    return merged_data
 
 
 def make_student_department_table(students: pd.DataFrame) -> pd.DataFrame:

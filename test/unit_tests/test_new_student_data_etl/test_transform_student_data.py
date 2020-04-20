@@ -8,11 +8,35 @@ from src.new_student_data_etl.transform_student_data import add_major_metadata
 from src.new_student_data_etl.transform_student_data import make_student_department_subtable
 from src.new_student_data_etl.transform_student_data import make_student_department_table
 from src.new_student_data_etl.transform_student_data import melt_majors
+from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
 
 
-class TestAddStudentColleges(unittest.TestCase):
+class TestCleanMajor(unittest.TestCase):
+
+    def test_major_without_colon_is_not_changed(self):
+        students = pd.DataFrame({'major': ['economics']})
+        expected = pd.DataFrame({'major': ['economics']})
+        assert_frame_equal(expected, clean_majors(students))
+
+    def test_major_starting_with_m_dot_is_not_changed(self):
+        students = pd.DataFrame({'major': ['M.S.: economics']})
+        expected = pd.DataFrame({'major': ['M.S.: economics']})
+        assert_frame_equal(expected, clean_majors(students))
+
+    def test_major_starting_with_phd_is_not_changed(self):
+        students = pd.DataFrame({'major': ['Ph.D.: economics']})
+        expected = pd.DataFrame({'major': ['Ph.D.: economics']})
+        assert_frame_equal(expected, clean_majors(students))
+
+    def test_otherwise_any_text_before_the_first_colon_is_discarded(self):
+        students = pd.DataFrame({'major': ['B.A.: economics']})
+        expected = pd.DataFrame({'major': ['economics']})
+        assert_frame_equal(expected, clean_majors(students))
+
+
+class TestAddMajorMetadata(unittest.TestCase):
 
     def test_left_joins_student_data_to_major_metadata_using_major_as_the_join_key(self):
         students = pd.DataFrame({'major': ['economics', 'comp sci', 'economics']})
