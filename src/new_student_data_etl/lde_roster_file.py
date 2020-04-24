@@ -5,10 +5,11 @@ import pandas as pd
 
 
 def split_into_separate_department_rosters(roster: pd.DataFrame) -> List[pd.DataFrame]:
+    roster['department'] = roster['department'].fillna('no_department')
     return [roster.loc[roster['department'] == department]
                 .drop_duplicates()
                 .reset_index(drop=True)
-            for department in (roster['department'].unique())]
+            for department in roster['department'].unique()]
 
 
 def format_for_roster_file(students: pd.DataFrame) -> pd.DataFrame:

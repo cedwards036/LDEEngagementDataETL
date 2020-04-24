@@ -147,3 +147,18 @@ class TestSplitIntoSeparateDepartmentRosters(unittest.TestCase):
         actual = split_into_separate_department_rosters(roster)
         for i in range(len(expected)):
             assert_frame_equal(expected[i], actual[i])
+
+    def test_puts_all_rows_with_null_dept_into_special_no_department_roster(self):
+        roster = pd.DataFrame({
+            'hopkins_id': ['8fj4t2'],
+            'department': [None],
+        })
+        actual = split_into_separate_department_rosters(roster)
+        expected = [
+            pd.DataFrame({
+                'hopkins_id': ['8fj4t2'],
+                'department': ['no_department'],
+            })
+        ]
+        for i in range(len(expected)):
+            assert_frame_equal(expected[i], actual[i])

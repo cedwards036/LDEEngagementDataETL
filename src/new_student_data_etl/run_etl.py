@@ -18,6 +18,7 @@ from src.new_student_data_etl.transform_student_data import merge_with_engagemen
 from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
 
 from src.new_student_data_etl.lde_roster_file import format_for_roster_file
+from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
 
 
 def read_file_to_string(file_path) -> str:
@@ -38,6 +39,10 @@ def get_major_metadata() -> pd.DataFrame:
 def get_handshake_data() -> pd.DataFrame:
     with BrowsingSession() as browser:
         return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))
+
+
+def roster_file_name(roster: pd.DataFrame) -> str:
+    return roster['department'][0] + '_roster'
 
 
 if __name__ == '__main__':
@@ -65,7 +70,10 @@ if __name__ == '__main__':
     roster_file = format_for_roster_file(pd.read_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv'))
     engagement_data = count_engagements_by_type(pd.read_csv('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv', encoding='ISO-8859-1'))
     roster_file = merge_with_engagement_data(roster_file, engagement_data)
-    roster_file.to_excel('C:\\Users\\cedwar42\\Downloads\\new_roster_file.xlsx', index=False)
+    department_roster_files = split_into_separate_department_rosters(roster_file)
+    roster_dir = 'C:\\Users\\cedwar42\\Downloads\\lde_rosters\\'
+    for roster in department_roster_files:
+        roster.to_excel(roster_dir + roster_file_name(roster) + '.xlsx', index=False)
 
     print('Done!')
 
