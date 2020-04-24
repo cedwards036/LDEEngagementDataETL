@@ -13,7 +13,7 @@ EVENTS_INSIGHTS_REPORT = InsightsReport(
 )
 
 EVENTS_LABELS_INSIGHTS_REPORT = InsightsReport(
-    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1YeGVFWG9SV0h2NjZSdFBLcTI3NWYwJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vZXZlbnRzP3FpZD1PbFdmR3pzSjBIdE56RFo1UlR1aE9xJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
     date_field=RangeInsightsDateField(date_field_category='Events',
                                       date_field_title='Start Date Date')
 )
@@ -51,10 +51,7 @@ def _build_dept_lookup_dict(raw_events_labels_data: List[dict]) -> dict:
     for row in raw_events_labels_data:
         dept_data = _ensure_event_is_in_lookup_data(row, dept_data)
         department = _get_department_from_label(row)
-        if department is not None:
-            dept_data[row[EventFields.ID]] = _add_valid_dept(department, dept_data[row[EventFields.ID]])
-        else:
-            dept_data[row[EventFields.ID]] = _add_invalid_dept(dept_data[row[EventFields.ID]])
+        dept_data[row[EventFields.ID]] = _add_department(department, dept_data[row[EventFields.ID]])
     return dept_data
 
 
@@ -62,6 +59,13 @@ def _ensure_event_is_in_lookup_data(event_data_row: dict, dept_data: dict) -> di
     if event_data_row[EventFields.ID] not in dept_data.keys():
         dept_data[event_data_row[EventFields.ID]] = {'depts': [], 'contains_valid_dept': False}
     return dept_data
+
+
+def _add_department(department: Department, dept_record: dict):
+    if department is not None:
+        return _add_valid_dept(department, dept_record)
+    else:
+        return _add_invalid_dept(dept_record)
 
 
 def _add_valid_dept(department: Department, dept_record: dict) -> dict:
