@@ -4,6 +4,19 @@ import numpy as np
 from src.data_model import Departments
 
 
+def clean_student_string_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
+    string_bool_fields = ['is_athlete', 'is_first_generation', 'is_pell_eligible', 'is_urm']
+    for field in string_bool_fields:
+        students = clean_string_bool_field(students, field)
+    return students
+
+
+def clean_string_bool_field(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    lower_column = df[column_name].str.lower()
+    df[column_name] = lower_column.replace({'true': True, 'false': False, '': None})
+    return df
+
+
 def merge_with_handshake_data(students: pd.DataFrame, handshake_data: pd.DataFrame) -> pd.DataFrame:
     return students.merge(handshake_data, how='left', on='jhed')
 

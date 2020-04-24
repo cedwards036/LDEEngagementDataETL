@@ -12,7 +12,21 @@ from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
 from src.new_student_data_etl.transform_student_data import merge_with_engagement_data
+from src.new_student_data_etl.transform_student_data import clean_string_bool_field
 
+
+class TestCleanStringBoolField(unittest.TestCase):
+
+    def test_converts_string_representations_of_true_and_false_to_bools(self):
+        df = pd.DataFrame({'field': ['TRUE', 'tRuE', 'False', 'falsE']})
+        expected = pd.DataFrame({'field': [True, True, False, False]}).astype(object)
+        assert_frame_equal(expected, clean_string_bool_field(df, 'field'))
+
+
+    def test_converts_the_empty_string_to_none(self):
+        df = pd.DataFrame({'field': ['TRUE', None]})
+        expected = pd.DataFrame({'field': [True, None]})
+        assert_frame_equal(expected, clean_string_bool_field(df, 'field'))
 
 class TestCleanMajor(unittest.TestCase):
 

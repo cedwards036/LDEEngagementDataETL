@@ -7,6 +7,7 @@ from src.new_student_data_etl.extract import get_sis_data
 from src.new_student_data_etl.lde_roster_file import format_for_roster_file
 from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
 from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
+from src.new_student_data_etl.transform_student_data import clean_student_string_bool_fields
 from src.new_student_data_etl.transform_student_data import add_major_metadata
 from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import make_student_department_table
@@ -18,7 +19,7 @@ from src.new_student_data_etl.transform_student_data import merge_with_student_d
 
 def run_student_etl():
     print('Extracting SIS data...')
-    students = get_sis_data()
+    students = clean_student_string_bool_fields(get_sis_data())
     print('Extracting major metadata...')
     major_metadata = get_major_metadata()
 
