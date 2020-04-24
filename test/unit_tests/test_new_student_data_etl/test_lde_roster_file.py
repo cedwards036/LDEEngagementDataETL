@@ -3,9 +3,9 @@ import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
+from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
 from src.new_student_data_etl.lde_roster_file import unmelt_and_join
 from src.new_student_data_etl.lde_roster_file import unmelt_students_for_roster_file
-
 
 
 class TestUnmeltStudentsForRosterFile(unittest.TestCase):
@@ -122,3 +122,28 @@ class TestUnmeltAndJoin(unittest.TestCase):
             'unmelted_field': ['value2', '', 'value2']
         })
         assert_frame_equal(expected, unmelt_and_join(students, 'melted_field', 'unmelted_field'))
+
+
+class TestSplitIntoSeparateDepartmentRosters(unittest.TestCase):
+
+    def test_creates_a_separate_dataframe_for_each_department(self):
+        roster = pd.DataFrame({
+            'hopkins_id': ['8fj4t2', '8fj4t2', 'sfs834'],
+            'other_field': [0, 1, 2],
+            'department': ['humanities', 'phys_sci', 'humanities'],
+        })
+        expected = [
+            pd.DataFrame({
+                'hopkins_id': ['8fj4t2', 'sfs834'],
+                'other_field': [0, 2],
+                'department': ['humanities', 'humanities'],
+            }),
+            pd.DataFrame({
+                'hopkins_id': ['8fj4t2'],
+                'other_field': [1],
+                'department': ['phys_sci'],
+            })
+        ]
+        actual = split_into_separate_department_rosters(roster)
+        for i in range(len(expected)):
+            assert_frame_equal(expected[i], actual[i])

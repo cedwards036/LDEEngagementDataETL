@@ -1,5 +1,14 @@
-import pandas as pd
+from typing import List
+
 import numpy
+import pandas as pd
+
+
+def split_into_separate_department_rosters(roster: pd.DataFrame) -> List[pd.DataFrame]:
+    return [roster.loc[roster['department'] == department]
+                .drop_duplicates()
+                .reset_index(drop=True)
+            for department in (roster['department'].unique())]
 
 
 def format_for_roster_file(students: pd.DataFrame) -> pd.DataFrame:
@@ -25,6 +34,7 @@ def unmelt_and_join(students: pd.DataFrame, column_to_unmelt: str, unmelted_colu
     unmelted_df = unmelted_df.rename(columns={column_to_unmelt: unmelted_column_name})
     students = students.merge(unmelted_df, on='hopkins_id', how='left')
     return students
+
 
 def filter_columns_for_roster_file(students: pd.DataFrame) -> pd.DataFrame:
     return students[[
