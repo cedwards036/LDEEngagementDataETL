@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from src.data_model import Departments
 
@@ -82,3 +83,11 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
 
 def merge_with_student_department_data(students: pd.DataFrame, student_department_data: pd.DataFrame) -> pd.DataFrame:
     return students.merge(student_department_data, how='left', on='hopkins_id')
+
+
+def merge_with_engagement_data(students: pd.DataFrame, engagement_data: pd.DataFrame) -> pd.DataFrame:
+    merged = students.merge(engagement_data, how='left', left_on='handshake_id', right_on='student_handshake_id')
+    merged = merged.drop(columns=['student_handshake_id'])
+    engagement_columns = engagement_data.iloc[:, 1:].columns
+    merged[engagement_columns] = merged[engagement_columns].fillna(0).astype(np.int64)
+    return merged

@@ -11,6 +11,7 @@ from src.new_student_data_etl.transform_student_data import melt_majors
 from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
+from src.new_student_data_etl.transform_student_data import merge_with_engagement_data
 
 
 class TestCleanMajor(unittest.TestCase):
@@ -77,6 +78,29 @@ class TestMergeWithHandshakeData(unittest.TestCase):
             'handshake_field': ['value1', 'value1', 'value2']
         })
         assert_frame_equal(expected, merge_with_handshake_data(students, handshake_data))
+
+
+class TestMergeWithEngagementData(unittest.TestCase):
+
+    def test_merges_student_data_with_engagement_data_on_handshake_id(self):
+        students = pd.DataFrame({'handshake_id': ['230942095', '10193853'], 'other_field': ['a', 'b']})
+        engagement_data = pd.DataFrame({'student_handshake_id': ['230942095', '10193853'], 'event_engagement': [4, 2]})
+        expected = pd.DataFrame({
+            'handshake_id': ['230942095', '10193853'],
+            'other_field': ['a', 'b'],
+            'event_engagement': [4, 2],
+        })
+        assert_frame_equal(expected, merge_with_engagement_data(students, engagement_data))
+
+    def test_fills_na_with_zero_for_students_with_no_engagement_data(self):
+        students = pd.DataFrame({'handshake_id': ['230942095'], 'other_field': [None]})
+        engagement_data = pd.DataFrame({'student_handshake_id': [], 'event_engagement': []})
+        expected = pd.DataFrame({
+            'handshake_id': ['230942095'],
+            'other_field': [None],
+            'event_engagement': [0],
+        })
+        assert_frame_equal(expected, merge_with_engagement_data(students, engagement_data))
 
 
 class TestMergeWithStudentDepartmentData(unittest.TestCase):

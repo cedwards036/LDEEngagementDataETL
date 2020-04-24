@@ -14,6 +14,8 @@ from src.new_student_data_etl.transform_student_data import melt_majors
 from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
+from src.new_student_data_etl.transform_student_data import merge_with_engagement_data
+from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
 
 from src.new_student_data_etl.lde_roster_file import format_for_roster_file
 
@@ -60,7 +62,9 @@ if __name__ == '__main__':
     students.to_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv', index=False)
 
     print('Creating roster file...')
-    roster_file = format_for_roster_file(pd.DataFrame(read_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv')))
+    roster_file = format_for_roster_file(pd.read_csv('C:\\Users\\cedwar42\\Downloads\\student_data.csv'))
+    engagement_data = count_engagements_by_type(pd.read_csv('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv', encoding='ISO-8859-1'))
+    roster_file = merge_with_engagement_data(roster_file, engagement_data)
     roster_file.to_excel('C:\\Users\\cedwar42\\Downloads\\new_roster_file.xlsx', index=False)
 
     print('Done!')
