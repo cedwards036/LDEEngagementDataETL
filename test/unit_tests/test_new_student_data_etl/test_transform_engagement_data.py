@@ -20,7 +20,8 @@ class TestCountEngagementsByType(unittest.TestCase):
             'event_engagements': [0, 2],
             'interview_engagements': [0, 1],
             'office_hours_engagements': [0, 1],
-            'vmock_engagements': [1, 0]
+            'vmock_engagements': [1, 0],
+            'total_engagements': [1, 4]
         })
 
         assert_frame_equal(expected, count_engagements_by_type(engagements))
