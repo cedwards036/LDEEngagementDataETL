@@ -5,6 +5,7 @@ import pandas as pd
 from src.common import BrowsingSession
 from src.common import CONFIG
 from src.common import read_csv
+from src.file_writers import write_roster_excel_files
 from src.new_student_data_etl.extract import STUDENTS_INSIGHTS_REPORT
 from src.new_student_data_etl.sis_connection import SISConnection
 from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
@@ -41,10 +42,6 @@ def get_handshake_data() -> pd.DataFrame:
         return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))
 
 
-def roster_file_name(roster: pd.DataFrame) -> str:
-    return roster['department'][0] + '_roster'
-
-
 if __name__ == '__main__':
     print('Extracting SIS data...')
     students = get_sis_data()
@@ -72,8 +69,7 @@ if __name__ == '__main__':
     roster_file = merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
     roster_dir = 'C:\\Users\\cedwar42\\Downloads\\lde_rosters\\'
-    for roster in department_roster_files:
-        roster.to_excel(roster_dir + roster_file_name(roster) + '.xlsx', index=False)
+    write_roster_excel_files(roster_dir, department_roster_files)
 
     print('Done!')
 

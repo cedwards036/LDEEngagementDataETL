@@ -62,3 +62,30 @@ def write_roster_excel_file(filepath: str, data: List[dict]):
             sheet_name = _determine_sheet_name(department)
             _write_department_roster_sheet(dept_roster, sheet_name, writer)
         writer.save()
+
+
+def write_roster_excel_files(dir_path: str, rosters: List[pd.DataFrame]):
+
+    def roster_file_name(roster: pd.DataFrame) -> str:
+        return roster['department'][0] + '_roster'
+
+    def _write_department_roster_sheet(roster: pd.DataFrame, writer: ExcelWriter):
+        roster.to_excel(writer, index=False)
+        worksheet = writer.sheets['Sheet1']
+        _adjust_column_widths(roster, worksheet)
+
+    def _adjust_column_widths(df: pd.DataFrame, worksheet):
+        """Thanks to https://stackoverflow.com/a/40535454"""
+        for idx, col in enumerate(df):  # loop through all columns
+            series = df[col]
+            max_len = max((
+                series.astype(str).map(len).max(),  # len of largest item
+                len(str(series.name))  # len of column name/header
+            ))
+            worksheet.set_column(idx, idx, max_len)  # set column width
+
+    for roster in rosters:
+        roster_filepath = dir_path + roster_file_name(roster) + '.xlsx'
+        with ExcelWriter(roster_filepath) as writer:
+            _write_department_roster_sheet(roster, writer)
+            writer.save()
