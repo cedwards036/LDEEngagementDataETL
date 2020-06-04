@@ -65,32 +65,44 @@ def make_student_department_table(students: pd.DataFrame) -> pd.DataFrame:
 
 
 def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) -> pd.DataFrame:
-    def create_student_dept_table_from_major_depts(df: pd.DataFrame) -> pd.DataFrame:
-        student_dept_table = df[['hopkins_id', 'major_department']]
-        return student_dept_table.rename(columns={'major_department': 'department'})
+    def is_freshman(student_df: pd.DataFrame) -> bool:
+        return student_df.iloc[0]['school_year'] == 'Freshman'
+
+    def is_bme(student_df: pd.DataFrame) -> bool:
+        return student_df.iloc[0]['major_department'] == Departments.BME.value.name
+
+    def create_student_department_table() -> pd.DataFrame:
+        return pd.DataFrame({'hopkins_id': [], 'department': []})
+
+    def add_major_depts(student_df: pd.DataFrame, department_table: pd.DataFrame) -> pd.DataFrame:
+        major_depts = student_df[['hopkins_id', 'major_department']]
+        major_depts = major_depts.rename(columns={'major_department': 'department'})
+        return pd.concat([major_depts, department_table])
 
     def add_soar_departments(student_df: pd.DataFrame, table_df: pd.DataFrame) -> pd.DataFrame:
-        if student_df.iloc[0]['school_year'] == 'Freshman':
+        if is_freshman(student_df):
             if 'ksas' in student_df['college'].values:
-                table_df = append_department(Departments.SOAR_FYE_KSAS.value.name, table_df)
+                table_df = append_department(hopkins_id, Departments.SOAR_FYE_KSAS.value.name, table_df)
             if 'wse' in student_df['college'].values:
-                table_df = append_department(Departments.SOAR_FYE_WSE.value.name, table_df)
+                table_df = append_department(hopkins_id, Departments.SOAR_FYE_WSE.value.name, table_df)
         if student_df.iloc[0]['is_athlete']:
-            table_df = append_department(Departments.SOAR_ATHLETICS.value.name, table_df)
+            table_df = append_department(hopkins_id, Departments.SOAR_ATHLETICS.value.name, table_df)
         if student_df.iloc[0]['is_urm']:
-            table_df = append_department(Departments.SOAR_DIV_INCL.value.name, table_df)
+            table_df = append_department(hopkins_id, Departments.SOAR_DIV_INCL.value.name, table_df)
         return table_df
 
-    def append_department(department: str, table: pd.DataFrame) -> pd.DataFrame:
+    def append_department(hopkins_id: str, department: str, table: pd.DataFrame) -> pd.DataFrame:
         return table.append(pd.DataFrame(data={
             'hopkins_id': [hopkins_id],
             'department': [department]
         }), ignore_index=True)
 
-    student_rows = students.loc[students['hopkins_id'] == hopkins_id]
-    student_dept_table = create_student_dept_table_from_major_depts(student_rows)
-    if not student_rows.empty:
-        student_dept_table = add_soar_departments(student_rows, student_dept_table)
+    student_df = students.loc[students['hopkins_id'] == hopkins_id]
+    student_dept_table = create_student_department_table()
+    if not student_df.empty:
+        if not is_freshman(student_df) or is_bme(student_df):
+            student_dept_table = add_major_depts(student_df, student_dept_table)
+        student_dept_table = add_soar_departments(student_df, student_dept_table)
     student_dept_table = student_dept_table.drop_duplicates().reset_index(drop=True)
     return student_dept_table
 

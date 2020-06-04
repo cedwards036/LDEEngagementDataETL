@@ -33,19 +33,25 @@ class Department:
 class Departments(Enum):
     """The possible engagement department values"""
     AMS_FM_DATA_SCI = Department('ams_fm_data_sci', Categories.AMS_FM_DATA_SCI)
+    AMS_UGRAD = Department('ams_ugrad', Categories.LDL_DEPARTMENT)
     BIO_BRAIN_SCI = Department('bio_brain_sci', Categories.LDL_DEPARTMENT)  # archived
     BIO_SCI = Department('bio_sci', Categories.LDL_DEPARTMENT)
     BRAIN_SCI = Department('brain_sci', Categories.LDL_DEPARTMENT)
     BME = Department('bme', Categories.LDL_DEPARTMENT)
-    CHEMBE_MAT_SCI = Department('chembe_mat_sci', Categories.LDL_DEPARTMENT)
+    CHEMBE = Department('chembe', Categories.LDL_DEPARTMENT)
+    CHEMBE_MAT_SCI = Department('chembe_mat_sci', Categories.LDL_DEPARTMENT) # archived
+    CIVIL_ENG = Department('civil_eng', Categories.LDL_DEPARTMENT)
     COMP_ELEC_ENG = Department('comp_elec_eng', Categories.LDL_DEPARTMENT)
     ENG_MASTERS = Department('eng_masters', Categories.ENG_MASTERS)
+    ENV_ENG = Department('env_eng', Categories.LDL_DEPARTMENT)
     HIST_PHIL_HUM = Department('hist_phil_hum', Categories.LDL_DEPARTMENT)  # archived
     HISTORY = Department('history', Categories.LDL_DEPARTMENT)
     HUMANITIES = Department('humanities', Categories.LDL_DEPARTMENT)
     LIT_LANG_FILM = Department('lit_lang_film', Categories.LDL_DEPARTMENT)  # archived
     POL_ECON_FIN = Department('pol_econ_fin', Categories.LDL_DEPARTMENT)
-    MISC_ENG = Department('misc_eng', Categories.LDL_DEPARTMENT)
+    MAT_SCI = Department('mat_sci', Categories.LDL_DEPARTMENT)
+    MECH_ENG = Department('mech_eng', Categories.LDL_DEPARTMENT)
+    MISC_ENG = Department('misc_eng', Categories.LDL_DEPARTMENT) # archived
     PA_DROP_INS = Department('pa_drop_ins', Categories.PA_DROP_INS)
     PHYS_ENV_SCI = Department('phys_env_sci', Categories.LDL_DEPARTMENT)
     PRE_PUB_HEALTH = Department('pre_pub_health', Categories.LDL_DEPARTMENT)

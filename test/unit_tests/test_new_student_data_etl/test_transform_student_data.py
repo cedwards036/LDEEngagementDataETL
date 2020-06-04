@@ -164,7 +164,7 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'jf38ru'))
 
-    def test_includes_soar_fye_ksas_department_for_ksas_freshmen_who_have_already_chosen_a_major(self):
+    def test_ignores_major_dept_for_ksas_freshmen_but_includes_soar_fye_dept(self):
         students = pd.DataFrame({
             'hopkins_id': ['93aml3'],
             'college': ['ksas'],
@@ -174,8 +174,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'major_department': ['pol_sci_econ']
         })
         expected = pd.DataFrame({
-            'hopkins_id': ['93aml3', '93aml3'],
-            'department': ['pol_sci_econ', Departments.SOAR_FYE_KSAS.value.name]
+            'hopkins_id': ['93aml3'],
+            'department': [Departments.SOAR_FYE_KSAS.value.name]
         })
         assert_frame_equal(expected, make_student_department_subtable(students, '93aml3'))
 
@@ -194,7 +194,7 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
         })
         assert_frame_equal(expected, make_student_department_subtable(students, '93aml3'))
 
-    def test_includes_soar_fye_wse_department_for_wse_freshmen_who_have_already_chosen_a_major(self):
+    def test_ignores_major_dept_for_wse_freshmen_but_includes_soar_fye_dept(self):
         students = pd.DataFrame({
             'hopkins_id': ['93aml3'],
             'college': ['wse'],
@@ -204,8 +204,23 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'major_department': ['comp_sci']
         })
         expected = pd.DataFrame({
+            'hopkins_id': ['93aml3'],
+            'department': [Departments.SOAR_FYE_WSE.value.name]
+        })
+        assert_frame_equal(expected, make_student_department_subtable(students, '93aml3'))
+
+    def test_does_not_ignore_major_dept_for_wse_freshmen_if_freshman_is_bme(self):
+        students = pd.DataFrame({
+            'hopkins_id': ['93aml3'],
+            'college': ['wse'],
+            'school_year': ['Freshman'],
+            'is_athlete': [False],
+            'is_urm': [False],
+            'major_department': ['bme']
+        })
+        expected = pd.DataFrame({
             'hopkins_id': ['93aml3', '93aml3'],
-            'department': ['comp_sci', Departments.SOAR_FYE_WSE.value.name]
+            'department': ['bme', Departments.SOAR_FYE_WSE.value.name]
         })
         assert_frame_equal(expected, make_student_department_subtable(students, '93aml3'))
 
@@ -249,9 +264,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'major_department': ['elec_eng', Departments.SOAR_FYE_KSAS.value.name]
         })
         expected = pd.DataFrame({
-            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'pmle45', 'pmle45'],
+            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'pmle45'],
             'department': [
-                'elec_eng',
                 Departments.SOAR_FYE_KSAS.value.name,
                 Departments.SOAR_FYE_WSE.value.name,
                 Departments.SOAR_ATHLETICS.value.name,
@@ -287,8 +301,8 @@ class TestMakeStudentDepartmentsTable(unittest.TestCase):
             'major_department': ['pol_sci_econ']
         })
         expected = pd.DataFrame({
-            'hopkins_id': ['93aml3', '93aml3'],
-            'department': ['pol_sci_econ', Departments.SOAR_FYE_KSAS.value.name]
+            'hopkins_id': ['93aml3'],
+            'department': [Departments.SOAR_FYE_KSAS.value.name]
         })
         assert_frame_equal(expected, make_student_department_table(students))
 
