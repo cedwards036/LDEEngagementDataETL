@@ -24,18 +24,18 @@ if __name__ == '__main__':
         print('Writing engagement data...')
         engagement_data = clean_appt_data + clean_event_data + clean_fair_data + clean_interview_data
         write_engagement_data(CONFIG['engagement_data_filepath'], engagement_data)
-        print('Pulling Handshake student data...')
-        handshake_data = extract_handshake_data(browser)
-
-    student_data = run_data_file_etl(handshake_data, MAJORS_FILEPATH, ATHLETE_FILEPATH)
-    roster_data = run_roster_file_etl(handshake_data, MAJORS_FILEPATH, ATHLETE_FILEPATH)
-    print('Writing student roster data...')
-    write_to_csv(CONFIG['student_data_filepath'], student_data)
-    write_roster_excel_file(CONFIG['student_roster_filepath'], roster_data)
-
-    print('Pulling satisfaction survey data...')
-    survey_data = run_survey_etl(clean_event_data)
-    print('Writing satisfaction survey data')
-    write_to_csv(CONFIG['survey_data_filepath'], survey_data)
+        # print('Pulling Handshake student data...')
+        # handshake_data = extract_handshake_data(browser)
+    #
+    # student_data = run_data_file_etl(handshake_data, MAJORS_FILEPATH, ATHLETE_FILEPATH)
+    # roster_data = run_roster_file_etl(handshake_data, MAJORS_FILEPATH, ATHLETE_FILEPATH)
+    # print('Writing student roster data...')
+    # write_to_csv(CONFIG['student_data_filepath'], student_data)
+    # write_roster_excel_file(CONFIG['student_roster_filepath'], roster_data)
+    #
+    # print('Pulling satisfaction survey data...')
+    # survey_data = run_survey_etl(clean_event_data)
+    # print('Writing satisfaction survey data')
+    # write_to_csv(CONFIG['survey_data_filepath'], survey_data)
 
     print('Complete!')

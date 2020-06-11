@@ -100,7 +100,7 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
     student_df = students.loc[students['hopkins_id'] == hopkins_id]
     student_dept_table = create_student_department_table()
     if not student_df.empty:
-        if not is_freshman(student_df) or is_bme(student_df):
+        if (not is_freshman(student_df)) or is_bme(student_df):
             student_dept_table = add_major_depts(student_df, student_dept_table)
         student_dept_table = add_soar_departments(student_df, student_dept_table)
     student_dept_table = student_dept_table.drop_duplicates().reset_index(drop=True)
