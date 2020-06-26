@@ -2,6 +2,7 @@ import io
 import sys
 import unittest
 from typing import List
+from datetime import datetime
 
 from src.data_model import (EngagementTypes, EngagementRecord, Departments,
                             Mediums)
@@ -97,7 +98,7 @@ class TestCreateEventDataLookup(unittest.TestCase):
             EngagementRecord(
                 engagement_type=EngagementTypes.EVENT,
                 handshake_engagement_id='340134',
-                start_date_time=None,
+                start_date_time=datetime(2019, 10, 30, 11),
                 medium=Mediums.IN_PERSON,
                 engagement_name='Homewood: McKinsey Day Informational Chats',
                 engagement_department=Departments.NO_DEPARTMENT.value,
@@ -109,7 +110,7 @@ class TestCreateEventDataLookup(unittest.TestCase):
             EngagementRecord(
                 engagement_type=EngagementTypes.EVENT,
                 handshake_engagement_id='5374545',
-                start_date_time=None,
+                start_date_time=datetime(2019, 12, 3, 15),
                 medium=Mediums.IN_PERSON,
                 engagement_name='Homewood: BME Event',
                 engagement_department=Departments.BME.value,

@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+import numpy as np
 from pandas.testing import assert_frame_equal
 
 from src.data_model import Departments
@@ -12,21 +13,36 @@ from src.new_student_data_etl.transform_student_data import clean_majors
 from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
 from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
 from src.new_student_data_etl.transform_student_data import merge_with_engagement_data
-from src.new_student_data_etl.transform_student_data import clean_string_bool_field
+from src.new_student_data_etl.transform_student_data import clean_mistyped_bool_field
+from src.new_student_data_etl.transform_student_data import add_athlete_data
 
 
-class TestCleanStringBoolField(unittest.TestCase):
+class TestCleanMistypedBoolField(unittest.TestCase):
 
     def test_converts_string_representations_of_true_and_false_to_bools(self):
         df = pd.DataFrame({'field': ['TRUE', 'tRuE', 'False', 'falsE']})
         expected = pd.DataFrame({'field': [True, True, False, False]}).astype(object)
-        assert_frame_equal(expected, clean_string_bool_field(df, 'field'))
+        assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
 
+    def test_converts_float_representations_of_true_and_false_to_bools(self):
+        df = pd.DataFrame({'field': [1.0, 1, 0, 0.0]})
+        expected = pd.DataFrame({'field': [True, True, False, False]}).astype(object)
+        assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
 
     def test_converts_the_empty_string_to_none(self):
-        df = pd.DataFrame({'field': ['TRUE', None]})
+        df = pd.DataFrame({'field': ['TRUE', '']})
         expected = pd.DataFrame({'field': [True, None]})
-        assert_frame_equal(expected, clean_string_bool_field(df, 'field'))
+        assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
+
+    def test_converts_nan_to_none(self):
+        df = pd.DataFrame({'field': [None, np.nan]})
+        expected = pd.DataFrame({'field': [None, None]})
+        assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
+
+    def test_ignores_column_that_is_already_bool(self):
+        df = pd.DataFrame({'field': [True, False]})
+        expected = pd.DataFrame({'field': [True, False]})
+        assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
 
 class TestCleanMajor(unittest.TestCase):
 
@@ -62,6 +78,15 @@ class TestAddMajorMetadata(unittest.TestCase):
             'major_department': ['pol_sci_econ', 'comp_elec_eng', 'pol_sci_econ']
         })
         assert_frame_equal(expected, add_major_metadata(students, major_metadata))
+
+
+class TestAddAthleteData(unittest.TestCase):
+
+    def test_left_joins_student_data_to_athlete_data_using_hopkins_id_as_the_join_key(self):
+        students = pd.DataFrame({'hopkins_id': ['fie673']})
+        athlete_data = pd.DataFrame({'University ID': ['fie673'], 'Sport': ['Soccer']})
+        expected = pd.DataFrame({'hopkins_id': ['fie673'], 'sport': ['Soccer']})
+        assert_frame_equal(expected, add_athlete_data(students, athlete_data))
 
 
 class TestMeltMajors(unittest.TestCase):
@@ -251,6 +276,21 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45', 'pmle45'],
             'department': ['elec_eng', Departments.SOAR_DIV_INCL.value.name]
+        })
+        assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
+
+    def test_does_not_include_soar_diversity_and_inclusion_department_is_urm_is_nan(self):
+        students = pd.DataFrame({
+            'hopkins_id': ['pmle45'],
+            'college': ['wse'],
+            'school_year': ['Sophomore'],
+            'is_athlete': [False],
+            'is_urm': [np.nan],
+            'major_department': ['elec_eng']
+        })
+        expected = pd.DataFrame({
+            'hopkins_id': ['pmle45'],
+            'department': ['elec_eng']
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
 

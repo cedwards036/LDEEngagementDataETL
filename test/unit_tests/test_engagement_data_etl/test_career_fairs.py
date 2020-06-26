@@ -11,8 +11,8 @@ class TestCareerFairTransformation(unittest.TestCase):
         test_data = [
             {
                 CareerFairFields.ID: "9813",
-                CareerFairFields.START_DATE_TIME: "2019-09-26 11:00:00",
-                CareerFairFields.NAME: "Homewood: Johns Hopkins University Fall 2019 Career Fair",
+                CareerFairFields.START_DATE_TIME: "2018-03-21 11:00:00",
+                CareerFairFields.NAME: "Homewood: Johns Hopkins University Spring 2018 Career Fair",
                 CareerFairFields.STUDENT_ID: "2674562",
                 CareerFairFields.IS_PRE_REGISTERED: "Yes"
             },
@@ -22,9 +22,11 @@ class TestCareerFairTransformation(unittest.TestCase):
             'unique_engagement_id': 'career_fair_9813_2674562',
             'engagement_type': 'career_fair',
             'handshake_engagement_id': '9813',
-            'start_date_time': datetime(2019, 9, 26, 11, 0, 0),
+            'academic_year': 2018,
+            'semester': 'spring2018',
+            'start_date_time': datetime(2018, 3, 21, 11, 0, 0),
             'medium': 'in_person',
-            'engagement_name': 'Homewood: Johns Hopkins University Fall 2019 Career Fair',
+            'engagement_name': 'Homewood: Johns Hopkins University Spring 2018 Career Fair',
             'engagement_category': 'ldl_no_department',
             'engagement_department': 'no_dept',
             'student_handshake_id': '2674562',

@@ -4,16 +4,21 @@ import numpy as np
 from src.data_model import Departments
 
 
-def clean_student_string_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
+def clean_potentially_mistyped_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
     string_bool_fields = ['is_athlete', 'is_first_generation', 'is_pell_eligible', 'is_urm']
     for field in string_bool_fields:
-        students = clean_string_bool_field(students, field)
+        students = clean_mistyped_bool_field(students, field)
     return students
 
 
-def clean_string_bool_field(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    lower_column = df[column_name].str.lower()
-    df[column_name] = lower_column.replace({'true': True, 'false': False, '': None})
+def clean_mistyped_bool_field(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    if df[column_name].dtype == 'bool':
+        return df
+    elif df[column_name].dtype == 'object':
+        lower_column = df[column_name].fillna('').str.lower()
+        df[column_name] = lower_column.replace({'true': True, 'false': False, '': None})
+    elif df[column_name].dtype == 'float64' or df[column_name].dtype == 'int64':
+        df[column_name] = df[column_name].astype('object')
     return df
 
 
@@ -54,6 +59,12 @@ def add_major_metadata(students: pd.DataFrame, major_metadata: pd.DataFrame) -> 
     return merged_data
 
 
+def add_athlete_data(students: pd.DataFrame, athlete_data: pd.DataFrame) -> pd.DataFrame:
+    students = students.merge(athlete_data, how='left', left_on='hopkins_id', right_on='University ID')
+    students = students.drop(columns=['University ID'])
+    students = students.rename(columns={'Sport': 'sport'})
+    return students
+
 def make_student_department_table(students: pd.DataFrame) -> pd.DataFrame:
     if students.empty:
         return pd.DataFrame(data={'hopkins_id': [], 'department': []})
@@ -85,9 +96,9 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
                 table_df = append_department(hopkins_id, Departments.SOAR_FYE_KSAS.value.name, table_df)
             if 'wse' in student_df['college'].values:
                 table_df = append_department(hopkins_id, Departments.SOAR_FYE_WSE.value.name, table_df)
-        if student_df.iloc[0]['is_athlete']:
+        if student_df.iloc[0]['is_athlete'] == True:
             table_df = append_department(hopkins_id, Departments.SOAR_ATHLETICS.value.name, table_df)
-        if student_df.iloc[0]['is_urm']:
+        if student_df.iloc[0]['is_urm'] == True:
             table_df = append_department(hopkins_id, Departments.SOAR_DIV_INCL.value.name, table_df)
         return table_df
 

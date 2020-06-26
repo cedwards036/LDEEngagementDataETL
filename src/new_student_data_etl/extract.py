@@ -28,6 +28,12 @@ def get_major_metadata() -> pd.DataFrame:
     return pd.DataFrame(read_csv(f'{CONFIG["student_data_dir"]}\\major_metadata.csv'))
 
 
+def get_athlete_data(filepath) -> pd.DataFrame:
+    athlete_data = pd.read_csv(filepath)
+    athlete_data = athlete_data[['University ID', 'Sport']]
+    return athlete_data
+
+
 def get_handshake_data() -> pd.DataFrame:
     with BrowsingSession() as browser:
         return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))

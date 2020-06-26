@@ -1,4 +1,14 @@
+declare
+	@cur_month int = month(getdate()),
+	@cur_year int = year(getdate());
+
 select
+	(case when @cur_month < 6 then @cur_year else @cur_year + 1 end) as academic_year,
+	(case
+			when @cur_month < 6 then concat('spring', @cur_year)
+			when @cur_month < 9 then concat('summer', @cur_year)
+			else concat('fall', @cur_year)
+	end) as semester,
 	CMN_PersonsID as cmn_persons_id,
 	handshake.Identifier1 as hopkins_id,
 	email_address,

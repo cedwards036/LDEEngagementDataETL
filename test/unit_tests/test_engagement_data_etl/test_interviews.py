@@ -22,6 +22,8 @@ class TestInterviewsTransformation(unittest.TestCase):
             'unique_engagement_id': 'interview_289843_937574353',
             'engagement_type': 'interview',
             'handshake_engagement_id': '289843',
+            'academic_year': 2020,
+            'semester': 'fall2019',
             'start_date_time': datetime(2019, 10, 8, 13, 0, 0),
             'medium': 'in_person',
             'engagement_name': 'Deloitte Interviews on 2019-10-08',
