@@ -7,7 +7,7 @@ from src.data_model import Departments, Department, EngagementRecord, Engagement
 from src.handshake_fields import AppointmentFields
 
 APPT_INSIGHTS_REPORT = InsightsReport(
-    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD1yT0hJV3dtbGVVOVpsTG9TeUY2UWJrJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
+    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vYXBwb2ludG1lbnRzP3FpZD1FN3dFaTlXWkpWWktKeElVT0FZbE1lJmVtYmVkX2RvbWFpbj1odHRwczolMkYlMkZhcHAuam9pbmhhbmRzaGFrZS5jb20mdG9nZ2xlPWZpbA==',
     date_field=RangeInsightsDateField(date_field_category='Appointments',
                                       date_field_title='Start Date Date')
 )
@@ -73,30 +73,34 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
     appt_type_to_dept_mapping = {
         'Homewood: AMS Career Advising - For FM, AMS, and Data Science Graduate Students': Departments.AMS_FM_DATA_SCI,
         '(Archived) Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI,
-        'Homewood: Biological and Brain Sciences': Departments.BIO_BRAIN_SCI,  # Delete tomorrow
+        'Homewood: AMS Undergraduates': Departments.AMS_UGRAD,
+        '(Archived) Homewood: Biological Sciences': Departments.BIO_SCI,
         'Homewood: Brain Sciences': Departments.BRAIN_SCI,
-        'Homewood: Biological Sciences': Departments.BIO_SCI,
         'Homewood: Biomedical Engineering': Departments.BME,
-        'Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI,
+        '(Archived) Homewood: ChemBE and Materials Science Engineering': Departments.CHEMBE_MAT_SCI,
+        'Homewood: ChemBE': Departments.CHEMBE,
+        'Homewood: Civil Engineering': Departments.CIVIL_ENG,
         'Homewood: Computer Science, Computer Engineering, and Electrical Engineering': Departments.COMP_ELEC_ENG,
         'Homewood: Engineering Masters Students': Departments.ENG_MASTERS,
+        'Homewood: Environmental Engineering': Departments.ENV_ENG,
         '(Archived) Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM,
         '(Archived) Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,
-        'Homewood: Humanities: History, Philosophy, and Humanistic Thought': Departments.HIST_PHIL_HUM,  # Delete tomorrow
-        'Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,  # Delete tomorrow
+        '(Archived) Homewood: History': Departments.HISTORY,
         'Homewood: Humanities': Departments.HUMANITIES,
-        'Homewood: History': Departments.HISTORY,
-        'Homewood: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN,
-        'Homewood: Misc. Engineering': Departments.MISC_ENG,
+        '(Archived) Homewood: Misc. Engineering': Departments.MISC_ENG,
         'Homewood: Peer Advisor Drop In': Departments.PA_DROP_INS,
-        'Homewood: Physical and Environmental Sciences': Departments.PHYS_ENV_SCI,
+        '(Archived) Homewood: Physical and Environmental Sciences': Departments.PHYS_ENV_SCI,
         'Homewood: Pre-Health and Public Health Studies': Departments.PRE_PUB_HEALTH,
+        'Homewood: Sciences': Departments.SCIENCES,
         'Homewood: SOAR: Athletics': Departments.SOAR_ATHLETICS,
+        'Homewood: SOAR: CSS': Departments.SOAR_CSS,
         'Homewood: SOAR: Diversity and Inclusion': Departments.SOAR_DIV_INCL,
         'Homewood: SOAR: First Year Experience (KSAS)': Departments.SOAR_FYE_KSAS,
         'Homewood: SOAR: First Year Experience (WSE)': Departments.SOAR_FYE_WSE,
         'Homewood: SOAR: Student Leadership and Involvement': Departments.SOAR_SLI,
-        'Homewood: Social Sciences: International Studies, Sociology, and Anthropology': Departments.INT_SOC_ANTH,
+        'Homewood: Social Sciences': Departments.SOCIAL_SCI,
+        '(Archived) Homewood: Social Sciences: International Studies, Sociology, and Anthropology': Departments.INT_SOC_ANTH,
+        '(Archived) Homewood: Social Sciences: Political Science, Economics, and Finance': Departments.POL_ECON_FIN,
         'Homewood: Arts, Media, and Marketing Academy': Departments.AMM_ACADEMY,
         'Homewood: Nonprofit and Government Academy': Departments.NP_GOV_ACADEMY,
         'Homewood: Consulting Academy': Departments.CONSUTING_ACADEMY,
