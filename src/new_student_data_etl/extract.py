@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import pandas as pd
 
@@ -6,6 +7,7 @@ from src.common import BrowsingSession
 from src.common import CONFIG
 from src.common import read_csv
 from src.common import InsightsReport
+from src.data_model import EngagementRecord
 from src.new_student_data_etl.sis_connection import SISConnection
 from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
 
@@ -37,3 +39,8 @@ def get_athlete_data(filepath) -> pd.DataFrame:
 def get_handshake_data() -> pd.DataFrame:
     with BrowsingSession() as browser:
         return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))
+
+
+def get_this_years_engagement_data(filepath) -> pd.DataFrame:
+    engagement_data = pd.read_csv(filepath, encoding='ISO-8859-1')
+    return engagement_data.loc[engagement_data['academic_year'] == EngagementRecord.academic_year(datetime.now())]

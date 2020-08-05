@@ -103,7 +103,7 @@ class EngagementRecord:
                                                                student_handshake_id),
             'handshake_engagement_id': handshake_engagement_id,
             'engagement_type': engagement_type.value,
-            'academic_year': self._academic_year(start_date_time),
+            'academic_year': self.academic_year(start_date_time),
             'semester': self._semester(start_date_time),
             'start_date_time': start_date_time,
             'medium': medium.value,
@@ -121,7 +121,7 @@ class EngagementRecord:
         return f'{engagement_type.value}_{handshake_engagement_id}_{student_handshake_id}'
 
     @staticmethod
-    def _academic_year(date):
+    def academic_year(date):
         if date.month < 6:
             return date.year
         else:

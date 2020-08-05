@@ -5,6 +5,7 @@ from src.new_student_data_etl.extract import get_handshake_data
 from src.new_student_data_etl.extract import get_major_metadata
 from src.new_student_data_etl.extract import get_sis_data
 from src.new_student_data_etl.extract import get_athlete_data
+from src.new_student_data_etl.extract import get_this_years_engagement_data
 from src.new_student_data_etl.lde_roster_file import format_for_roster_file
 from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
 from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
@@ -47,7 +48,7 @@ def run_student_etl():
 
     print('Creating roster file...')
     roster_file = format_for_roster_file(pd.read_excel('C:\\Users\\cedwar42\\Downloads\\student_data.xlsx'))
-    engagement_data = count_engagements_by_type(pd.read_csv('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv', encoding='ISO-8859-1'))
+    engagement_data = count_engagements_by_type(get_this_years_engagement_data('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv'))
     roster_file = merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
     roster_dir = 'C:\\Users\\cedwar42\\Downloads\\lde_rosters\\'
