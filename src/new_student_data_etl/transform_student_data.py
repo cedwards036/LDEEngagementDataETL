@@ -5,7 +5,7 @@ from src.data_model import Departments
 
 
 def clean_potentially_mistyped_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
-    string_bool_fields = ['is_athlete', 'is_first_generation', 'is_pell_eligible', 'is_urm']
+    string_bool_fields = ['is_first_generation', 'is_pell_eligible', 'is_urm']
     for field in string_bool_fields:
         students = clean_mistyped_bool_field(students, field)
     return students
@@ -63,6 +63,7 @@ def add_athlete_data(students: pd.DataFrame, athlete_data: pd.DataFrame) -> pd.D
     students = students.merge(athlete_data, how='left', left_on='hopkins_id', right_on='University ID')
     students = students.drop(columns=['University ID'])
     students = students.rename(columns={'Sport': 'sport'})
+    students['is_athlete'] = ~students['sport'].isna()
     return students
 
 def make_student_department_table(students: pd.DataFrame) -> pd.DataFrame:

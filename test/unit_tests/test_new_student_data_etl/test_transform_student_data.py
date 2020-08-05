@@ -85,7 +85,13 @@ class TestAddAthleteData(unittest.TestCase):
     def test_left_joins_student_data_to_athlete_data_using_hopkins_id_as_the_join_key(self):
         students = pd.DataFrame({'hopkins_id': ['fie673']})
         athlete_data = pd.DataFrame({'University ID': ['fie673'], 'Sport': ['Soccer']})
-        expected = pd.DataFrame({'hopkins_id': ['fie673'], 'sport': ['Soccer']})
+        expected = pd.DataFrame({'hopkins_id': ['fie673'], 'sport': ['Soccer'], 'is_athlete': [True]})
+        assert_frame_equal(expected, add_athlete_data(students, athlete_data))
+
+    def test_sets_is_athlete_to_false_if_sport_is_null(self):
+        students = pd.DataFrame({'hopkins_id': ['fie673']})
+        athlete_data = pd.DataFrame({'University ID': ['xjf84e'], 'Sport': ['Basketball']})
+        expected = pd.DataFrame({'hopkins_id': ['fie673'], 'sport': [None], 'is_athlete': [False]})
         assert_frame_equal(expected, add_athlete_data(students, athlete_data))
 
 

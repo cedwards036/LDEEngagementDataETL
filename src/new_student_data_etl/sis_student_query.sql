@@ -40,7 +40,6 @@ select
 	gender,
 	home_location,
 	system_label_names as system_labels,
-	athlete as is_athlete,
 	first_generation as is_first_generation,
 	veteran as is_veteran,
 	work_study_eligible,
