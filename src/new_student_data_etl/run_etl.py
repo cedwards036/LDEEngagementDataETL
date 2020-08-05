@@ -22,9 +22,15 @@ from src.new_student_data_etl.transform_student_data import merge_with_student_d
 def run_student_etl():
     print('Extracting SIS data...')
     students = clean_potentially_mistyped_bool_fields(get_sis_data())
+
     print('Extracting athlete roster...')
     athlete_data = get_athlete_data('S:\\Reporting & Data\\Life Design Educator Engagement\\StudentData\\student_athlete_roster_2020_06_09.csv')
     students = add_athlete_data(students, athlete_data)
+
+    print('Extracting handshake data...')
+    handshake_data = get_handshake_data()
+    students = merge_with_handshake_data(students, handshake_data)
+
     print('Extracting major metadata...')
     major_metadata = get_major_metadata()
 
@@ -35,10 +41,6 @@ def run_student_etl():
     student_departments = make_student_department_table(students)
     student_departments.to_csv('C:\\Users\\cedwar42\\Downloads\\student_departments.csv', index=False)
     students = merge_with_student_department_data(students, student_departments)
-
-    print('Extracting handshake data...')
-    handshake_data = get_handshake_data()
-    students = merge_with_handshake_data(students, handshake_data)
 
     print('Writing output to file...')
     students.to_excel('C:\\Users\\cedwar42\\Downloads\\student_data.xlsx', index=False)

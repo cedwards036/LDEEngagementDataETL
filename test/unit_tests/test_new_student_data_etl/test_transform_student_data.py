@@ -172,6 +172,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': [],
             'is_athlete': [],
             'is_urm': [],
+            'is_first_generation': [],
+            'is_pell_eligible': [],
             'major_department': []
         })
         expected = pd.DataFrame({
@@ -187,6 +189,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Senior', 'Senior', 'Junior'],
             'is_athlete': [False, False, False],
             'is_urm': [False, False, False],
+            'is_first_generation': [False, False, False],
+            'is_pell_eligible': [False, False, False],
             'major_department': ['pol_sci_econ', 'comp_elec_eng', 'pol_sci_econ']
         })
         expected = pd.DataFrame({
@@ -202,6 +206,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Freshman'],
             'is_athlete': [False],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': ['pol_sci_econ']
         })
         expected = pd.DataFrame({
@@ -217,6 +223,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Freshman'],
             'is_athlete': [False],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': [Departments.SOAR_FYE_KSAS.value.name]
         })
         expected = pd.DataFrame({
@@ -232,6 +240,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Freshman'],
             'is_athlete': [False],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': ['comp_sci']
         })
         expected = pd.DataFrame({
@@ -247,6 +257,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Freshman'],
             'is_athlete': [False],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': ['bme']
         })
         expected = pd.DataFrame({
@@ -262,6 +274,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Sophomore'],
             'is_athlete': [True],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': ['comp_sci']
         })
         expected = pd.DataFrame({
@@ -270,20 +284,28 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'jf398f'))
 
-    def test_includes_soar_diversity_and_inclusion_department_for_urms(self):
+    def test_includes_soar_sli_and_div_incl_for_all_fli_and_urms(self):
         students = pd.DataFrame({
-            'hopkins_id': ['pmle45'],
-            'college': ['wse'],
-            'school_year': ['Sophomore'],
-            'is_athlete': [False],
-            'is_urm': [True],
-            'major_department': ['elec_eng']
+            'hopkins_id': ['pmle45', 'fjr84', '9f8j39'],
+            'college': ['wse', 'wse', 'ksas'],
+            'school_year': ['Sophomore', 'Junior', 'Senior'],
+            'is_athlete': [False, False, False],
+            'is_urm': [True, False, False],
+            'is_first_generation': [False, True, False],
+            'is_pell_eligible': [False, False, True],
+            'is_pre_med': [False, False, False],
+            'major_department': ['elec_eng', 'english', 'science']
         })
         expected = pd.DataFrame({
-            'hopkins_id': ['pmle45', 'pmle45'],
-            'department': ['elec_eng', Departments.SOAR_DIV_INCL.value.name]
+            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'fjr84', 'fjr84', 'fjr84', '9f8j39', '9f8j39', '9f8j39'],
+            'department': ['elec_eng', Departments.SOAR_DIV_INCL.value.name, Departments.SOAR_SLI.value.name,
+                           'english', Departments.SOAR_DIV_INCL.value.name, Departments.SOAR_SLI.value.name,
+                           'science', Departments.SOAR_DIV_INCL.value.name, Departments.SOAR_SLI.value.name]
         })
-        assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
+        actual = pd.concat([make_student_department_subtable(students, 'pmle45'),
+                            make_student_department_subtable(students, 'fjr84'),
+                            make_student_department_subtable(students, '9f8j39')]).reset_index(drop=True)
+        assert_frame_equal(expected, actual)
 
     def test_does_not_include_soar_diversity_and_inclusion_department_is_urm_is_nan(self):
         students = pd.DataFrame({
@@ -292,11 +314,33 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Sophomore'],
             'is_athlete': [False],
             'is_urm': [np.nan],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
+            'is_pre_med': [False],
             'major_department': ['elec_eng']
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45'],
             'department': ['elec_eng']
+        })
+        assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
+
+    def test_includes_css_department_for_pre_med_fli_urms(self):
+        students = pd.DataFrame({
+            'hopkins_id': ['pmle45'],
+            'college': ['wse'],
+            'school_year': ['Sophomore'],
+            'is_athlete': [False],
+            'is_urm': [True],
+            'is_first_generation': [False],
+            'is_pell_eligible': [True],
+            'is_pre_med': [True],
+            'major_department': ['elec_eng']
+        })
+        expected = pd.DataFrame({
+            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'pmle45'],
+            'department': ['elec_eng', Departments.SOAR_CSS.value.name,
+                           Departments.SOAR_DIV_INCL.value.name, Departments.SOAR_SLI.value.name]
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
 
@@ -307,15 +351,19 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'school_year': ['Freshman', 'Freshman'],
             'is_athlete': [True, True],
             'is_urm': [True, True],
+            'is_first_generation': [False, False],
+            'is_pell_eligible': [False, False],
+            'is_pre_med': [False, False],
             'major_department': ['elec_eng', Departments.SOAR_FYE_KSAS.value.name]
         })
         expected = pd.DataFrame({
-            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'pmle45'],
+            'hopkins_id': ['pmle45', 'pmle45', 'pmle45', 'pmle45', 'pmle45'],
             'department': [
                 Departments.SOAR_FYE_KSAS.value.name,
                 Departments.SOAR_FYE_WSE.value.name,
                 Departments.SOAR_ATHLETICS.value.name,
-                Departments.SOAR_DIV_INCL.value.name]
+                Departments.SOAR_DIV_INCL.value.name,
+                Departments.SOAR_SLI.value.name]
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'pmle45'))
 
@@ -344,6 +392,8 @@ class TestMakeStudentDepartmentsTable(unittest.TestCase):
             'school_year': ['Freshman'],
             'is_athlete': [False],
             'is_urm': [False],
+            'is_first_generation': [False],
+            'is_pell_eligible': [False],
             'major_department': ['pol_sci_econ']
         })
         expected = pd.DataFrame({
@@ -359,6 +409,8 @@ class TestMakeStudentDepartmentsTable(unittest.TestCase):
             'school_year': ['Sophomore', 'Sophomore', 'Junior'],
             'is_athlete': [False, False, False],
             'is_urm': [False, False, False],
+            'is_first_generation': [False, False, False],
+            'is_pell_eligible': [False, False, False],
             'major_department': ['pol_sci_econ', 'brain_sci', 'comp_sci']
         })
         expected = pd.DataFrame({

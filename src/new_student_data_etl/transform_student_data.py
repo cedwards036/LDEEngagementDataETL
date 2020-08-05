@@ -99,8 +99,11 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
                 table_df = append_department(hopkins_id, Departments.SOAR_FYE_WSE.value.name, table_df)
         if student_df.iloc[0]['is_athlete'] == True:
             table_df = append_department(hopkins_id, Departments.SOAR_ATHLETICS.value.name, table_df)
-        if student_df.iloc[0]['is_urm'] == True:
+        if student_df.iloc[0]['is_urm'] == True or student_df.iloc[0]['is_first_generation'] == True or student_df.iloc[0]['is_pell_eligible'] == True:
+            if student_df.iloc[0]['is_pre_med'] == True:
+                table_df = append_department(hopkins_id, Departments.SOAR_CSS.value.name, table_df)
             table_df = append_department(hopkins_id, Departments.SOAR_DIV_INCL.value.name, table_df)
+            table_df = append_department(hopkins_id, Departments.SOAR_SLI.value.name, table_df)
         return table_df
 
     def append_department(hopkins_id: str, department: str, table: pd.DataFrame) -> pd.DataFrame:
