@@ -59,5 +59,5 @@ left join (
 where (system_label_names like '%system gen: hwd;%'
    or system_label_names like '%system gen: dual degree hwd;%')
    and system_label_names not like '%system gen: ep;%'
-   and not school_year_name = 'Doctorate'
+   and (not school_year_name = 'Doctorate' or [primary_education:major_names] = 'Ph.D.: Applied Mathematics & Statistics')
    and not school_year_name = 'Postdoctoral Studies'
