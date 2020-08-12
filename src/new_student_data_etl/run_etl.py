@@ -1,4 +1,5 @@
 import pandas as pd
+import glob
 
 from src.file_writers import write_roster_excel_files
 from src.new_student_data_etl.extract import get_handshake_data
@@ -44,10 +45,14 @@ def run_student_etl():
     students = merge_with_student_department_data(students, student_departments)
 
     print('Writing output to file...')
-    students.to_excel('C:\\Users\\cedwar42\\Downloads\\student_data.xlsx', index=False)
+    students.to_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\summer_2020_student_data.xlsx', index=False)
+
+    print('Combining student data files...')
+    combined = pd.concat([pd.read_excel(filename) for filename in glob.glob("S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\*.xlsx")], sort=True)
+    combined.to_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\student_data.xlsx', index=False)
 
     print('Creating roster file...')
-    roster_file = format_for_roster_file(pd.read_excel('C:\\Users\\cedwar42\\Downloads\\student_data.xlsx'))
+    roster_file = format_for_roster_file(pd.read_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\summer_2020_student_data.xlsx'))
     engagement_data = count_engagements_by_type(get_this_years_engagement_data('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv'))
     roster_file = merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
