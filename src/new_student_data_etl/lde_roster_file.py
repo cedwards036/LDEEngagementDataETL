@@ -51,6 +51,7 @@ def filter_columns_for_roster_file(students: pd.DataFrame) -> pd.DataFrame:
         'departments',
         'colleges',
         'majors',
+        'education_start_date',
         'school_year',
         'is_pre_med',
         'has_activated_handshake',
