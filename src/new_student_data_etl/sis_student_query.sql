@@ -30,13 +30,14 @@ select
 	[primary_education:college_name] as primary_college,
 	[primary_education:start_date] as education_start_date,
 	[primary_education:end_date] as education_end_date,
-	work_authorization_name as visa_status,
-	(case
-		when work_authorization_name = 'U.S. Citizen' then 'U.S. Citizen or Permanant Resident'
-		when work_authorization_name = 'Permanent U.S. Resident' then 'U.S. Citizen or Permanant Resident'
-		when work_authorization_name = '' then ''
-		else 'Not U.S. Citizen'
-	end) as citizenship,
+-- 	work_authorization_name as visa_status,
+-- 	(case
+-- 		when work_authorization_name = 'U.S. Citizen' then 'U.S. Citizen or Permanant Resident'
+-- 		when work_authorization_name = 'Permanent U.S. Resident' then 'U.S. Citizen or Permanant Resident'
+-- 		when work_authorization_name = '' then '' 
+-- 		else 'Not U.S. Citizen'
+-- 	end) as citizenship,
+    '' as citizenship,
 	gender,
 	home_location,
 	system_label_names as system_labels,
