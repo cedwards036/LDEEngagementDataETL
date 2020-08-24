@@ -45,7 +45,7 @@ class RangeInsightsDateField(InsightsDateField):
         self.date_field_title = date_field_title
 
     def set_report_date_range(self, insights_page: InsightsPage):
-        START_DATE = self._first_date_of_current_academic_year()
+        START_DATE = datetime(2019, 7, 1)
         END_DATE = datetime.today()
         insights_page.set_date_range_filter(field_category=self.date_field_category,
                                             field_title=self.date_field_title,
