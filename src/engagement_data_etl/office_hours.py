@@ -87,6 +87,8 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         '(Archived) Homewood: Humanities: Language, Literatures, Film and Media': Departments.LIT_LANG_FILM,
         '(Archived) Homewood: History': Departments.HISTORY,
         'Homewood: Humanities': Departments.HUMANITIES,
+        'Homewood: Materials Science Engineering': Departments.MAT_SCI,
+        'Homewood: Mechanical Engineering': Departments.MECH_ENG,
         '(Archived) Homewood: Misc. Engineering': Departments.MISC_ENG,
         'Homewood: Peer Advisor Drop In': Departments.PA_DROP_INS,
         '(Archived) Homewood: Physical and Environmental Sciences': Departments.PHYS_ENV_SCI,
