@@ -1,63 +1,50 @@
 import pandas as pd
 import glob
 
+from src.common import CONFIG
 from src.file_writers import write_roster_excel_files
-from src.new_student_data_etl.extract import get_handshake_data
-from src.new_student_data_etl.extract import get_major_metadata
-from src.new_student_data_etl.extract import get_sis_data
-from src.new_student_data_etl.extract import get_athlete_data
-from src.new_student_data_etl.extract import get_this_years_engagement_data
-from src.new_student_data_etl.lde_roster_file import format_for_roster_file
-from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
+import src.new_student_data_etl.extract as extract
+from src.new_student_data_etl.lde_roster_file import format_for_roster_file, split_into_separate_department_rosters
 from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
-from src.new_student_data_etl.transform_student_data import clean_potentially_mistyped_bool_fields
-from src.new_student_data_etl.transform_student_data import add_athlete_data
-from src.new_student_data_etl.transform_student_data import add_major_metadata
-from src.new_student_data_etl.transform_student_data import clean_majors
-from src.new_student_data_etl.transform_student_data import make_student_department_table
-from src.new_student_data_etl.transform_student_data import melt_majors
-from src.new_student_data_etl.transform_student_data import merge_with_engagement_data
-from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
-from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
+import src.new_student_data_etl.transform_student_data as ts
 
 
 def run_student_etl():
     print('Extracting SIS data...')
-    students = clean_potentially_mistyped_bool_fields(get_sis_data())
+    students = ts.clean_potentially_mistyped_bool_fields(extract.get_sis_data())
 
     print('Extracting athlete roster...')
-    athlete_data = get_athlete_data('S:\\Reporting & Data\\Life Design Educator Engagement\\StudentData\\student_athlete_roster_2020_06_09.csv')
-    students = add_athlete_data(students, athlete_data)
+    athlete_data = extract.get_athlete_data(CONFIG['athlete_filepath'])
+    students = ts.add_athlete_data(students, athlete_data)
 
     print('Extracting handshake data...')
-    handshake_data = get_handshake_data()
-    students = merge_with_handshake_data(students, handshake_data)
+    handshake_data = extract.get_handshake_data()
+    students = ts.merge_with_handshake_data(students, handshake_data)
 
     print('Extracting major metadata...')
-    major_metadata = get_major_metadata()
+    major_metadata = extract.get_major_metadata()
 
     print('Adding major and department data to student records...')
-    students = melt_majors(students)
-    students = clean_majors(students)
-    students = add_major_metadata(students, major_metadata)
-    student_departments = make_student_department_table(students)
-    student_departments.to_csv('C:\\Users\\cedwar42\\Downloads\\student_departments.csv', index=False)
-    students = merge_with_student_department_data(students, student_departments)
+    students = ts.melt_majors(students)
+    students = ts.clean_majors(students)
+    students = ts.add_major_metadata(students, major_metadata)
+    student_departments = ts.make_student_department_table(students)
+    student_departments.to_csv(CONFIG['student_departments_filepath'], index=False)
+    students = ts.merge_with_student_department_data(students, student_departments)
 
     print('Writing output to file...')
-    students.to_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\summer_2020_student_data.xlsx', index=False)
+    students.to_excel(CONFIG['current_semester_data_filepath'], index=False)
 
     print('Combining student data files...')
-    combined = pd.concat([pd.read_excel(filename) for filename in glob.glob("S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\*.xlsx")], sort=True)
-    combined.to_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\student_data.xlsx', index=False)
+    combined = pd.concat([pd.read_excel(filename) for filename in glob.glob(CONFIG['semester_data_dir'] + "\\*.xlsx")], sort=True)
+    combined.to_excel(CONFIG['student_data_filepath'], index=False)
 
     print('Creating roster file...')
-    roster_file = format_for_roster_file(pd.read_excel('S:\\Reporting & Data\\Life Design Educator Engagement\\semester_datasets\\summer_2020_student_data.xlsx'))
-    engagement_data = count_engagements_by_type(get_this_years_engagement_data('S:\\Reporting & Data\\Life Design Educator Engagement\\engagement_data.csv'))
-    roster_file = merge_with_engagement_data(roster_file, engagement_data)
+    roster_file = format_for_roster_file(pd.read_excel(CONFIG['current_semester_data_filepath']))
+    engagement_data = count_engagements_by_type(extract.get_this_years_engagement_data(CONFIG['engagement_data_filepath']))
+    roster_file = ts.merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
-    roster_dir = 'C:\\Users\\cedwar42\\Downloads\\lde_rosters\\'
-    write_roster_excel_files(roster_dir, department_roster_files)
+    write_roster_excel_files(CONFIG['lde_roster_dir'], department_roster_files)
 
     print('Done!')
 
