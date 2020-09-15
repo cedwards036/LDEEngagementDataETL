@@ -26,7 +26,7 @@ class EventFields:
 
 class CareerFairFields:
     ID = 'Career Fair ID'
-    START_DATE_TIME = 'Career Fair Session Session Start Time'
+    START_DATE_TIME = 'Career Fair Session Start Time'
     NAME = 'Career Fair Name'
     STUDENT_ID = 'Student Attendees ID'
     IS_PRE_REGISTERED = 'Career Fair Session Attendees Pre-Registered? (Yes / No)'

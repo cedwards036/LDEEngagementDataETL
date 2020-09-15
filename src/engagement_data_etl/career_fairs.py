@@ -9,7 +9,7 @@ from src.handshake_fields import CareerFairFields
 CAREER_FAIRS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vY2FyZWVyX2ZhaXJfc2Vzc2lvbl9hdHRlbmRlZXM_cWlkPXlKVmZobzk5enFkY2pJMm42aHYxd0UmZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls',
     date_field=RangeInsightsDateField(date_field_category='Career Fair Session',
-                                      date_field_title='Session Start Date')
+                                      date_field_title='Start Date')
 )
 
 
