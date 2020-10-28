@@ -12,6 +12,7 @@ import src.new_student_data_etl.transform_student_data as ts
 def run_student_etl():
     print('Extracting SIS data...')
     students = ts.clean_potentially_mistyped_bool_fields(extract.get_sis_data())
+    students = students.merge(extract.get_pell_data(), how='left', on='hopkins_id')
 
     print('Extracting athlete roster...')
     athlete_data = extract.get_athlete_data(CONFIG['athlete_filepath'])
@@ -44,7 +45,8 @@ def run_student_etl():
     engagement_data = count_engagements_by_type(extract.get_this_years_engagement_data(CONFIG['engagement_data_filepath']))
     roster_file = ts.merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
-    write_roster_excel_files(CONFIG['lde_roster_dir'], department_roster_files)
+    for dir in CONFIG['lde_roster_dirs']:
+        write_roster_excel_files(dir, department_roster_files)
 
     print('Done!')
 

@@ -5,7 +5,7 @@ from src.data_model import Departments
 
 
 def clean_potentially_mistyped_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
-    string_bool_fields = ['is_first_generation', 'is_pell_eligible', 'is_urm']
+    string_bool_fields = ['is_first_generation', 'is_urm']
     for field in string_bool_fields:
         students = clean_mistyped_bool_field(students, field)
     return students

@@ -30,35 +30,41 @@ select
 	[primary_education:college_name] as primary_college,
 	[primary_education:start_date] as education_start_date,
 	[primary_education:end_date] as education_end_date,
--- 	work_authorization_name as visa_status,
--- 	(case
--- 		when work_authorization_name = 'U.S. Citizen' then 'U.S. Citizen or Permanant Resident'
--- 		when work_authorization_name = 'Permanent U.S. Resident' then 'U.S. Citizen or Permanant Resident'
--- 		when work_authorization_name = '' then '' 
--- 		else 'Not U.S. Citizen'
--- 	end) as citizenship,
-    '' as citizenship,
+    citizenship,
 	gender,
 	home_location,
 	system_label_names as system_labels,
 	first_generation as is_first_generation,
 	veteran as is_veteran,
-	work_study_eligible,
-	pell.is_pell_eligible
+	work_study_eligible
+	--pell.is_pell_eligible
 from JHU_SSS_SIStoHandShakeStaging as handshake
 
---add pell proxy data
+--add citizenship data
 left join (
 	select
 		p.Identifier1,
-		(case when attribute_value = 'Y' then 'TRUE' else 'FALSE' end) as is_pell_eligible
-	from JHU_SSS_ASEN_Starfish_UserAttributes s
-	left join cmn_persons p on s.user_integration_id = p.Identifier1
-	where attribute_key = 'IS_PELL_ELIGIBLE'
-) as pell on pell.Identifier1 = handshake.Identifier1
+		(case
+			when p.IsInternational = 'Y' and c.IsPermanentUSResident = 'N' then 'Not U.S. Citizen'
+			else 'U.S. Citizen or Permanant Resident'
+		end) as citizenship
+	from CMN_Persons p
+left join CMN_PersonsCitizenshipInfo c on p.CMN_PersonsID = c.CMN_PersonsID
+) as citizen on citizen.Identifier1 = handshake.Identifier1
+
+--add pell proxy data
+--left join (
+--	select
+--		p.Identifier1,
+--		(case when attribute_value = 'Y' then 'TRUE' else 'FALSE' end) as is_pell_eligible
+--	from JHU_SSS_ASEN_Starfish_UserAttributes s
+--	left join cmn_persons p on s.user_integration_id = p.Identifier1
+--	where attribute_key = 'IS_PELL_ELIGIBLE'
+--) as pell on pell.Identifier1 = handshake.Identifier1
 
 where (system_label_names like '%system gen: hwd;%'
    or system_label_names like '%system gen: dual degree hwd;%')
    and system_label_names not like '%system gen: ep;%'
    and (not school_year_name = 'Doctorate' or [primary_education:major_names] = 'Ph.D.: Applied Mathematics & Statistics')
    and not school_year_name = 'Postdoctoral Studies'
+   and [primary_education:currently_attending] = 'TRUE';
