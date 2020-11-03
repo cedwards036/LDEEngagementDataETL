@@ -41,6 +41,12 @@ def get_athlete_data(filepath) -> pd.DataFrame:
     return athlete_data
 
 
+def get_sli_data(filepath) -> pd.DataFrame:
+    sli_data = pd.read_excel(filepath)
+    sli_data = sli_data[['hopkins_id', 'is_top_4_officer']]
+    return sli_data
+
+
 def get_handshake_data() -> pd.DataFrame:
     with BrowsingSession() as browser:
         return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))

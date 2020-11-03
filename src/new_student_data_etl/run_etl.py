@@ -18,6 +18,10 @@ def run_student_etl():
     athlete_data = extract.get_athlete_data(CONFIG['athlete_filepath'])
     students = ts.add_athlete_data(students, athlete_data)
 
+    print('Extracting SLI roster...')
+    sli_data = extract.get_sli_data(CONFIG['sli_filepath'])
+    students = ts.add_sli_data(students, sli_data)
+
     print('Extracting handshake data...')
     handshake_data = extract.get_handshake_data()
     students = ts.merge_with_handshake_data(students, handshake_data)

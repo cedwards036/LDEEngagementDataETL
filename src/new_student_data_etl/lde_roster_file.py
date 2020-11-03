@@ -57,6 +57,8 @@ def filter_columns_for_roster_file(students: pd.DataFrame) -> pd.DataFrame:
         'has_activated_handshake',
         'has_completed_profile',
         'is_athlete',
+        'is_in_org',
+        'is_top_4_officer',
         'gender',
         'is_first_generation',
         'is_pell_eligible',
