@@ -34,6 +34,7 @@ select
 	gender,
 	home_location,
 	system_label_names as system_labels,
+	(case when system_label_names like '%system gen: ep%' then 'TRUE' else 'FALSE' end) as is_ep,
 	first_generation as is_first_generation,
 	veteran as is_veteran,
 	work_study_eligible
@@ -62,9 +63,9 @@ left join CMN_PersonsCitizenshipInfo c on p.CMN_PersonsID = c.CMN_PersonsID
 --	where attribute_key = 'IS_PELL_ELIGIBLE'
 --) as pell on pell.Identifier1 = handshake.Identifier1
 
-where (system_label_names like '%system gen: hwd;%'
-   or system_label_names like '%system gen: dual degree hwd;%')
-   and system_label_names not like '%system gen: ep;%'
+where (system_label_names like '%system gen: hwd'
+	or system_label_names like '%system gen: hwd;%'
+   or system_label_names like '%system gen: dual degree hwd%')
    and (not school_year_name = 'Doctorate' or [primary_education:major_names] = 'Ph.D.: Applied Mathematics & Statistics')
    and not school_year_name = 'Postdoctoral Studies'
    and [primary_education:currently_attending] = 'TRUE';

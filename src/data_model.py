@@ -72,6 +72,7 @@ class Departments(Enum):
     NP_GOV_ACADEMY = Department('np_gov_academy', Categories.LDL_ACADEMY)
     PRE_PROF = Department('pre_prof', Categories.PRE_PROF)
     NO_DEPARTMENT = Department('no_dept', Categories.LDL_NO_DEPARTMENT)
+    EP = Department('wse_ep', Categories.LDL_DEPARTMENT)
 
 
 class EngagementTypes(Enum):

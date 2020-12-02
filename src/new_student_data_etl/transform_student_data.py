@@ -5,7 +5,7 @@ from src.data_model import Departments
 
 
 def clean_potentially_mistyped_bool_fields(students: pd.DataFrame) -> pd.DataFrame:
-    string_bool_fields = ['is_first_generation', 'is_urm']
+    string_bool_fields = ['is_first_generation', 'is_urm', 'is_ep']
     for field in string_bool_fields:
         students = clean_mistyped_bool_field(students, field)
     return students
@@ -55,6 +55,7 @@ def clean_majors(students: pd.DataFrame) -> pd.DataFrame:
 def add_major_metadata(students: pd.DataFrame, major_metadata: pd.DataFrame) -> pd.DataFrame:
     merged_data = students.merge(major_metadata, how='left', on='major')
     merged_data = merged_data.rename(columns={'department': 'major_department'})
+    merged_data.loc[merged_data['is_ep'], ['college', 'major_department']] = ['wse', Departments.EP.value.name]
     return merged_data
 
 
@@ -90,6 +91,9 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
     def is_undergrad(student_df: pd.DataFrame) -> bool:
         return student_df.iloc[0]['school_year'] in ['Freshman', 'Sophomore', 'Junior', 'Senior']
 
+    def is_ep(student_df: pd.DataFrame) -> bool:
+        return student_df.iloc[0]['is_ep']
+
     def is_bme(student_df: pd.DataFrame) -> bool:
         return student_df.iloc[0]['major_department'] == Departments.BME.value.name
 
@@ -100,6 +104,9 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
         major_depts = student_df[['hopkins_id', 'major_department']]
         major_depts = major_depts.rename(columns={'major_department': 'department'})
         return pd.concat([major_depts, department_table])
+
+    def add_ep_dept(department_table: pd.DataFrame) -> pd.DataFrame:
+        return append_department(hopkins_id, Departments.EP.value.name, department_table)
 
     def add_soar_departments(student_df: pd.DataFrame, table_df: pd.DataFrame) -> pd.DataFrame:
         if student_df.iloc[0]['is_athlete'] == True:
