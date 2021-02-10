@@ -22,7 +22,7 @@ class TestCleanMistypedBoolField(unittest.TestCase):
 
     def test_converts_string_representations_of_true_and_false_to_bools(self):
         df = pd.DataFrame({'field': ['TRUE', 'tRuE', 'False', 'falsE']})
-        expected = pd.DataFrame({'field': [True, True, False, False]}).astype(object)
+        expected = pd.DataFrame({'field': [True, True, False, False]})
         assert_frame_equal(expected, clean_mistyped_bool_field(df, 'field'))
 
     def test_converts_float_representations_of_true_and_false_to_bools(self):
