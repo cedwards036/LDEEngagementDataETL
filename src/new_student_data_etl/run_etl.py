@@ -11,8 +11,10 @@ import src.new_student_data_etl.transform_student_data as ts
 
 def run_student_etl():
     print('Extracting SIS data...')
-    students = ts.clean_potentially_mistyped_bool_fields(extract.get_sis_data())
+    students = ts.clean_potentially_mistyped_bool_fields(extract.get_student_sis_data())
     students = students.merge(extract.get_pell_data(), how='left', on='hopkins_id')
+    wgs_students = extract.get_wgs_sis_data()
+    students = ts.add_wgs_data(students, wgs_students)
 
     print('Extracting athlete roster...')
     athlete_data = extract.get_athlete_data(CONFIG['athlete_filepath'])

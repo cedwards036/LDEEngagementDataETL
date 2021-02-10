@@ -21,8 +21,15 @@ def read_file_to_string(file_path) -> str:
         return file.read()
 
 
-def get_sis_data() -> pd.DataFrame:
-    sis_query_filepath = f'{os.path.dirname(os.path.abspath(__file__))}/sis_student_query.sql'
+def get_student_sis_data() -> pd.DataFrame:
+    return get_sis_data(f'{os.path.dirname(os.path.abspath(__file__))}/sis_student_query.sql')
+
+
+def get_wgs_sis_data() -> pd.DataFrame:
+    return get_sis_data(f'{os.path.dirname(os.path.abspath(__file__))}/wgs_students.sql')
+
+
+def get_sis_data(sis_query_filepath) -> pd.DataFrame:
     with SISConnection() as cursor:
         return pd.DataFrame(cursor.select(read_file_to_string(sis_query_filepath)))
 

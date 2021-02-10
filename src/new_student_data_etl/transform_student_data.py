@@ -67,6 +67,10 @@ def add_athlete_data(students: pd.DataFrame, athlete_data: pd.DataFrame) -> pd.D
     return students
 
 
+def add_wgs_data(students: pd.DataFrame, wgs_data: pd.DataFrame) -> pd.DataFrame:
+    return students.merge(wgs_data, how='left', on='hopkins_id')
+
+
 def add_sli_data(students: pd.DataFrame, sli_data: pd.DataFrame) -> pd.DataFrame:
     students = students.merge(sli_data, how='left', on='hopkins_id')
     students['is_in_org'] = ~students['is_top_4_officer'].isna()
@@ -105,9 +109,6 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
         major_depts = major_depts.rename(columns={'major_department': 'department'})
         return pd.concat([major_depts, department_table])
 
-    def add_ep_dept(department_table: pd.DataFrame) -> pd.DataFrame:
-        return append_department(hopkins_id, Departments.EP.value.name, department_table)
-
     def add_soar_departments(student_df: pd.DataFrame, table_df: pd.DataFrame) -> pd.DataFrame:
         if student_df.iloc[0]['is_athlete'] == True:
             table_df = append_department(hopkins_id, Departments.SOAR_ATHLETICS.value.name, table_df)
@@ -126,6 +127,11 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
                     table_df = append_department(hopkins_id, Departments.SOAR_DIV_INCL.value.name, table_df)
         return table_df
 
+    def add_wgs_dept(student_df: pd.DataFrame, table_df: pd.DataFrame) -> pd.DataFrame:
+        if (student_df.iloc[0]['wgs_affiliation_type'] in ['enrollment', 'minor']):
+            table_df = append_department(hopkins_id, Departments.WGS.value.name, table_df)
+        return table_df
+
     def append_department(hopkins_id: str, department: str, table: pd.DataFrame) -> pd.DataFrame:
         return table.append(pd.DataFrame(data={
             'hopkins_id': [hopkins_id],
@@ -138,6 +144,7 @@ def make_student_department_subtable(students: pd.DataFrame, hopkins_id: str) ->
         if (not is_freshman(student_df)) or is_bme(student_df):
             student_dept_table = add_major_depts(student_df, student_dept_table)
         student_dept_table = add_soar_departments(student_df, student_dept_table)
+        student_dept_table = add_wgs_dept(student_df, student_dept_table)
     student_dept_table = student_dept_table.drop_duplicates().reset_index(drop=True)
     return student_dept_table
 

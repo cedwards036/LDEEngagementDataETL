@@ -204,7 +204,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [],
             'major_department': [],
             'is_in_org': [],
-            'is_ep': []
+            'is_ep': [],
+            'wgs_affiliation_type': []
         })
         expected = pd.DataFrame({
             'hopkins_id': [],
@@ -223,13 +224,39 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False, False, False],
             'major_department': ['pol_sci_econ', 'comp_elec_eng', 'pol_sci_econ'],
             'is_in_org': [False, False, False],
-            'is_ep': [False, False, False]
+            'is_ep': [False, False, False],
+            'wgs_affiliation_type': [None, None, None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['jf38ru', 'jf38ru'],
             'department': ['pol_sci_econ', 'comp_elec_eng']
         })
         assert_frame_equal(expected, make_student_department_subtable(students, 'jf38ru'))
+
+    def test_adds_wgs_dept_for_students_enrolled_in_or_minoring_in_wgs(self):
+        students = pd.DataFrame({
+            'hopkins_id': ['93aml3', 'f89423'],
+            'college': ['ksas', 'ksas'],
+            'school_year': ['Junior', 'Senior'],
+            'is_athlete': [False, False],
+            'is_urm': [False, False],
+            'is_first_generation': [False, False],
+            'is_pell_eligible': [False, False],
+            'major_department': ['humanities', 'humanities'],
+            'is_in_org': [False, False],
+            'is_ep': [False, False],
+            'wgs_affiliation_type': ['enrollment', 'minor']
+        })
+        expected1 = pd.DataFrame({
+            'hopkins_id': ['93aml3', '93aml3'],
+            'department': ['humanities', Departments.WGS.value.name]
+        })
+        assert_frame_equal(expected1, make_student_department_subtable(students, '93aml3'))
+        expected2 = pd.DataFrame({
+            'hopkins_id': ['f89423', 'f89423'],
+            'department': ['humanities', Departments.WGS.value.name]
+        })
+        assert_frame_equal(expected2, make_student_department_subtable(students, 'f89423'))
 
     def test_ignores_major_dept_for_ksas_freshmen_but_includes_soar_fye_dept(self):
         students = pd.DataFrame({
@@ -242,7 +269,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['pol_sci_econ'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3'],
@@ -261,7 +289,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': [Departments.SOAR_FYE_KSAS.value.name],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3'],
@@ -280,7 +309,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['comp_sci'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3'],
@@ -299,7 +329,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['bme'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3', '93aml3'],
@@ -318,7 +349,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['comp_sci'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['jf398f', 'jf398f'],
@@ -337,7 +369,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['comp_sci'],
             'is_in_org': [True],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['jf398f', 'jf398f'],
@@ -357,7 +390,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pre_med': [False, False, False],
             'major_department': ['elec_eng', 'english', 'science'],
             'is_in_org': [False, False, False],
-            'is_ep': [False, False, False]
+            'is_ep': [False, False, False],
+            'wgs_affiliation_type': [None, None, None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45', 'pmle45', 'fjr84', 'fjr84', '9f8j39', '9f8j39'],
@@ -382,7 +416,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pre_med': [False, False, False],
             'major_department': ['elec_eng', 'english', 'science'],
             'is_in_org': [False, False, False],
-            'is_ep': [False, False, False]
+            'is_ep': [False, False, False],
+            'wgs_affiliation_type': [None, None, None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45', 'fjr84', '9f8j39'],
@@ -405,7 +440,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pre_med': [False],
             'major_department': ['elec_eng'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45'],
@@ -425,7 +461,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pre_med': [True],
             'major_department': ['elec_eng'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45', 'pmle45'],
@@ -445,7 +482,8 @@ class TestMakeStudentDepartmentsSubTable(unittest.TestCase):
             'is_pre_med': [False, False],
             'major_department': ['elec_eng', Departments.SOAR_FYE_KSAS.value.name],
             'is_in_org': [False, False],
-            'is_ep': [False, False]
+            'is_ep': [False, False],
+            'wgs_affiliation_type': [None, None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['pmle45', 'pmle45', 'pmle45'],
@@ -485,7 +523,8 @@ class TestMakeStudentDepartmentsTable(unittest.TestCase):
             'is_pell_eligible': [False],
             'major_department': ['pol_sci_econ'],
             'is_in_org': [False],
-            'is_ep': [False]
+            'is_ep': [False],
+            'wgs_affiliation_type': [None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3'],
@@ -504,7 +543,8 @@ class TestMakeStudentDepartmentsTable(unittest.TestCase):
             'is_pell_eligible': [False, False, False],
             'major_department': ['pol_sci_econ', 'brain_sci', 'comp_sci'],
             'is_in_org': [False, False, False],
-            'is_ep': [False, False, False]
+            'is_ep': [False, False, False],
+            'wgs_affiliation_type': [None, None, None]
         })
         expected = pd.DataFrame({
             'hopkins_id': ['93aml3', 'ndfe83', '78576e'],
