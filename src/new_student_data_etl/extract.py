@@ -12,7 +12,7 @@ from src.new_student_data_etl.sis_connection import SISConnection
 from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
 
 STUDENTS_INSIGHTS_REPORT = InsightsReport(
-    url='https://app.joinhandshake.com/analytics/explore_embed?insights_page=ZXhwbG9yZS9nZW5lcmF0ZWRfaGFuZHNoYWtlX3Byb2R1Y3Rpb24vc3R1ZGVudHM_cWlkPWZnaHJkMzI4OHFtTHhUdEpJYjJmaFImZW1iZWRfZG9tYWluPWh0dHBzOiUyRiUyRmFwcC5qb2luaGFuZHNoYWtlLmNvbSZ0b2dnbGU9Zmls',
+    url='https://app.joinhandshake.com/analytics/reports/9241',
 )
 
 
@@ -23,6 +23,10 @@ def read_file_to_string(file_path) -> str:
 
 def get_student_sis_data() -> pd.DataFrame:
     return get_sis_data(f'{os.path.dirname(os.path.abspath(__file__))}/sis_student_query.sql')
+
+
+def get_wse_masters_student_data() -> pd.DataFrame:
+    return get_sis_data(f'{os.path.dirname(os.path.abspath(__file__))}/current_eng_masters_students.sql')
 
 
 def get_wgs_sis_data() -> pd.DataFrame:

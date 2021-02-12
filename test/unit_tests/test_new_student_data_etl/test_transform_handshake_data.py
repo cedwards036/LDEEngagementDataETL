@@ -86,11 +86,13 @@ class TestTransformHandshakeData(unittest.TestCase):
             StudentFields.LABELS: ['system gen: bsph', 'hwd: pre-health'],
             StudentFields.AUTH_ID: ['jsmit2@johnshopkins.edu', 'ajohns4@johnshopkins.edu'],
             StudentFields.HAS_COMPLETED_PROFILE: ['No', 'Yes'],
+            StudentFields.USERNAME: ['fur567', 'ijf383'],
             'extra_field1': ['value1', 'value2'],
         })
 
         expected = pd.DataFrame({
             'jhed': ['jsmit2', 'ajohns4'],
+            'handshake_username': ['FUR567', 'IJF383'],
             'handshake_id': ['1104932', '820934'],
             'has_activated_handshake': [True, False],
             'has_completed_profile': [False, True],

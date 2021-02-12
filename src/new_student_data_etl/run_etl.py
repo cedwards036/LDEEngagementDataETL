@@ -15,6 +15,7 @@ def run_student_etl():
     students = students.merge(extract.get_pell_data(), how='left', on='hopkins_id')
     wgs_students = extract.get_wgs_sis_data()
     students = ts.add_wgs_data(students, wgs_students)
+    wse_masters_students = extract.get_wse_masters_student_data()
 
     print('Extracting athlete roster...')
     athlete_data = extract.get_athlete_data(CONFIG['athlete_filepath'])
@@ -27,6 +28,7 @@ def run_student_etl():
     print('Extracting handshake data...')
     handshake_data = extract.get_handshake_data()
     students = ts.merge_with_handshake_data(students, handshake_data)
+    wse_masters_students = ts.merge_with_handshake_data(wse_masters_students, handshake_data)
 
     print('Extracting major metadata...')
     major_metadata = extract.get_major_metadata()
@@ -41,6 +43,7 @@ def run_student_etl():
 
     print('Writing output to file...')
     students.to_excel(CONFIG['current_semester_data_filepath'], index=False)
+    wse_masters_students.to_excel(CONFIG['wse_masters_students_filepath'], index=False)
 
     print('Combining student data files...')
     combined = pd.concat([pd.read_excel(filename) for filename in glob.glob(CONFIG['semester_data_dir'] + "\\*.xlsx")], sort=True)

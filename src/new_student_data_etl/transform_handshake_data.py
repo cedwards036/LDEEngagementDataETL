@@ -9,8 +9,10 @@ def transform_handshake_data(handshake_data: pd.DataFrame) -> pd.DataFrame:
     handshake_data = clean_profile_completion_column(handshake_data)
     handshake_data = convert_auth_id_to_jhed(handshake_data)
     handshake_data = add_pre_med_column(handshake_data)
+    handshake_data = uppercase_username(handshake_data)
     handshake_data = handshake_data[[
         'jhed',
+        'handshake_username',
         'handshake_id',
         'has_activated_handshake',
         'has_completed_profile',
@@ -59,4 +61,12 @@ def extract_jhed_from_auth_id(auth_id: str) -> str:
 
 def add_pre_med_column(handshake_data: pd.DataFrame) -> pd.DataFrame:
     handshake_data['is_pre_med'] = handshake_data[StudentFields.LABELS].str.contains('hwd: pre-health')
+    return handshake_data
+
+
+def uppercase_username(handshake_data: pd.DataFrame) -> pd.DataFrame:
+    handshake_data = handshake_data.rename(columns={
+        StudentFields.USERNAME: 'handshake_username'
+    })
+    handshake_data['handshake_username'] = handshake_data['handshake_username'].str.upper()
     return handshake_data
