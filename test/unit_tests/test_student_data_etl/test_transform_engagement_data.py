@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
+from src.student_data_etl.transform_engagement_data import count_engagements_by_type
 
 
 class TestCountEngagementsByType(unittest.TestCase):

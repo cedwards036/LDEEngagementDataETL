@@ -3,9 +3,9 @@ import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from src.new_student_data_etl.lde_roster_file import split_into_separate_department_rosters
-from src.new_student_data_etl.lde_roster_file import unmelt_and_join
-from src.new_student_data_etl.lde_roster_file import unmelt_students_for_roster_file
+from src.student_data_etl.lde_roster_file import split_into_separate_department_rosters
+from src.student_data_etl.lde_roster_file import unmelt_and_join
+from src.student_data_etl.lde_roster_file import unmelt_students_for_roster_file
 
 
 class TestUnmeltStudentsForRosterFile(unittest.TestCase):

@@ -3,10 +3,10 @@ import glob
 
 from src.common import CONFIG
 from src.file_writers import write_roster_excel_files
-import src.new_student_data_etl.extract as extract
-from src.new_student_data_etl.lde_roster_file import format_for_roster_file, split_into_separate_department_rosters
-from src.new_student_data_etl.transform_engagement_data import count_engagements_by_type
-import src.new_student_data_etl.transform_student_data as ts
+import src.student_data_etl.extract as extract
+from src.student_data_etl.lde_roster_file import format_for_roster_file, split_into_separate_department_rosters
+from src.student_data_etl.transform_engagement_data import count_engagements_by_type
+import src.student_data_etl.transform_student_data as ts
 
 
 def run_student_etl():

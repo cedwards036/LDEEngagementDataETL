@@ -4,12 +4,12 @@ import pandas as pd
 from pandas.testing import assert_frame_equal, assert_series_equal
 
 from src.handshake_fields import StudentFields
-from src.new_student_data_etl.transform_handshake_data import add_pre_med_column
-from src.new_student_data_etl.transform_handshake_data import clean_logged_in_column
-from src.new_student_data_etl.transform_handshake_data import clean_profile_completion_column
-from src.new_student_data_etl.transform_handshake_data import convert_auth_id_to_jhed
-from src.new_student_data_etl.transform_handshake_data import rename_handshake_id_column
-from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
+from src.student_data_etl.transform_handshake_data import add_pre_med_column
+from src.student_data_etl.transform_handshake_data import clean_logged_in_column
+from src.student_data_etl.transform_handshake_data import clean_profile_completion_column
+from src.student_data_etl.transform_handshake_data import convert_auth_id_to_jhed
+from src.student_data_etl.transform_handshake_data import rename_handshake_id_column
+from src.student_data_etl.transform_handshake_data import transform_handshake_data
 
 
 class TestCleanLoggedInColumn(unittest.TestCase):

@@ -1,16 +1,16 @@
 import pandas as pd
 
-from src.new_student_data_etl.extract import get_handshake_data
-from src.new_student_data_etl.extract import get_major_metadata
-from src.new_student_data_etl.extract import get_athlete_data
-from src.new_student_data_etl.transform_student_data import clean_potentially_mistyped_bool_fields
-from src.new_student_data_etl.transform_student_data import add_major_metadata
-from src.new_student_data_etl.transform_student_data import add_athlete_data
-from src.new_student_data_etl.transform_student_data import clean_majors
-from src.new_student_data_etl.transform_student_data import make_student_department_table
-from src.new_student_data_etl.transform_student_data import melt_majors
-from src.new_student_data_etl.transform_student_data import merge_with_handshake_data
-from src.new_student_data_etl.transform_student_data import merge_with_student_department_data
+from src.student_data_etl.extract import get_handshake_data
+from src.student_data_etl.extract import get_major_metadata
+from src.student_data_etl.extract import get_athlete_data
+from src.student_data_etl.transform_student_data import clean_potentially_mistyped_bool_fields
+from src.student_data_etl.transform_student_data import add_major_metadata
+from src.student_data_etl.transform_student_data import add_athlete_data
+from src.student_data_etl.transform_student_data import clean_majors
+from src.student_data_etl.transform_student_data import make_student_department_table
+from src.student_data_etl.transform_student_data import melt_majors
+from src.student_data_etl.transform_student_data import merge_with_handshake_data
+from src.student_data_etl.transform_student_data import merge_with_student_department_data
 
 
 def run_student_etl():

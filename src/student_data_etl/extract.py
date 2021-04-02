@@ -8,8 +8,8 @@ from src.common import CONFIG
 from src.common import InsightsReport
 from src.common import read_csv
 from src.data_model import EngagementRecord
-from src.new_student_data_etl.sis_connection import SISConnection
-from src.new_student_data_etl.transform_handshake_data import transform_handshake_data
+from src.student_data_etl.sis_connection import SISConnection
+from src.student_data_etl.transform_handshake_data import transform_handshake_data
 
 STUDENTS_INSIGHTS_REPORT = InsightsReport(
     url='https://app.joinhandshake.com/analytics/reports/9241',
