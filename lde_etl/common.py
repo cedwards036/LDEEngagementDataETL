@@ -6,20 +6,16 @@ from typing import List, Union
 
 from autohandshake import HandshakeSession, HandshakeBrowser, InsightsPage, FileType
 
-CONFIG_FILEPATH = f'{os.path.dirname(os.path.abspath(__file__))}/../config.json'
 
-
-def load_config(config_filepath: str):
+def load_config(config_filepath: str, jhed: str = ''):
     """
     Load the configuration file
     :param config_filepath: the filepath to the config file
     :return: a dict of config values
     """
     with open(config_filepath, 'r') as file:
-        return json.load(file)
-
-
-CONFIG = load_config(CONFIG_FILEPATH)
+        config = json.load(file)
+        return {k: v.replace('$jhed', jhed) for (k, v) in config.items()}
 
 
 class BrowsingSession(HandshakeSession):
@@ -28,7 +24,7 @@ class BrowsingSession(HandshakeSession):
     """
 
     def __init__(self, config, max_wait_time=300):
-        super().__init__(config['handshake_url'], config['handshake_email'],
+        super().__init__(login_url=config['handshake_url'], email=config['handshake_email'], password=config['handshake_pw'],
                          download_dir=config['download_dir'], chromedriver_path=config['chromedriver_path'], max_wait_time=max_wait_time)
 
 

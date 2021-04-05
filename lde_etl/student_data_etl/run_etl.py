@@ -53,7 +53,6 @@ def run_student_etl(config):
     engagement_data = count_engagements_by_type(extract.get_this_years_engagement_data(config['engagement_data_filepath']))
     roster_file = ts.merge_with_engagement_data(roster_file, engagement_data)
     department_roster_files = split_into_separate_department_rosters(roster_file)
-    for dir in config['lde_roster_dirs']:
-        write_roster_excel_files(dir, department_roster_files)
+    write_roster_excel_files(config['lde_roster_dir'], department_roster_files)
 
     print('Done!')
