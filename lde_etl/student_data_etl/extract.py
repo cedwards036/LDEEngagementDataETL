@@ -4,7 +4,6 @@ from datetime import datetime
 import pandas as pd
 
 from lde_etl.common import BrowsingSession
-from lde_etl.common import CONFIG
 from lde_etl.common import InsightsReport
 from lde_etl.common import read_csv
 from lde_etl.data_model import EngagementRecord
