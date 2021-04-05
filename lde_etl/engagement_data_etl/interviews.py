@@ -13,14 +13,14 @@ INTERVIEWS_INSIGHTS_REPORT = InsightsReport(
 )
 
 
-def run_interviews_etl(browser: HandshakeBrowser) -> List[EngagementRecord]:
+def run_interviews_etl(browser: HandshakeBrowser, download_dir) -> List[EngagementRecord]:
     """
     Run the full ETL process for events data
 
     :param browser: a logged-in HandshakeBrowser
     :return: a list consisting of cleaned event engagement data
     """
-    raw_event_data = INTERVIEWS_INSIGHTS_REPORT.extract_data(browser)
+    raw_event_data = INTERVIEWS_INSIGHTS_REPORT.extract_data(browser, download_dir)
     return transform_interviews_data(raw_event_data)
 
 

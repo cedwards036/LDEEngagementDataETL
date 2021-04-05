@@ -13,14 +13,14 @@ CAREER_FAIRS_INSIGHTS_REPORT = InsightsReport(
 )
 
 
-def run_career_fair_etl(browser: HandshakeBrowser) -> List[EngagementRecord]:
+def run_career_fair_etl(browser: HandshakeBrowser, download_dir: str) -> List[EngagementRecord]:
     """
     Run the full ETL process for career fair data
 
     :param browser: a logged-in HandshakeBrowser
     :return: a list consisting of cleaned career fair engagement data
     """
-    raw_fair_data = CAREER_FAIRS_INSIGHTS_REPORT.extract_data(browser)
+    raw_fair_data = CAREER_FAIRS_INSIGHTS_REPORT.extract_data(browser, download_dir)
     return transform_fair_data(raw_fair_data)
 
 

@@ -27,9 +27,9 @@ class BrowsingSession(HandshakeSession):
     A wrapper class around HandshakeSession that always logs into the same account.
     """
 
-    def __init__(self, max_wait_time=300):
-        super().__init__(CONFIG['handshake_url'], CONFIG['handshake_email'],
-                         download_dir=CONFIG['download_dir'], chromedriver_path=CONFIG['chromedriver_path'], max_wait_time=max_wait_time)
+    def __init__(self, config, max_wait_time=300):
+        super().__init__(config['handshake_url'], config['handshake_email'],
+                         download_dir=config['download_dir'], chromedriver_path=config['chromedriver_path'], max_wait_time=max_wait_time)
 
 
 class InsightsDateField:
@@ -76,7 +76,7 @@ class InsightsReport:
         self.url = url
         self._date_field = date_field
 
-    def extract_data(self, browser: HandshakeBrowser) -> List[dict]:
+    def extract_data(self, browser: HandshakeBrowser, download_dir: str) -> List[dict]:
         """
         Extract data from a Handshake insights page for the engagement report.
 
@@ -86,7 +86,7 @@ class InsightsReport:
         """
         insights_page = InsightsPage(self.url, browser)
         insights_page = self._date_field.set_report_date_range(insights_page)
-        downloaded_filepath = insights_page.download_file(CONFIG['download_dir'], file_type=FileType.JSON)
+        downloaded_filepath = insights_page.download_file(download_dir, file_type=FileType.JSON)
         return read_and_delete_json(downloaded_filepath)
 
 

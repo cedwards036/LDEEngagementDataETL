@@ -13,14 +13,14 @@ APPT_INSIGHTS_REPORT = InsightsReport(
 )
 
 
-def run_office_hours_etl(browser: HandshakeBrowser) -> List[EngagementRecord]:
+def run_office_hours_etl(browser: HandshakeBrowser, download_dir) -> List[EngagementRecord]:
     """
     Run the full ETL process for Office Hours data
 
     :param browser: a logged-in HandshakeBrowser
     :return: a list consisting of cleaned office hour engagement data
     """
-    raw_appt_data = APPT_INSIGHTS_REPORT.extract_data(browser)
+    raw_appt_data = APPT_INSIGHTS_REPORT.extract_data(browser, download_dir)
     return transform_office_hours_data(raw_appt_data)
 
 

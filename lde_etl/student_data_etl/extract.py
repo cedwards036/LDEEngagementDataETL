@@ -38,12 +38,12 @@ def get_sis_data(sis_query_filepath) -> pd.DataFrame:
         return pd.DataFrame(cursor.select(read_file_to_string(sis_query_filepath)))
 
 
-def get_pell_data() -> pd.DataFrame:
-    return pd.read_excel(CONFIG['pell_data_filepath'])
+def get_pell_data(filepath) -> pd.DataFrame:
+    return pd.read_excel(filepath)
 
 
-def get_major_metadata() -> pd.DataFrame:
-    return pd.DataFrame(read_csv(f'{CONFIG["student_data_dir"]}\\major_metadata.csv'))
+def get_major_metadata(filepath) -> pd.DataFrame:
+    return pd.DataFrame(read_csv(filepath))
 
 
 def get_athlete_data(filepath) -> pd.DataFrame:
@@ -58,9 +58,9 @@ def get_sli_data(filepath) -> pd.DataFrame:
     return sli_data
 
 
-def get_handshake_data() -> pd.DataFrame:
-    with BrowsingSession() as browser:
-        return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser)))
+def get_handshake_data(config) -> pd.DataFrame:
+    with BrowsingSession(config) as browser:
+        return transform_handshake_data(pd.DataFrame(STUDENTS_INSIGHTS_REPORT.extract_data(browser, config['download_dir'])))
 
 
 def get_this_years_engagement_data(filepath) -> pd.DataFrame:
