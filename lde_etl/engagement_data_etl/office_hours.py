@@ -119,7 +119,8 @@ def _get_department_from_type(raw_data_row: dict) -> Department:
         'Homewood: Pre-Med': Departments.PRE_PROF,
         '(Archived) Homewood: Pre-Med': Departments.PRE_PROF,
         'Homewood: Non-Office Hour Interaction': Departments.NO_DEPARTMENT,
-        'Homewood: Underclassmen Pre-Health': Departments.PRE_PROF
+        'Homewood: Underclassmen Pre-Health': Departments.PRE_PROF,
+        'Homewood: Operations': Departments.OPERATIONS
     }
     return appt_type_to_dept_mapping[raw_data_row[AppointmentFields.TYPE]].value
 

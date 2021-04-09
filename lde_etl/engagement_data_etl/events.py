@@ -141,6 +141,7 @@ def _get_department_from_label(raw_data_row: dict):
         'hwd: finance academy': Departments.FINANCE_ACADEMY.value,
         'hwd: health sciences academy': Departments.HEALTH_SCI_ACADEMY.value,
         'hwd: stem & innovation academy': Departments.STEM_ACADEMY.value,
+        'hwd: operations': Departments.OPERATIONS.value
     }
     try:
         return label_to_dept_mapping[raw_data_row[EventFields.LABEL]]
